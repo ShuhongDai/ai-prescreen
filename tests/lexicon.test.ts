@@ -200,11 +200,18 @@ describe('lexical entries', () => {
     expect(LEXICAL.length).toBeGreaterThan(0);
   });
 
-  it('each match their own pattern text', () => {
+  it('each match their own pattern text (all but retired)', () => {
     const unmatched = LEXICAL.filter(
-      (e) => !analyze(e.pattern, only(e)).matches.some((m) => m.entryId === e.id),
+      (e) => e.status !== 'retired' && !analyze(e.pattern, only(e)).matches.some((m) => m.entryId === e.id),
     ).map((e) => `${e.id}: ${JSON.stringify(e.pattern)}`);
     expect(unmatched).toEqual([]);
+  });
+
+  it('retired entries never fire, even with the experimental lexicon', () => {
+    const fired = LEXICAL.filter(
+      (e) => e.status === 'retired' && analyze(e.pattern, only(e)).matches.length > 0,
+    ).map((e) => e.id);
+    expect(fired).toEqual([]);
   });
 });
 

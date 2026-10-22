@@ -1,8 +1,14 @@
-/* Plain CSS, no framework. Colours are tokens; dark mode follows the system setting. */
+/* Plain CSS, no framework. Colours are tokens; dark mode follows the system setting.
+   Contrast (WCAG 2.x), both themes: text >= 4.5:1 on every background it sits on,
+   including the highlight tints; focus outline, tier underlines, tier icons and control
+   borders >= 3:1. */
 
 :root {
   --bg: #ffffff;
   --surface: #f6f8fa;
+  /* The popover, and hover backgrounds of buttons. */
+  --raised: #ffffff;
+  --hover: #eff2f5;
   --fg: #1f2328;
   --muted: #59636e;
   --border: #d1d9e0;
@@ -10,14 +16,19 @@
   --border-control: #818b98;
   --accent: #0969da;
   --focus: #0969da;
+  --shadow: 0 1px 3px rgb(31 35 40 / 0.12), 0 8px 24px rgb(66 74 83 / 0.16);
 
-  /* Tier colours. Tier is never conveyed by colour alone: underline style + icon too. */
+  /* Tier colours. Tier is never conveyed by colour alone: underline style + icon too.
+     The -strong tints mark a hovered highlight and the one whose popover is open. */
   --artifact: #cf222e;
   --artifact-bg: rgb(207 34 46 / 0.1);
+  --artifact-bg-strong: rgb(207 34 46 / 0.18);
   --lexical: #9a6700;
   --lexical-bg: rgb(212 167 44 / 0.2);
+  --lexical-bg-strong: rgb(212 167 44 / 0.36);
   --stylistic: #6e7781;
   --stylistic-bg: rgb(110 119 129 / 0.12);
+  --stylistic-bg-strong: rgb(110 119 129 / 0.22);
   --experimental: #59636e;
 
   --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -34,19 +45,25 @@
   :root {
     --bg: #0d1117;
     --surface: #151b23;
+    --raised: #1b222b;
+    --hover: #262c36;
     --fg: #e6edf3;
     --muted: #9198a1;
     --border: #3d444d;
     --border-control: #6e7681;
     --accent: #4493f8;
     --focus: #4493f8;
+    --shadow: 0 0 0 1px rgb(1 4 9 / 0.4), 0 8px 24px rgb(1 4 9 / 0.8);
 
     --artifact: #ff7b72;
     --artifact-bg: rgb(255 123 114 / 0.16);
+    --artifact-bg-strong: rgb(255 123 114 / 0.26);
     --lexical: #d29922;
     --lexical-bg: rgb(210 153 34 / 0.2);
+    --lexical-bg-strong: rgb(210 153 34 / 0.32);
     --stylistic: #9198a1;
     --stylistic-bg: rgb(145 152 161 / 0.16);
+    --stylistic-bg-strong: rgb(145 152 161 / 0.26);
     --experimental: #9198a1;
   }
 }
@@ -55,6 +72,11 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+/* `hidden` always wins over a component's own display value. */
+[hidden] {
+  display: none !important;
 }
 
 body {
@@ -168,7 +190,9 @@ a {
 
 .pane-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
+  gap: 0.25rem 1rem;
   min-height: 2rem;
 }
 
@@ -178,6 +202,12 @@ a {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.pane-hint {
+  margin: 0 0 0 auto;
+  font-size: 0.8125rem;
   color: var(--muted);
 }
 
@@ -256,12 +286,13 @@ a {
   margin-bottom: 0.5rem;
 }
 
-.summary-text {
+/* Counts (live region) and the per-1k rate (not live) on one line. */
+.summary-line {
   margin: 0;
   font-weight: 600;
 }
 
-.summary[data-state="idle"] .summary-text {
+.summary[data-state="idle"] .summary-line {
   font-weight: 400;
   color: var(--muted);
 }
@@ -282,6 +313,49 @@ a {
   cursor: pointer;
 }
 
+/* ---- Buttons ---- */
+
+.button {
+  display: inline-block;
+  padding: 0.3125rem 0.75rem;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid transparent; /* stays visible in forced-colours mode */
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .button:hover {
+    background: var(--hover);
+  }
+  .icon-button:hover {
+    background: var(--hover);
+    color: var(--fg);
+  }
+}
+
 /* ---- Highlights ---- */
 
 mark.hl {
@@ -296,35 +370,44 @@ mark.hl {
   box-decoration-break: clone;
 }
 
-/* Tier 1: red, solid underline, "!" badge. */
+/* Tier icons: drawn by CSS, so they are neither part of the text (copying) nor of its
+   accessible name. Shared by the highlights, the legend and the popover title. */
+mark.hl::before,
+.popover-title::before {
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 0.2em;
+  border: 1px solid transparent; /* stays visible in forced-colours mode */
+  font-family: var(--font-ui);
+  font-size: 0.75em;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  text-indent: 0;
+  vertical-align: 0.15em;
+  text-decoration: none;
+  user-select: none;
+}
+
+/* Tier 1: red, solid underline, filled "!" badge. */
 mark.hl--artifact {
   background: var(--artifact-bg);
   text-decoration-style: solid;
   text-decoration-color: var(--artifact);
 }
 
-mark.hl--artifact::before {
+mark.hl--artifact::before,
+.popover-title[data-tier="artifact"]::before {
   content: "!";
   content: "!" / "";
-  display: inline-block;
-  width: 1.1em;
-  height: 1.1em;
-  margin-right: 0.2em;
-  border: 1px solid transparent; /* stays visible in forced-colours mode */
   border-radius: 50%;
   background: var(--artifact);
   color: var(--bg);
-  font-family: var(--font-ui);
-  font-size: 0.75em;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  vertical-align: 0.15em;
-  text-decoration: none;
-  user-select: none;
 }
 
-/* Tier 2: yellow, wavy underline. */
+/* Tier 2: yellow, wavy underline, outlined "~" badge (lighter than tier 1: your call). */
 mark.hl--lexical {
   background: var(--lexical-bg);
   text-decoration-style: wavy;
@@ -332,11 +415,31 @@ mark.hl--lexical {
   text-decoration-color: var(--lexical);
 }
 
-/* Tier 3: grey, dotted underline. */
+mark.hl--lexical::before,
+.popover-title[data-tier="lexical"]::before {
+  content: "~";
+  content: "~" / "";
+  border-color: var(--lexical);
+  border-radius: 3px;
+  color: var(--lexical);
+}
+
+/* Tier 3: grey, dotted underline, dotted "¶" badge. */
 mark.hl--stylistic {
   background: var(--stylistic-bg);
   text-decoration-style: dotted;
   text-decoration-color: var(--stylistic);
+}
+
+mark.hl--stylistic::before,
+.popover-title[data-tier="stylistic"]::before {
+  content: "¶";
+  content: "¶" / "";
+  border-style: dotted;
+  border-color: var(--stylistic);
+  border-radius: 3px;
+  color: var(--stylistic);
+  font-weight: 400;
 }
 
 /* Candidate (experimental) entries: dashed outline in addition to the tier style. */
@@ -345,11 +448,171 @@ mark.hl--experimental {
   outline-offset: 1px;
 }
 
+/* Highlights in the result open the popover (click, Enter or Space). */
+.result mark.hl {
+  cursor: pointer;
+}
+
+.result mark.hl--artifact[aria-expanded="true"] {
+  background: var(--artifact-bg-strong);
+}
+.result mark.hl--lexical[aria-expanded="true"] {
+  background: var(--lexical-bg-strong);
+}
+.result mark.hl--stylistic[aria-expanded="true"] {
+  background: var(--stylistic-bg-strong);
+}
+
+@media (hover: hover) {
+  .result mark.hl--artifact:hover {
+    background: var(--artifact-bg-strong);
+  }
+  .result mark.hl--lexical:hover {
+    background: var(--lexical-bg-strong);
+  }
+  .result mark.hl--stylistic:hover {
+    background: var(--stylistic-bg-strong);
+  }
+}
+
+/* Must beat the dashed outline of experimental entries. */
+.result mark.hl:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---- Popover (role="dialog", one at a time; placed by src/ui/popover.ts) ---- */
+
+.popover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 22rem;
+  /* Refined in px from script; these keep it inside the viewport until then. */
+  max-width: calc(100vw - 1rem);
+  max-height: calc(100vh - 1rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 0.625rem 0.875rem 0.875rem;
+  background: var(--raised);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* Focus lands on the dialog itself when it opens; the ring shows for keyboard users. */
+.popover:focus {
+  outline: none;
+}
+.popover:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.popover-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.popover-title {
+  margin: 0.25rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.popover-title::before {
+  margin-right: 0.4em;
+}
+
+.popover-close {
+  margin: -0.125rem -0.5rem 0 0;
+}
+
+.popover-experimental {
+  display: inline-block;
+  margin: 0.375rem 0 0;
+  padding: 0 0.375rem;
+  border: 1px dashed var(--experimental);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.popover-quote {
+  margin: 0.375rem 0 0;
+  font-family: var(--font-text);
+  overflow-wrap: anywhere;
+}
+
+.popover-section {
+  margin-top: 0.75rem;
+}
+
+.popover-heading {
+  margin: 0 0 0.125rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.popover-text {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.popover-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.popover-list li + li {
+  margin-top: 0.125rem;
+}
+
+.popover-actions {
+  margin-top: 0.875rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Motion only for people who have not asked to reduce it. */
+@media (prefers-reduced-motion: no-preference) {
+  .popover {
+    animation: popover-in 120ms ease-out;
+  }
+}
+
+@keyframes popover-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---- Forced colours (Windows high contrast) ---- */
+
 @media (forced-colors: active) {
   mark.hl {
     text-decoration-color: CanvasText;
   }
-  mark.hl--artifact::before {
+  mark.hl::before,
+  .popover-title::before {
+    border-color: CanvasText;
+  }
+  .result mark.hl[aria-expanded="true"] {
+    outline: 2px solid Highlight;
+  }
+  .popover {
     border-color: CanvasText;
   }
 }
@@ -388,7 +651,7 @@ mark.hl--experimental {
   font-weight: 600;
 }
 
-/* No animations are used; this guards anything added later. */
+/* Guards anything animated, now or later. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

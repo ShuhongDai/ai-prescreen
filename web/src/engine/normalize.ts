@@ -22,9 +22,7 @@ export function normalize(text: string): string {
 
 // Invisible format characters: soft hyphen, zero-width space / non-joiner / joiner, word
 // joiner, BOM (zero-width no-break space). They cannot be mapped to a single visible
-// character, so analyze() removes them before matching and maps offsets back.
-export const HAS_INVISIBLE = /[\u00AD\u200B-\u200D\u2060\uFEFF]/;
-
+// character, so preprocess() removes them before matching and maps offsets back.
 export function isInvisible(code: number): boolean {
   return (
     code === 0x00ad ||
@@ -35,8 +33,8 @@ export function isInvisible(code: number): boolean {
 }
 
 /**
- * Code points that never reach a lexicon pattern: normalize() rewrites them, or analyze()
- * removes them. A regex that names one of them can never match it.
+ * Code points that never reach a lexicon pattern: normalize() rewrites them, or
+ * preprocess() removes them. A regex that names one of them can never match it.
  */
 export function isRewrittenOrRemoved(code: number): boolean {
   if (code > 0xffff) return false;

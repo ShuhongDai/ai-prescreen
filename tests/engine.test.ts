@@ -792,19 +792,33 @@ describe('candidate entries only add highlights', () => {
     expect(ids(true)).not.toContain('en.artifact.closing-offer-at-end');
   });
 
-  it('settles reviewed matches first, then adds candidates only where nothing overlaps', () => {
+  it('settles tier by tier, reviewed before candidates within a tier', () => {
     const reviewed = entry({ id: 'r', pattern: 'beta gamma', tier: 'lexical' });
     const longer = entry({ id: 'c1', pattern: 'alpha beta gamma delta', tier: 'artifact', status: 'candidate' });
     const free = entry({ id: 'c2', pattern: 'epsilon', status: 'candidate' });
     const inside = entry({ id: 'c3', pattern: 'gamma', tier: 'artifact', status: 'candidate' });
     const text = 'alpha beta gamma delta epsilon';
     const all = [longer, reviewed, free, inside];
-    expect(ids(all, text, { includeCandidates: true })).toEqual(['r', 'c2']);
+    // A candidate artifact outranks a reviewed lexical match; it only shows when the
+    // experimental lexicon is on.
+    expect(ids(all, text, { includeCandidates: true })).toEqual(['c1', 'c2']);
     expect(ids(all, text)).toEqual(['r']);
+    // Within a tier, a reviewed match is never replaced by a candidate.
+    const reviewedArtifact = entry({ id: 'ra', pattern: 'beta gamma' });
+    expect(ids([longer, reviewedArtifact], text, { includeCandidates: true })).toEqual(['ra']);
     // Between candidates, the usual order still decides.
     const a = entry({ id: 'a', pattern: 'alpha beta', status: 'candidate' });
     const b = entry({ id: 'b', pattern: 'beta gamma delta', status: 'candidate' });
     expect(ids([b, a], text, { includeCandidates: true })).toEqual(['a']);
+  });
+});
+
+describe('tiers in overlaps', () => {
+  it('never lets a lexical match hide an artifact, even when it starts earlier', () => {
+    const word = entry({ id: 'w', pattern: 'alpha beta', tier: 'lexical' });
+    const artifact = entry({ id: 'a', pattern: 'beta gamma' });
+    const other = entry({ id: 'x', pattern: 'delta', tier: 'lexical' });
+    expect(ids([word, artifact, other], 'alpha beta gamma delta')).toEqual(['a', 'x']);
   });
 });
 

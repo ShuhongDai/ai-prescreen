@@ -2,6 +2,7 @@
 // Wording rule: describe what was flagged, never who or what wrote the text.
 
 import { TIERS, type AnalysisStats, type LexiconEntry, type Tier } from '../engine/index.ts';
+import { baselineText, type Baseline } from './baseline.ts';
 
 export interface TierInfo {
   /** Noun used in the summary line, singular and plural. */
@@ -44,6 +45,8 @@ export interface SummaryInput {
   experimentalHidden: number;
   /** Entries dismissed as false positives during this page session. */
   dismissedEntries?: number;
+  /** Human baseline appended to the density (see ui/baseline.ts). */
+  baseline?: Pick<Baseline, 'years' | 'pooledPer1k'> | null;
 }
 
 export type SummaryState = 'idle' | 'clean' | 'flagged';
@@ -129,10 +132,16 @@ export function buildSummary(input: SummaryInput): Summary {
     countNoun(stats.counts[t], TIER_INFO[t].one, TIER_INFO[t].many),
   );
 
+  // The baseline was measured with the default lexicon, so it is left out while
+  // experimental matches are shown.
+  const baseline =
+    input.baseline && experimentalShown === 0 ? `${SEPARATOR}${baselineText(input.baseline)}` : '';
+
   return {
     state: 'flagged',
     text: parts.join(SEPARATOR),
-    density: stats.words >= DENSITY_MIN_WORDS ? `${formatPer1k(stats.per1k)} per 1k words` : null,
+    density:
+      stats.words >= DENSITY_MIN_WORDS ? `${formatPer1k(stats.per1k)} per 1k words${baseline}` : null,
     note: hidden ? note : experimentalShown > 0 ? shownNote(experimentalShown, stats.total) : null,
     offerExperimental: hidden,
     dismissed,

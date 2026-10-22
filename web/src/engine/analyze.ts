@@ -53,41 +53,42 @@ function byPriority(a: Match, b: Match): number {
   );
 }
 
-/** Keeps matches in priority order, dropping each one that overlaps a kept one. */
-function settle(matches: Match[]): Match[] {
-  matches.sort(byPriority);
-  const kept: Match[] = [];
-  let lastEnd = -1;
-  for (const m of matches) {
-    if (m.start >= lastEnd) {
-      kept.push(m);
-      lastEnd = m.end;
-    }
-  }
-  return kept;
-}
-
 /**
- * Overlaps among reviewed entries (accepted, watch) are settled first. Matches of
- * candidate entries are then added only where they overlap nothing kept, so turning the
- * experimental lexicon on can add highlights but never replace a reviewed one.
+ * Adds the `layer` matches that overlap nothing already kept, in priority order, dropping
+ * each one that overlaps a match of this layer added before it.
  */
-function resolveOverlaps(reviewed: Match[], candidates: Match[]): Match[] {
-  const kept = settle(reviewed);
-  if (candidates.length === 0) return kept;
-  candidates.sort(byPriority);
+function fillGaps(kept: Match[], layer: Match[]): Match[] {
+  if (layer.length === 0) return kept;
+  layer.sort(byPriority);
   const added: Match[] = [];
   let k = 0;
   let lastEnd = -1;
-  for (const c of candidates) {
-    while (k < kept.length && kept[k]!.end <= c.start) k++;
-    if (k < kept.length && kept[k]!.start < c.end) continue; // overlaps a reviewed match
-    if (c.start < lastEnd) continue; // overlaps a candidate match already added
-    added.push(c);
-    lastEnd = c.end;
+  for (const m of layer) {
+    while (k < kept.length && kept[k]!.end <= m.start) k++;
+    if (k < kept.length && kept[k]!.start < m.end) continue; // overlaps an earlier layer
+    if (m.start < lastEnd) continue; // overlaps a match of this layer
+    added.push(m);
+    lastEnd = m.end;
   }
   if (added.length === 0) return kept;
+  if (kept.length === 0) return added;
   return [...kept, ...added].sort((a, b) => a.start - b.start);
+}
+
+/**
+ * Overlaps are settled layer by layer: artifact matches first, then lexical, then
+ * stylistic, and within each tier reviewed entries (accepted, watch) before candidates.
+ * A later layer only fills gaps, so a tier-1 artifact is never hidden by an overlapping
+ * tier-2 word, and turning the experimental lexicon on can add highlights but never
+ * replace a reviewed one of the same or a higher tier.
+ */
+function resolveOverlaps(reviewed: Match[], candidates: Match[]): Match[] {
+  let kept: Match[] = [];
+  for (const tier of TIERS) {
+    kept = fillGaps(kept, reviewed.filter((m) => m.tier === tier));
+    kept = fillGaps(kept, candidates.filter((m) => m.tier === tier));
+  }
+  return kept;
 }
 
 type Found = (entry: LexiconEntry, start: number, end: number) => void;

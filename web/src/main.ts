@@ -1,4 +1,5 @@
 import './style.css';
+import baseline from './baseline.json';
 import type { LexiconEntry } from './engine/index.ts';
 import { LEXICON } from './lexicon.ts';
 import { focusIndexAfterDismiss } from './ui/dismiss.ts';
@@ -135,6 +136,7 @@ function update(): void {
     experimentalShown,
     experimentalHidden,
     dismissedEntries: dismissed.size,
+    baseline,
   });
 
   summaryBox.dataset.state = summary.state;

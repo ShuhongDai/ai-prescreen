@@ -115,9 +115,10 @@ Entry schema:
   only *closed* backtick fences mask their content (fence lines stay visible; `~~~` is not
   a fence); inline code uses flanking rules and LaTeX ``…'' quotes are not code; inline
   code and `$…$` keep their delimiters visible; `\url{}`/`\href{}` URLs stay visible.
-- Overlaps: earliest start, then longest, then tier, then id — but reviewed entries
-  (accepted/watch) are settled first and candidates only fill gaps, so the experimental
-  lexicon can only add highlights. A hyphen in a pattern matches "-", whitespace or
+- Overlaps are settled tier by tier (artifact, then lexical, then stylistic) and, within a
+  tier, reviewed entries (accepted/watch) before candidates; each layer only fills gaps
+  (earliest start, then longest, then id). So a tier-1 artifact is never hidden by a word
+  inside it, and the experimental lexicon never replaces a reviewed match of its tier. A hyphen in a pattern matches "-", whitespace or
   nothing ("cutting-edge" matches "cutting edge", "cuttingedge").
 - Matching: case-insensitive, word boundaries, inflection for `inflect: true`.
   Word/phrase entries are indexed by their first word (all forms) and checked with one
@@ -135,7 +136,10 @@ Entry schema:
 - Layout: left = plain textarea (on paste, take `text/plain` only); right = read-only
   highlighted result. Stacked on mobile. No in-place highlighting inside the editor (v1).
 - Summary line on top of results, e.g. "2 artifacts · 7 overused words · 3.1 per 1k words".
-  The per-1k density is shown only from 200 words up (`DENSITY_MIN_WORDS`).
+  The per-1k density is shown only from 200 words up (`DENSITY_MIN_WORDS`), followed by the
+  human baseline "typical human papers (2019–21): ~X" (`web/src/baseline.json`: lexical
+  hits per 1k words on the arXiv measuring stick with the default lexicon; left out while
+  experimental matches are shown).
 - Clicking a highlight opens a popover: tier, why it is flagged, suggestions,
   "Not AI-like (false positive)" button. Until M3 the button only hides that entry for
   the page session (memory only, Undo in the summary); M3 adds reporting in
@@ -229,6 +233,8 @@ npm run fetch-arxiv       # draw the pre-2022 arXiv sample → data/arxiv/ (giti
                           # `-- --ids data/arxiv-sample-ids.txt` re-fetches the committed sample
 npm run fire-rate -- --tier lexical --status candidate [--review reviews/<name>.md]
                           # human fire-rate per entry on that sample (measuring stick only)
+npm run baseline          # recompute web/src/baseline.json after changing which lexical
+                          # entries are accepted (tests/baseline.test.ts fails until you do)
 ```
 
 Before every push: `npm test && npm run validate-lexicon`.
@@ -247,3 +253,5 @@ Files: everything for this project stays inside this folder. Review files for Sh
 - 2026-10-22 — Solo workflow: push directly to `main` without confirmation; no PRs for my own
   work; external contributions come in as PRs; no branch protection; CI = build + deploy only;
   tests and lexicon validation run locally.
+- 2026-10-23 — Tier-2 batch rule: retire the top-30 firers; accept everything else. Self-check
+  tool, so prefer recall over precision. Revisit the 1–5% band if default noise turns out too high.

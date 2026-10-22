@@ -34,7 +34,10 @@ Repo: github.com/ShuhongDai/ai-prescreen. Site: GitHub Pages.
 7. Remote database: reading is fine. Any `--remote` write, delete or schema change
    requires explicit confirmation from Shuhong first. Migrations are append-only:
    never edit an existing migration file, always add a new one.
-8. After M0, work on branches and open PRs. Deployment happens only via CI on merge to `main`.
+8. Work directly on `main` and push without asking for confirmation. Run `npm test` and
+   `npm run validate-lexicon` locally before pushing. If a check fails, mention it in the
+   report. CI only builds and deploys; it runs no tests, linters or format checks.
+   External contributions come in as PRs.
 
 ## Detection tiers
 
@@ -77,7 +80,8 @@ Entry schema:
   entries appear only with an "experimental lexicon" toggle; `retired` are ignored.
 - Runtime statistics (hit counts, false-positive reports, last reported) live in the
   database (M4), not in the JSON, to keep lexicon diffs clean.
-- CI validates every lexicon file: schema, unique IDs, valid regexes, no duplicate patterns.
+- `npm run validate-lexicon` (run locally, not in CI) validates every lexicon file:
+  schema, unique IDs, valid regexes, no duplicate patterns.
 
 ## Engine requirements (`src/engine/`, pure TypeScript, no DOM)
 
@@ -133,7 +137,7 @@ ai-prescreen/
 ├── tests/
 └── .github/
     ├── ISSUE_TEMPLATE/  # "report AI-like phrase", "report false positive"
-    └── workflows/       # test, deploy-pages, deploy-worker, backup
+    └── workflows/       # deploy-pages, deploy-worker, backup (build + deploy only)
 ```
 
 ## Milestones (do one at a time; stop and report after each)
@@ -149,7 +153,8 @@ ai-prescreen/
   summary line, popover with explanation and suggestions, seed tier-2 lexicon (candidates
   for Shuhong to review). Done when: tests incl. false-positive set pass; perf target met.
 - **M3 Contribution flow v1 (no backend)** — "report phrase" / "false positive" buttons
-  open pre-filled GitHub issues; issue templates; lexicon validation in CI;
+  open pre-filled GitHub issues; issue templates; lexicon validation as a local script
+  (`npm run validate-lexicon`);
   CONTRIBUTING.md.
 - **M4 Backend** — Worker + D1 + Turnstile; feedback and false-positive endpoints;
   anonymous entry-ID hit counts; Worker → GitHub issue. Privacy note on the page.
@@ -177,11 +182,14 @@ Single root `package.json`; Vite `root` is `web/`, build output goes to `dist/`.
 ```
 npm install
 npm run dev        # Vite dev server → http://localhost:5173/ai-prescreen/
-npm test           # Vitest (tests/**/*.test.ts, web/src/**/*.test.ts)
+npm test           # tsc --noEmit, then Vitest (tests/**/*.test.ts, web/src/**/*.test.ts)
 npm run test:watch
-npm run build      # tsc --noEmit, then vite build → dist/
+npm run validate-lexicon  # schema, unique IDs, valid regexes, no duplicate patterns
+npm run build      # vite build → dist/ (this is all CI runs, then deploys to Pages)
 npm run preview    # serve dist/ locally
 ```
+
+Before every push: `npm test && npm run validate-lexicon`.
 
 ## Decision log
 
@@ -191,3 +199,5 @@ npm run preview    # serve dist/ locally
 - 2026-10-22 — Hosting: GitHub Pages + Cloudflare Workers/D1 (free tier). All config as code.
 - 2026-10-22 — Stack: Vite + TypeScript, no framework, plain CSS; engine separate from UI.
 - 2026-10-22 — Licences: MIT (code), CC BY 4.0 (lexicon).
+- 2026-10-22 — Solo workflow: push directly to `main` without confirmation; no PRs, no branch
+  protection; CI = build + deploy only; tests and lexicon validation run locally.

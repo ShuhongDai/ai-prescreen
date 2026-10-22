@@ -5,6 +5,7 @@ export default defineConfig({
   base: '/ai-prescreen/',
   build: {
     outDir: '../dist',
+    modulePreload: { polyfill: false },
     emptyOutDir: true,
   },
   test: {

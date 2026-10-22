@@ -1,5 +1,7 @@
-// Detection engine: pure TypeScript, no DOM access. Implemented from M1.
+// Detection engine: pure TypeScript, no DOM access.
 
-export const TIERS = ['artifact', 'lexical', 'stylistic'] as const;
-
-export type Tier = (typeof TIERS)[number];
+export * from './types.ts';
+export { normalize } from './normalize.ts';
+export { compileEntry, compileLexicon, isActive, literalSource } from './compile.ts';
+export type { CompiledEntry, CompiledLexicon } from './compile.ts';
+export { analyze, countWords } from './analyze.ts';

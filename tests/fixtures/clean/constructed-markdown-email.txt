@@ -1,0 +1,11 @@
+Hi Anna,
+
+Thanks for the comments on the draft. Here is the revised version of the manuscript, with the changes tracked: [draft v3](https://example.org/drafts/v3.pdf). I moved the robustness checks to the appendix and fixed the reference to Smith et al. [4]. The sentence about funding still says "[citation needed]" because I could not find the original report; feel free to suggest a source. One interviewee put it bluntly: "[Name] never answered my emails," so we kept the quote but anonymised it. Completion depends on [the ethics committee]'s timeline.
+
+- [x] update the *bootstrap* figures
+- [ ] rerun the model with `n = 1000`
+
+As an AI researcher, I am not surprised by the results. Please let me know if you have any questions. Would you like me to send the slides as well?
+
+Best,
+Jonas

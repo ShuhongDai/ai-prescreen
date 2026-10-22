@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test": "tsc --noEmit && vitest run",
     "test:watch": "vitest",
-    "validate-lexicon": "node scripts/validate-lexicon.ts"
+    "validate-lexicon": "node scripts/validate-lexicon.ts",
+    "fetch-arxiv": "node scripts/fetch-arxiv.ts",
+    "fire-rate": "node scripts/fire-rate.ts"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

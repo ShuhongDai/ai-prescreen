@@ -163,7 +163,8 @@ describe('experimental lexicon toggle OFF (the default)', () => {
       experimentalHidden: hidden.length,
     });
     expect(summary.state).toBe('flagged');
-    expect(summary.text).toMatch(/^1 artifact \u00b7 /);
+    // Six words: below the 200-word threshold, so no per-1k density.
+    expect(summary.text).toBe('1 artifact');
     expect(summary.note).toBeNull();
   });
 
@@ -190,6 +191,21 @@ describe('experimental lexicon toggle OFF (the default)', () => {
       });
     }
   }
+});
+
+describe('lexical entries', () => {
+  const LEXICAL = LEXICON.filter((e) => e.tier === 'lexical');
+
+  it('are found', () => {
+    expect(LEXICAL.length).toBeGreaterThan(0);
+  });
+
+  it('each match their own pattern text', () => {
+    const unmatched = LEXICAL.filter(
+      (e) => !analyze(e.pattern, only(e)).matches.some((m) => m.entryId === e.id),
+    ).map((e) => `${e.id}: ${JSON.stringify(e.pattern)}`);
+    expect(unmatched).toEqual([]);
+  });
 });
 
 describe('clean human-written and constructed text', () => {
@@ -285,6 +301,19 @@ describe('validateLexicon', () => {
 
   it('rejects whitespace in word patterns', () => {
     expect(joined(check({ match: 'word', pattern: 'two words' }))).toMatch(/whitespace/);
+  });
+
+  it('checks evidence items and the independent-source count', () => {
+    const paper = { type: 'paper', ref: 'Example et al. 2024', url: 'https://example.org/p' };
+    const blog = { type: 'blog', ref: 'Some blog', derivedFrom: 'Example et al. 2024' };
+    expect(check({ evidence: [paper, blog], independentSources: 1 })).toEqual([]);
+    expect(joined(check({ evidence: [paper, blog], independentSources: 2 }))).toMatch(
+      /"independentSources" is 2, but 1 evidence item/,
+    );
+    expect(joined(check({ independentSources: 1.5 }))).toMatch(/non-negative integer/);
+    expect(joined(check({ evidence: [{ ...paper, url: 'example.org' }] }))).toMatch(/http\(s\) URL/);
+    expect(joined(check({ evidence: [{ ...paper, quote: 'copied text' }] }))).toMatch(/unknown field "quote"/);
+    expect(joined(check({ evidence: [{ ...paper, derivedFrom: ' ' }] }))).toMatch(/"derivedFrom"/);
   });
 
   it('rejects bad dates and wrongly typed arrays', () => {

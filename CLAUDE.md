@@ -72,9 +72,17 @@ Entry schema:
   "suggestions": ["examine", "explore", "look at"],
   "models": [],                 // optional: model families where observed
   "added": "2026-10-22",
-  "evidence": [{ "type": "paper", "ref": "Kobak et al., excess vocabulary" }]
+  "evidence": [
+    { "type": "paper", "ref": "Kobak et al., excess vocabulary", "url": "https://…" },
+    { "type": "blog", "ref": "Some blog", "derivedFrom": "Kobak et al., excess vocabulary" }
+  ],
+  "independentSources": 1        // evidence items without "derivedFrom"
 }
 ```
+
+- `evidence` lists the sources consulted for the entry: short citations and URLs only, never
+  copied passages. An item that only repeats another source's list carries `derivedFrom`;
+  `independentSources` counts the other items (the validator checks it).
 
 - Only `accepted` (and `watch`, shown normally) entries are active by default; `candidate`
   entries appear only with an "experimental lexicon" toggle; `retired` are ignored.
@@ -99,7 +107,23 @@ Entry schema:
     `\label{}`, comments; keep the text arguments of formatting commands (`\emph{…}`)
   - Markdown: skip code blocks and inline code; do NOT strip `**`/`###` before
     artifact matching (they are tier-1 signals themselves)
+- As built (M2, `preprocess.ts`): one uniform pass, no input-type detection. Skipped text
+  is masked with spaces (newlines kept), so line-anchored artifact regexes still work.
+  `%` starts a comment only at a line start, after whitespace, `}` or `\\`, or at a line
+  end — never after a digit ("20%", "5 wt%") or inside a URL; inline `$…$` follows
+  Pandoc's rule and never opens right after a digit ("$5 and $10", "5$" are not math);
+  only *closed* backtick fences mask their content (fence lines stay visible; `~~~` is not
+  a fence); inline code uses flanking rules and LaTeX ``…'' quotes are not code; inline
+  code and `$…$` keep their delimiters visible; `\url{}`/`\href{}` URLs stay visible.
+- Overlaps: earliest start, then longest, then tier, then id — but reviewed entries
+  (accepted/watch) are settled first and candidates only fill gaps, so the experimental
+  lexicon can only add highlights. A hyphen in a pattern matches "-", whitespace or
+  nothing ("cutting-edge" matches "cutting edge", "cuttingedge").
 - Matching: case-insensitive, word boundaries, inflection for `inflect: true`.
+  Word/phrase entries are indexed by their first word (all forms) and checked with one
+  pass over the text; regex entries are scanned. Inflection (`inflect.ts`) gives every
+  content word of a base-form pattern its verb/noun forms, a small irregular table and
+  -ize/-ise variants; it cannot tell nouns from verbs (landscape → landscaping).
 - Performance target: 20,000 words analysed in < 100 ms on a normal laptop.
 - Tests with Vitest, including a false-positive regression set of clean human text
   that must produce no tier-1 hits.
@@ -111,8 +135,13 @@ Entry schema:
 - Layout: left = plain textarea (on paste, take `text/plain` only); right = read-only
   highlighted result. Stacked on mobile. No in-place highlighting inside the editor (v1).
 - Summary line on top of results, e.g. "2 artifacts · 7 overused words · 3.1 per 1k words".
+  The per-1k density is shown only from 200 words up (`DENSITY_MIN_WORDS`).
 - Clicking a highlight opens a popover: tier, why it is flagged, suggestions,
-  "Not AI-like (false positive)" button.
+  "Not AI-like (false positive)" button. Until M3 the button only hides that entry for
+  the page session (memory only, Undo in the summary); M3 adds reporting in
+  `onFalsePositive()` in `main.ts`.
+- The build strips `evidence`, `models` and `independentSources` from the bundled lexicon
+  (`vite.config.ts`); the page needs only patterns, notes and suggestions.
 - Visual style: clean, minimal, editor-like. Iterate from screenshots.
 - UI language: English. Product name shown as "AI初筛 · ai-prescreen".
 - Vite `base` must be `/ai-prescreen/` for GitHub Pages.
@@ -196,6 +225,10 @@ npm run test:watch
 npm run validate-lexicon  # schema, unique IDs, valid regexes, no duplicate patterns
 npm run build      # vite build → dist/ (this is all CI runs, then deploys to Pages)
 npm run preview    # serve dist/ locally
+npm run fetch-arxiv       # draw the pre-2022 arXiv sample → data/arxiv/ (gitignored);
+                          # `-- --ids data/arxiv-sample-ids.txt` re-fetches the committed sample
+npm run fire-rate -- --tier lexical --status candidate [--review file.md]
+                          # human fire-rate per entry on that sample (measuring stick only)
 ```
 
 Before every push: `npm test && npm run validate-lexicon`.

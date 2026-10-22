@@ -24,7 +24,10 @@ const KNOWN_KEYS = new Set([
   'models',
   'added',
   'evidence',
+  'independentSources',
 ]);
+const EVIDENCE_KEYS = new Set(['type', 'ref', 'url', 'derivedFrom']);
+const URL = /^https?:\/\/\S+$/;
 const REQUIRED_STRINGS = ['id', 'pattern', 'match', 'tier', 'lang', 'status', 'note', 'added'];
 
 const LANG = /^[a-z]{2,3}(?:-[a-z0-9]{2,8})?$/;
@@ -272,13 +275,44 @@ function validateEntry(
   if (entry.models !== undefined && !isStringArray(entry.models)) {
     err('"models" must be an array of strings');
   }
+  let independent: number | null = null;
   if (entry.evidence !== undefined) {
     const ok =
       Array.isArray(entry.evidence) &&
       entry.evidence.every(
         (ev) => isRecord(ev) && typeof ev.type === 'string' && typeof ev.ref === 'string',
       );
-    if (!ok) err('"evidence" must be an array of { "type": string, "ref": string }');
+    if (!ok) {
+      err('"evidence" must be an array of { "type": string, "ref": string }');
+    } else {
+      (entry.evidence as Record<string, unknown>[]).forEach((ev, i) => {
+        for (const key of Object.keys(ev)) {
+          if (!EVIDENCE_KEYS.has(key)) err(`evidence[${i}]: unknown field "${key}"`);
+        }
+        if ((ev.type as string).trim() === '' || (ev.ref as string).trim() === '') {
+          err(`evidence[${i}]: "type" and "ref" must not be empty`);
+        }
+        if (ev.url !== undefined && (typeof ev.url !== 'string' || !URL.test(ev.url))) {
+          err(`evidence[${i}]: "url" must be an http(s) URL`);
+        }
+        if (ev.derivedFrom !== undefined && (typeof ev.derivedFrom !== 'string' || ev.derivedFrom.trim() === '')) {
+          err(`evidence[${i}]: "derivedFrom" must be a non-empty string`);
+        }
+      });
+      independent = (entry.evidence as Record<string, unknown>[]).filter(
+        (ev) => ev.derivedFrom === undefined,
+      ).length;
+    }
+  }
+  if (entry.independentSources !== undefined) {
+    const n = entry.independentSources;
+    if (typeof n !== 'number' || !Number.isInteger(n) || n < 0) {
+      err('"independentSources" must be a non-negative integer');
+    } else if (independent !== null && n !== independent) {
+      err(
+        `"independentSources" is ${n}, but ${independent} evidence item(s) have no "derivedFrom"`,
+      );
+    }
   }
 
   if (typeof pattern === 'string' && pattern.trim() !== '') {

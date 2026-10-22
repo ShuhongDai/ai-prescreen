@@ -14,8 +14,9 @@ decide whether to revise it.
 - **Private.** Your text never leaves the browser.
 - **Instant.** Analysis runs locally as you paste.
 
-> Status: early development. Live at https://shuhongdai.github.io/ai-prescreen/ — currently
-> checks for chatbot artifacts (tier 1) only.
+> Status: early development. Live at https://shuhongdai.github.io/ai-prescreen/ — checks for
+> chatbot artifacts (tier 1). A tier-2 lexicon of over-used words is under review and can be
+> tried with the "Experimental lexicon" toggle.
 
 ## Detection tiers
 

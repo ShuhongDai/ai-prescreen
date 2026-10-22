@@ -47,29 +47,51 @@
         </div>
         <!-- Native paste is kept on purpose: a textarea only ever receives text/plain,
              and the browser's own paste keeps the undo history intact. -->
+        <!-- spellcheck/autocorrect off: browser cloud spell-checking can send the text off the device. -->
         <textarea
           id="input"
           class="editor"
           placeholder="Paste text from LaTeX, Markdown or Word…"
           autocomplete="off"
           autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
         ></textarea>
       </section>
 
       <section class="pane" aria-labelledby="result-title">
         <div class="pane-head">
           <h2 id="result-title" class="pane-title">Result</h2>
+          <p id="result-hint" class="pane-hint" hidden>Select a highlight for details</p>
         </div>
-        <!-- One live region for the summary line and its note, so screen readers also
-             hear about hidden experimental matches. -->
-        <div class="summary" data-state="idle" role="status" aria-live="polite">
-          <p id="summary-text" class="summary-text">Paste or type a draft to check it.</p>
-          <p id="summary-note" class="summary-note" hidden>
-            <span id="summary-note-text"></span>
-            <button type="button" id="enable-experimental" class="link-button" hidden>
-              Turn on Experimental lexicon
-            </button>
+        <!-- Two live regions: the counts, and the notes under them. The per-1k rate sits
+             right after the counts but outside both, because it changes on nearly every
+             keystroke and would make screen readers repeat the summary while typing. -->
+        <div id="summary" class="summary" data-state="idle">
+          <p class="summary-line">
+            <span id="summary-text" class="summary-text" role="status"
+              >Paste or type a draft to check it.</span
+            ><span id="summary-density" class="summary-density" hidden></span>
           </p>
+          <div class="summary-notes" role="status">
+            <p id="summary-note" class="summary-note" hidden>
+              <span id="summary-note-text"></span>
+              <button type="button" id="enable-experimental" class="link-button" hidden>
+                Turn on Experimental lexicon
+              </button>
+            </p>
+            <p id="summary-dismissed" class="summary-note" hidden>
+              <span id="summary-dismissed-text"></span><span aria-hidden="true"> · </span
+              ><button
+                type="button"
+                id="undo-dismiss"
+                class="link-button"
+                aria-describedby="summary-dismissed-text"
+              >
+                Undo
+              </button>
+            </p>
+          </div>
         </div>
         <div
           id="result"
@@ -77,8 +99,9 @@
           role="group"
           tabindex="0"
           aria-labelledby="result-title"
-          aria-describedby="summary-text summary-note-text"
+          aria-describedby="summary-text summary-density summary-note-text"
         ></div>
+        <!-- The highlight popover (role="dialog") is inserted here by src/ui/popover.ts. -->
       </section>
     </main>
 

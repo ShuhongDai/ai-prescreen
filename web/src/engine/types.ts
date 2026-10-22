@@ -8,8 +8,14 @@ export const STATUSES = ['candidate', 'accepted', 'watch', 'retired'] as const;
 export type EntryStatus = (typeof STATUSES)[number];
 
 export interface Evidence {
+  /** Kind of source, e.g. "paper", "dataset", "word-list", "blog", "media", "forum". */
   type: string;
+  /** Short citation; never a copied passage. */
   ref: string;
+  url?: string;
+  /** Set when this source repeats another source's list (ref of that source); such
+   * items do not count towards `independentSources`. */
+  derivedFrom?: string;
 }
 
 /** One lexicon entry, as stored in lexicon/*.json. */
@@ -26,6 +32,8 @@ export interface LexiconEntry {
   models?: string[];
   added: string;
   evidence?: Evidence[];
+  /** Number of evidence items that are independent (no `derivedFrom`). */
+  independentSources?: number;
 }
 
 export interface Match {

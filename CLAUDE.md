@@ -152,6 +152,10 @@ ai-prescreen/
 - **M2 Lexical tier** — inflection, LaTeX/Markdown preprocessing with offset map,
   summary line, popover with explanation and suggestions, seed tier-2 lexicon (candidates
   for Shuhong to review). Done when: tests incl. false-positive set pass; perf target met.
+  Notes:
+  - False-positive fixtures must include modern academic text (arXiv abstracts, CC0 metadata).
+  - The quote check (in M1 a same-line heuristic inside the artifact regexes) must cover
+    LaTeX ``…'', verbatim and figure/listing environments.
 - **M3 Contribution flow v1 (no backend)** — "report phrase" / "false positive" buttons
   open pre-filled GitHub issues; issue templates; lexicon validation as a local script
   (`npm run validate-lexicon`);
@@ -199,5 +203,6 @@ Before every push: `npm test && npm run validate-lexicon`.
 - 2026-10-22 — Hosting: GitHub Pages + Cloudflare Workers/D1 (free tier). All config as code.
 - 2026-10-22 — Stack: Vite + TypeScript, no framework, plain CSS; engine separate from UI.
 - 2026-10-22 — Licences: MIT (code), CC BY 4.0 (lexicon).
-- 2026-10-22 — Solo workflow: push directly to `main` without confirmation; no PRs, no branch
-  protection; CI = build + deploy only; tests and lexicon validation run locally.
+- 2026-10-22 — Solo workflow: push directly to `main` without confirmation; no PRs for my own
+  work; external contributions come in as PRs; no branch protection; CI = build + deploy only;
+  tests and lexicon validation run locally.

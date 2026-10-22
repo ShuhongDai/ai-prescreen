@@ -8,6 +8,7 @@ import {
 } from '../web/src/engine/index.ts';
 import { findDuplicates, validateLexicon, validateLexiconFiles } from '../web/src/engine/validate.ts';
 import { LEXICON } from '../web/src/lexicon.ts';
+import { buildSummary, isExperimental } from '../web/src/ui/format.ts';
 import examplesJson from './fixtures/artifact-examples.json';
 
 interface Examples {
@@ -133,11 +134,62 @@ describe('artifact spans', () => {
     ]);
   });
 
-  it('the M1 example is flagged', () => {
+  it('the M1 example is flagged (experimental lexicon on)', () => {
     expect(spans('Certainly! Here is a revised version\u2026')).toEqual([
       ['certainly-here-is', 'Certainly! Here is a revised version'],
     ]);
   });
+});
+
+describe('experimental lexicon toggle OFF (the default)', () => {
+  // Mirrors main.ts: the shown lexicon is compiled with includeCandidates = toggle state,
+  // and hidden experimental matches are counted against a candidates-included lexicon.
+  const OFF = compileLexicon(LEXICON, { includeCandidates: false });
+  const ON = compileLexicon(LEXICON, { includeCandidates: true });
+  const byId = new Map(LEXICON.map((e) => [e.id, e]));
+
+  it('flags the M1 example "Certainly! Here is a revised version\u2026"', () => {
+    const text = 'Certainly! Here is a revised version\u2026';
+    const res = analyze(text, OFF);
+    expect(res.matches.map((m) => [m.entryId, text.slice(m.start, m.end)])).toEqual([
+      ['en.artifact.certainly-here-is', 'Certainly! Here is a revised version'],
+    ]);
+
+    const hidden = analyze(text, ON).matches.filter((m) => isExperimental(byId.get(m.entryId)));
+    const summary = buildSummary({
+      idle: false,
+      stats: res.stats,
+      experimentalShown: 0,
+      experimentalHidden: hidden.length,
+    });
+    expect(summary.state).toBe('flagged');
+    expect(summary.text).toMatch(/^1 artifact \u00b7 /);
+    expect(summary.note).toBeNull();
+  });
+
+  for (const entry of ARTIFACT_ENTRIES) {
+    const positives = EXAMPLES[entry.id]?.positive ?? [];
+
+    if (entry.status === 'accepted' || entry.status === 'watch') {
+      it(`${entry.id} (${entry.status}) flags its positive examples`, () => {
+        for (const text of positives) {
+          const own = analyze(text, only(entry)).matches.filter((m) => m.entryId === entry.id);
+          const shown = analyze(text, OFF).matches;
+          const covered = own.some((o) =>
+            shown.some((m) => m.tier === 'artifact' && m.start < o.end && o.start < m.end),
+          );
+          expect(covered, `${JSON.stringify(text)}\n${describeMatches(text, shown) || 'no matches'}`).toBe(true);
+        }
+      });
+    } else {
+      it(`${entry.id} (${entry.status}) stays hidden`, () => {
+        for (const text of positives) {
+          const hits = analyze(text, OFF).matches.filter((m) => m.entryId === entry.id);
+          expect(hits, describeMatches(text, hits)).toEqual([]);
+        }
+      });
+    }
+  }
 });
 
 describe('clean human-written and constructed text', () => {

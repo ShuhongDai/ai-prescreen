@@ -82,6 +82,34 @@
       "Let me know if you'd like me to adjust the schedule."
     ]
   },
+  "en.artifact.closing-offer-at-end": {
+    "positive": [
+      "Let me know if you'd like any further changes.",
+      "Certainly! Here is a revised version of your abstract:\n\nWe study the problem of learning from noisy labels.\n\nLet me know if you'd like any further changes!",
+      "We study the problem of learning from noisy labels.\n\nLet me know if you would like me to make any other changes or adjustments to the tone!\n",
+      "Hope this helps! Let me know if you need any further edits. 😊",
+      "Feel free to let me know if you want any more tweaks!",
+      "If you'd like any further changes, just let me know!",
+      "Let me know if this works for you or if you'd like any changes!",
+      "Let me know if there's anything else you'd like me to adjust.",
+      "The revised paragraph is above.\r\nLet me know if you’d like any further revisions.\r\n",
+      "Best regards,\n[Your Name]\n\nLet me know if you'd like any further changes to the tone, style, or length!"
+    ],
+    "negative": [
+      "Let me know if you'd like any further changes.\n\nBest,\nAnna",
+      "I've attached the revised draft. Let me know if you'd like any further changes.",
+      "Let me know if you'd like any further changes to the agenda.",
+      "Let me know if you'd like any further changes. I will be in the office until five.",
+      "Let me know if you'd like any further changes.\nThe revised budget is attached.",
+      "\"Let me know if you'd like any further changes.\"",
+      "> Let me know if you'd like any further changes.",
+      "``Let me know if you'd like any further changes,'' the assistant replied.",
+      "Let me know if you have any questions.",
+      "Please let me know if you'd like any further changes.",
+      "Thanks! Let me know if you'd like any further changes.",
+      "Let me know if you need anything else."
+    ]
+  },
   "en.artifact.feel-free-to-adjust-your-needs": {
     "positive": [
       "Feel free to adjust the wording to better fit your personal style.",

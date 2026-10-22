@@ -14,7 +14,8 @@ decide whether to revise it.
 - **Private.** Your text never leaves the browser.
 - **Instant.** Analysis runs locally as you paste.
 
-> Status: early development. The detection engine and UI are not implemented yet.
+> Status: early development. Live at https://shuhongdai.github.io/ai-prescreen/ — currently
+> checks for chatbot artifacts (tier 1) only.
 
 ## Detection tiers
 

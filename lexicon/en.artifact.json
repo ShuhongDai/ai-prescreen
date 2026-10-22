@@ -6,7 +6,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Chat-assistant reply opener (\"Certainly! Here is a revised version…\") left at the start of pasted text. It addresses the person who asked, not the reader. Only flagged when a rewriting object follows (a revised version, a possible introduction, an outline for your…), and not inside quotation marks.",
     "suggestions": [
       "Delete the opener and start with your own first sentence."
@@ -22,7 +22,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Chat-assistant reply opener (\"Sure! Here's a shorter version…\") left in the text. It answers a request rather than addressing the reader. Only flagged when a rewriting object follows, and not inside quotation marks.",
     "suggestions": [
       "Delete the opener and start with your own first sentence."
@@ -38,7 +38,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Hand-over line from a rewriting request (\"Here is a polished version of your paragraph:\"). It introduces the text instead of being part of it.",
     "suggestions": [
       "Delete this line."
@@ -54,7 +54,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Hand-over line offering a generated draft (\"Here is a possible introduction for your paper:\") that ends in a colon. It speaks to the requester, not the reader.",
     "suggestions": [
       "Delete this line."
@@ -70,10 +70,26 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Chat-assistant closing offer to keep editing (\"Let me know if you'd like me to adjust the tone…\"). It refers to the chat, not to the document.",
     "suggestions": [
       "Delete this sentence."
+    ],
+    "models": [],
+    "added": "2026-10-22",
+    "evidence": []
+  },
+  {
+    "id": "en.artifact.closing-offer-at-end",
+    "pattern": "(?<=^[ \\t]*)(?:(?:I\\s+)?hope\\s+(?:this|that|it)\\s+helps(?:\\s+you)?[!.]\\s+)?(?:(?:just\\s+|feel\\s+free\\s+to\\s+)?let\\s+me\\s+know\\s+if\\s+(?:(?:(?:this|that|it)\\s+works(?:\\s+for\\s+you)?,?\\s+or\\s+if\\s+)?you(?:'d\\s+(?:like|prefer)|\\s+would\\s+(?:like|prefer)|\\s+want|\\s+need)\\s+(?:me\\s+to\\s+make\\s+)?(?:any\\s+(?:(?:further|other|additional|more)\\s+)?|(?:further|other|additional|more|some)\\s+)(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)(?:\\s+or\\s+(?:(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)|additions|anything\\s+else))?(?:\\s+to\\s+(?:the|this|your|its)\\s+(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)(?:,?\\s+(?:or\\s+|and\\s+)?(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)){0,3})?|there(?:'s|\\s+is)\\s+anything\\s+(?:else\\s+)?you(?:'d|\\s+would)\\s+like\\s+(?:me\\s+)?to\\s+(?:change|adjust|add|modify|tweak|refine|revise|edit|improve))|feel\\s+free\\s+to\\s+(?:ask|reach\\s+out)\\s+if\\s+you(?:'d\\s+(?:like|prefer)|\\s+would\\s+(?:like|prefer)|\\s+want|\\s+need)\\s+(?:me\\s+to\\s+make\\s+)?(?:any\\s+(?:(?:further|other|additional|more)\\s+)?|(?:further|other|additional|more|some)\\s+)(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)(?:\\s+or\\s+(?:(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)|additions|anything\\s+else))?(?:\\s+to\\s+(?:the|this|your|its)\\s+(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)(?:,?\\s+(?:or\\s+|and\\s+)?(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)){0,3})?|if\\s+you(?:'d\\s+(?:like|prefer)|\\s+would\\s+(?:like|prefer)|\\s+want|\\s+need)\\s+(?:me\\s+to\\s+make\\s+)?(?:any\\s+(?:(?:further|other|additional|more)\\s+)?|(?:further|other|additional|more|some)\\s+)(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)(?:\\s+or\\s+(?:(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)|additions|anything\\s+else))?(?:\\s+to\\s+(?:the|this|your|its)\\s+(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)(?:,?\\s+(?:or\\s+|and\\s+)?(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)){0,3})?,?\\s+(?:just\\s+)?(?:let\\s+me\\s+know|feel\\s+free\\s+to\\s+(?:ask|reach\\s+out|let\\s+me\\s+know)))[ \\t]*[!.]?(?:[ \\t]*[\\p{Extended_Pictographic}️]+)?(?=\\s*(?![\\s\\S]))",
+    "match": "regex",
+    "inflect": false,
+    "tier": "artifact",
+    "lang": "en",
+    "status": "candidate",
+    "note": "Chat-assistant closing offer (\"Let me know if you'd like any further changes.\") as the last line of the text. It speaks to the person who asked for the edit, not to the reader. Only flagged when it stands on its own line with nothing after it, so a message that continues or ends with a sign-off is not flagged.",
+    "suggestions": [
+      "Delete this line."
     ],
     "models": [],
     "added": "2026-10-22",
@@ -86,7 +102,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Chat-assistant closing line inviting the requester to tailor the output (\"Feel free to adjust the wording to fit your style\"). It addresses the person who asked, not the reader.",
     "suggestions": [
       "Delete this sentence."
@@ -102,7 +118,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Chat-assistant follow-up question offering another round of edits (\"Would you like me to make it more concise?\", \"Do you want me to create a shorter version?\"). It belongs to the conversation, not the draft.",
     "suggestions": [
       "Delete this sentence."
@@ -118,7 +134,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Chat-assistant closing offer (\"If you'd like, I can also make a shorter version.\") left at the end of the text. It belongs to the conversation, not the draft.",
     "suggestions": [
       "Delete this sentence."
@@ -134,7 +150,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Chat-assistant opener (\"I'd be happy to help! Here's a revised version…\") followed by the generated text. It addresses the requester.",
     "suggestions": [
       "Delete the opener."
@@ -150,7 +166,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Disclaimer that the text is a generic template that should be customised (\"Please note that this is a general template and should be tailored…\"). It comments on the generated output rather than the subject.",
     "suggestions": [
       "Delete this sentence and check that the text is specific to your case."
@@ -166,7 +182,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Reminder to replace placeholders with your own details, left over from a generated template (\"Remember to replace the placeholders with your details\"). Its presence suggests unfilled fields elsewhere.",
     "suggestions": [
       "Delete the instruction and fill in every placeholder."
@@ -182,7 +198,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Model self-reference (\"As an AI language model, I…\"). It is part of a chat reply, not of the author's text. Occurrences inside quotation marks are not flagged.",
     "suggestions": [
       "Delete the self-reference and rewrite the sentence in your own voice."
@@ -198,7 +214,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Model self-description (\"I'm an AI language model…\", \"I am an AI, so I don't have…\") from a chat reply. Occurrences inside quotation marks are not flagged.",
     "suggestions": [
       "Delete this sentence."
@@ -214,7 +230,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Model hedge about its training date (\"as of my last knowledge update\"). It refers to a model's training, not to the author.",
     "suggestions": [
       "Delete the hedge and state the date of your source instead."
@@ -230,7 +246,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Model reference to its own knowledge cutoff (\"after my knowledge cutoff\"). It is a chat leftover, not the author's statement.",
     "suggestions": [
       "Delete this phrase and cite a dated source instead."
@@ -246,7 +262,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Model statement about how far its training data reaches (\"My training data only goes up to 2021\"). It describes a model, not the author.",
     "suggestions": [
       "Delete this sentence."
@@ -262,7 +278,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Model disclaimer about lacking real-time access (\"I don't have access to real-time information or the ability to browse…\"). It is a chat leftover.",
     "suggestions": [
       "Delete this sentence and check the facts against a current source."
@@ -278,7 +294,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Model disclaimer about not browsing the web (\"I cannot browse the internet or access real-time data\", \"I don't have browsing capabilities\"). It is a chat leftover.",
     "suggestions": [
       "Delete this sentence and verify any claims or sources yourself."
@@ -294,7 +310,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Chat-assistant refusal (\"I'm sorry, but I can't assist with that.\") ending a sentence. It is part of a chat, not of the text.",
     "suggestions": [
       "Delete this sentence."
@@ -310,7 +326,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Model disclaimer (\"I don't have personal opinions or feelings\") from a chat reply. It reads as a leftover in the author's own text.",
     "suggestions": [
       "Delete this phrase."
@@ -326,7 +342,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Unfilled template placeholder (\"[Insert citation]\", \"[insert name here]\", \"<insert reference>\"). The bracketed instruction was never replaced with real content.",
     "suggestions": [
       "Replace the placeholder with the actual content, or delete it."
@@ -342,7 +358,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Unfilled citation placeholder (\"[citation]\", \"[add reference here]\", \"[source needed here]\"). The source it stands for is missing. \"[citation needed]\" is not flagged.",
     "suggestions": [
       "Replace with the actual citation."
@@ -358,7 +374,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Unfilled template field (\"[Your Name]\", \"[Your University]\"). The generated template was not completed.",
     "suggestions": [
       "Replace with the actual details."
@@ -374,7 +390,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Unfilled template field such as \"[Company Name]\", \"[Hiring Manager]\" or \"[Name of University]\". The template was not completed.",
     "suggestions": [
       "Replace with the actual name or title."
@@ -390,7 +406,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "A line that holds only a template field such as \"[Date]\" or \"[Name]\", typical of a generated letter that was not filled in.",
     "suggestions": [
       "Replace with the actual details, or delete the line."
@@ -406,7 +422,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Placeholder citation (\"(Author, Year)\") that was never replaced with a real reference.",
     "suggestions": [
       "Replace with the actual citation, or delete the claim if no source exists."
@@ -422,7 +438,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Unfilled placeholder asking for a specific detail (\"[specific example]\", \"[relevant statistic]\", \"[recent data here]\"). The generated text was not completed.",
     "suggestions": [
       "Replace with the actual detail, or delete the sentence."
@@ -438,7 +454,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Unfilled template instruction in brackets (\"[Mention a specific project]\", \"[Describe your experience]\"). The generated template was not completed.",
     "suggestions": [
       "Replace the bracket with the actual content, or delete it."
@@ -454,7 +470,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Chat interface button label (\"Regenerate response\") copied along with the text. Only flagged when it stands on its own line.",
     "suggestions": [
       "Delete this line."
@@ -470,7 +486,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Status line from a reasoning chat assistant (\"Thought for 12 seconds\") copied along with the answer.",
     "suggestions": [
       "Delete this line."
@@ -486,7 +502,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Status line from a chat assistant's web search (\"Searched 5 sites\") copied along with the answer.",
     "suggestions": [
       "Delete this line."
@@ -502,7 +518,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Code-block button label (\"Copy code\") copied from a chat interface. Only flagged when it stands on its own line.",
     "suggestions": [
       "Delete this line."
@@ -518,7 +534,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Code-block button labels (\"Copy\" and \"Edit\" on consecutive lines) copied from a chat interface.",
     "suggestions": [
       "Delete these two lines."
@@ -534,7 +550,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Feedback prompt from a chat interface, copied along with the text.",
     "suggestions": [
       "Delete this line."
@@ -550,7 +566,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Feedback banner from a chat interface, copied along with the text.",
     "suggestions": [
       "Delete this line."
@@ -566,7 +582,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Footer disclaimer from a chat interface (\"ChatGPT can make mistakes. Check important info.\", \"Copilot uses AI. Check for mistakes.\") copied along with the text.",
     "suggestions": [
       "Delete this line."
@@ -582,7 +598,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Speaker label (\"ChatGPT said:\") on its own line, copied from a chat transcript.",
     "suggestions": [
       "Delete this line."
@@ -598,7 +614,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Internal source marker from a chat assistant with web search (\"【4†source】\", \"turn0search3\"). It is not a real citation.",
     "suggestions": [
       "Delete the marker and add a proper citation."
@@ -614,7 +630,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Internal reference marker (\":contentReference[oaicite:0]{index=0}\") copied from a chat assistant's output. It is not a real citation.",
     "suggestions": [
       "Delete the marker and add a proper citation."
@@ -630,7 +646,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Tracking parameter added to links copied from a chat assistant's search results (\"?utm_source=chatgpt.com\").",
     "suggestions": [
       "Remove the parameter from the link and check that the source says what you cite it for."
@@ -646,7 +662,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Markdown bold marker (\"**\" opening \"**text**\") that a Word or LaTeX document would not contain. It usually comes from pasted chat output. Only the opening marker is highlighted.",
     "suggestions": [
       "Remove the asterisks; use your editor's formatting if emphasis is needed."
@@ -662,7 +678,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Markdown heading marker (\"##\", \"###\") at the start of a line, usually from pasted chat output.",
     "suggestions": [
       "Remove the hash marks and use your editor's heading style."
@@ -678,7 +694,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Markdown table separator row (\"|---|---|\"), usually from a pasted chat table.",
     "suggestions": [
       "Rebuild the table with your editor's table tool."
@@ -694,7 +710,7 @@
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Markdown code fence (\"```\") on its own line, usually from pasted chat output.",
     "suggestions": [
       "Remove the fence and format the code with your editor (e.g. a listing environment)."

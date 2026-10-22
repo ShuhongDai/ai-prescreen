@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+
+# secrets — never commit
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Cloudflare / wrangler local state
+.wrangler/
+
+# logs & caches
+*.log
+npm-debug.log*
+.vite/
+coverage/
+
+# editor / OS
+.DS_Store
+.idea/
+*.swp

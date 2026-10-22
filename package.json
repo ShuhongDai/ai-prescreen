@@ -1,0 +1,20 @@
+{
+  "name": "ai-prescreen",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Rule-based first-pass screener for telltale AI-generated wording in English drafts.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  }
+}

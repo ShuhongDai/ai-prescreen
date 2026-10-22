@@ -48,9 +48,11 @@ Repo: github.com/ShuhongDai/ai-prescreen. Site: GitHub Pages.
 | 3 | `stylistic` | Weak signals; off by default | em-dash density, "not only… but also", "In conclusion," openers | grey, dotted underline |
 
 Tier must never be conveyed by colour alone (underline style + icon as well).
-Keep tier 2 restrained: common academic words (robust, comprehensive, notably) are
-not entries, or are flagged only when density is abnormal. Every highlight should be
-worth the user's attention.
+Tier 2 prefers recall over precision: this is a self-check tool and the author decides
+what to change. Lexical batches are reviewed by human fire-rate (see Lexicon): the
+top firers are retired, everything else is accepted. The summary line shows the human
+baseline so the author can judge the noise. Revisit the 1–5% fire-rate band if default
+noise turns out too high (decision log, 2026-10-23).
 
 ## Lexicon
 

@@ -6,7 +6,8 @@ import { focusIndexAfterDismiss } from './ui/dismiss.ts';
 import { buildSummary, densitySuffix, popoverModel } from './ui/format.ts';
 import { analyzeDraft, compileLexicons } from './ui/lexicons.ts';
 import { createPopover } from './ui/popover.ts';
-import { loadExperimental, saveExperimental } from './ui/prefs.ts';
+import { loadExperimental, loadSensitivity, saveExperimental, saveSensitivity } from './ui/prefs.ts';
+import { isSensitivity } from './ui/sensitivity.ts';
 import { renderMirror, type RenderedHighlight } from './ui/render.ts';
 
 function byId<T extends HTMLElement>(id: string): T {
@@ -28,6 +29,7 @@ const input = byId<HTMLTextAreaElement>('input');
 const result = byId<HTMLDivElement>('result');
 const resultHint = byId<HTMLParagraphElement>('result-hint');
 const toggle = byId<HTMLInputElement>('experimental');
+const sensitivitySelect = byId<HTMLSelectElement>('sensitivity');
 const summaryBox = byId<HTMLDivElement>('summary');
 const summaryText = byId<HTMLSpanElement>('summary-text');
 const summaryDensity = byId<HTMLSpanElement>('summary-density');
@@ -42,15 +44,18 @@ const entries: ReadonlyMap<string, LexiconEntry> = new Map(LEXICON.map((e) => [e
 
 let experimental = loadExperimental();
 toggle.checked = experimental;
+let sensitivity = loadSensitivity();
+sensitivitySelect.value = sensitivity;
 
 /** Entry IDs marked "Not AI-like (false positive)". Memory only, for this page view. */
 const dismissed = new Set<string>();
 
 // Recompiled only when the toggle changes, an entry is dismissed, or Undo is pressed.
 // Dismissed entries are left out before compiling, so overlaps are settled without them.
-let lexicons = compileLexicons(LEXICON, { experimental, dismissed });
+const choice = () => ({ experimental, dismissed, sensitivity: { level: sensitivity, data: baseline } });
+let lexicons = compileLexicons(LEXICON, choice());
 function recompile(): void {
-  lexicons = compileLexicons(LEXICON, { experimental, dismissed });
+  lexicons = compileLexicons(LEXICON, choice());
 }
 
 /** The text the result pane shows, and its highlights in text order. */
@@ -136,7 +141,7 @@ function update(): void {
     experimentalShown,
     experimentalHidden,
     dismissedEntries: dismissed.size,
-    baseline,
+    baseline: { years: baseline.years, pooledPer1k: baseline.levels[sensitivity].pooledPer1k },
   });
 
   summaryBox.dataset.state = summary.state;
@@ -216,6 +221,13 @@ input.addEventListener('input', schedule);
 toggle.addEventListener('change', () => {
   experimental = toggle.checked;
   saveExperimental(experimental);
+  recompile();
+  schedule();
+});
+sensitivitySelect.addEventListener('change', () => {
+  if (!isSensitivity(sensitivitySelect.value)) return;
+  sensitivity = sensitivitySelect.value;
+  saveSensitivity(sensitivity);
   recompile();
   schedule();
 });

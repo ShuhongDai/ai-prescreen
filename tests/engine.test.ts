@@ -755,7 +755,7 @@ describe('prose that only looks like LaTeX or Markdown (real lexicon)', () => {
 
   it('a percent sign in prose does not hide the rest of the line', () => {
     const text = 'Yields (%) are listed below. As an AI language model, I cannot verify them.';
-    expect(spans(text)).toEqual([['en.artifact.as-an-ai-language-model', 'As an AI language model, I']]);
+    expect(spans(text)).toEqual([['en.artifact.as-an-ai-language-model', 'As an AI language model']]);
   });
 
   it('keeps tracking parameters inside \\url{} and \\href{}{} visible', () => {
@@ -774,7 +774,7 @@ describe('prose that only looks like LaTeX or Markdown (real lexicon)', () => {
 
   it('backticks used as apostrophes or quotes do not mask the prose after them', () => {
     expect(spans("I don`t know. As an AI language model, I can`t browse.")).toEqual([
-      ['en.artifact.as-an-ai-language-model', 'As an AI language model, I'],
+      ['en.artifact.as-an-ai-language-model', 'As an AI language model'],
     ]);
     const delve = entry({ pattern: 'delve', match: 'word', tier: 'lexical', inflect: true });
     expect(hits([delve], 'We call it ``AI-polished" text and ``human" text, then delve.')).toEqual(['delve']);
@@ -785,11 +785,12 @@ describe('prose that only looks like LaTeX or Markdown (real lexicon)', () => {
 describe('candidate entries only add highlights', () => {
   it('a reviewed entry keeps its match against a longer candidate (real lexicon)', () => {
     const text = "Here is the paragraph about our method.\n\nLet me know if you'd like any further adjustments to the tone.";
+    // The real lexicon has no candidates; this one overlaps the accepted entry and is longer.
+    const longer = entry({ id: 'test.longer-candidate', pattern: "Let me know if you'd like any further adjustments to the tone", status: 'candidate' });
     const ids = (includeCandidates: boolean) =>
-      analyze(text, compileLexicon(LEXICON, { includeCandidates })).matches.map((m) => m.entryId);
+      analyze(text, compileLexicon([...LEXICON, longer], { includeCandidates })).matches.map((m) => m.entryId);
     expect(ids(false)).toEqual(['en.artifact.let-me-know-adjustments']);
-    expect(ids(true)).toContain('en.artifact.let-me-know-adjustments');
-    expect(ids(true)).not.toContain('en.artifact.closing-offer-at-end');
+    expect(ids(true)).toEqual(['en.artifact.let-me-know-adjustments']);
   });
 
   it('settles tier by tier, reviewed before candidates within a tier', () => {

@@ -5,16 +5,21 @@
       "Absolutely! Here's a more concise abstract that keeps the key findings.",
       "Certainly! Below is a polished version of the paragraph.",
       "Certainly! Here is a revised version of the paragraph with improved flow:",
-      "Absolutely! Here are some suggested titles for your thesis:"
+      "Absolutely! Here are some suggested titles for your thesis:",
+      "Certainly! Here is",
+      "Absolutely! Here's what I found.",
+      "Certainly! Below are the key points.",
+      "Many outputs began with \"Certainly! Here is a revised version\" (see Table 2).",
+      "Certainly! Here are the minutes from Tuesday's meeting.",
+      "Absolutely! Here are the tickets.",
+      "Outputs starting with \"Certainly! Here is a revised version\" were counted as compliant.",
+      "Typical openers such as ``Certainly! Here is a polished version'' were removed."
     ],
     "negative": [
       "Certainly, here is the dataset you asked for.",
       "\"Certainly!\" she replied. \"Here, take my umbrella.\"",
       "It is certainly here that the argument fails.",
-      "Certainly! Here are the minutes from Tuesday's meeting.",
-      "Absolutely! Here are the tickets.",
-      "Outputs starting with \"Certainly! Here is a revised version\" were counted as compliant.",
-      "Typical openers such as ``Certainly! Here is a polished version'' were removed."
+      "Certainly, the results are here."
     ]
   },
   "en.artifact.sure-here-is": {
@@ -22,16 +27,20 @@
       "Sure! Here's a shorter version of your abstract:",
       "Of course! Here is an improved draft of the cover letter.",
       "Sure thing! Here's an outline for your essay:",
-      "Sure! Here is a paraphrase of the paragraph."
+      "Sure! Here is a paraphrase of the paragraph.",
+      "Sure! Here's",
+      "Of course! Here are a few options.",
+      "Sure thing! Below is the list.",
+      "Sure! Here's the link to the room booking.",
+      "Of course! Here is the receipt you asked for.",
+      "\"Sure! Here's a shorter version,\" the assistant wrote."
     ],
     "negative": [
       "Sure, here is the file you asked for.",
       "I am sure here is where the bug lies.",
       "Of course! That makes sense.",
-      "Sure! Here's the link to the room booking.",
-      "Of course! Here is the receipt you asked for.",
       "Sure thing, here is the key.",
-      "\"Sure! Here's a shorter version,\" the assistant wrote."
+      "Sure, here is the key."
     ]
   },
   "en.artifact.here-is-revised-version": {
@@ -40,9 +49,7 @@
       "Below is a polished version of your abstract.",
       "Here's the rewritten version of your introduction.",
       "Here is a revised version of your paragraph with improved clarity and flow:\nThe study shows...",
-      "Here's a more formal version of your email:"
-    ],
-    "negative": [
+      "Here's a more formal version of your email:",
       "Here is the revised version of the manuscript, which addresses all reviewer comments.",
       "Here is the revised version: https://example.org/draft.pdf",
       "Here is a revised version of the protocol.",
@@ -52,48 +59,62 @@
       "Here is a revised version, with the session moved to Monday at 10:30 in room B",
       "Here is a shortened version of the abstract for the conference booklet:",
       "Here is a revised version of your schedule for next week."
+    ],
+    "negative": []
+  },
+  "en.artifact.in-this-revised-version-i": {
+    "positive": [
+      "In this revised version, I have tightened the argument.",
+      "In this updated version I've removed the jargon."
+    ],
+    "negative": [
+      "In this revised version, we address all reviewer comments."
     ]
   },
   "en.artifact.here-is-possible-draft-for-your": {
     "positive": [
       "Here is a possible introduction for your paper on urban heat islands:",
-      "Here are some suggested titles for your thesis:"
+      "Here are some suggested titles for your thesis:",
+      "Here is a possible title for your talk at the workshop, but feel free to change it.",
+      "Here are some suggested replies to your reviewers; I would soften the second one."
     ],
     "negative": [
       "Here is a possible explanation for the discrepancy.",
-      "Here is one possible approach to your question.",
-      "Here is a possible title for your talk at the workshop, but feel free to change it.",
-      "Here are some suggested replies to your reviewers; I would soften the second one."
+      "Here is one possible approach to your question."
     ]
   },
   "en.artifact.let-me-know-adjustments": {
     "positive": [
       "Let me know if you'd like me to adjust the tone or length.",
       "Let me know if you'd like any further adjustments or refinements!",
-      "Let me know if you’d like me to refine it further."
-    ],
-    "negative": [
-      "Let me know if you have any questions.",
-      "Let me know if you need the raw data.",
-      "Let me know if you would like me to send the slides.",
+      "Let me know if you’d like me to refine it further.",
+      "Let me know if you'd like any further changes.",
+      "Certainly! Here is a revised version of your abstract:\n\nWe study the problem of learning from noisy labels.\n\nLet me know if you'd like any further changes!",
+      "We study the problem of learning from noisy labels.\n\nLet me know if you would like me to make any other changes or adjustments to the tone!\n",
+      "The revised paragraph is above.\r\nLet me know if you’d like any further revisions.\r\n",
+      "Best regards,\n[Your Name]\n\nLet me know if you'd like any further changes to the tone, style, or length!",
       "Attached is the floor plan. Let me know if you need any further adjustments before we print it.",
       "Let me know if you'd like any further adjustments to the room booking.",
       "Let me know if you need any further modifications!",
       "Let me know if you'd like me to adjust the schedule."
+    ],
+    "negative": [
+      "Let me know if you have any questions.",
+      "Let me know if you need the raw data.",
+      "Let me know if you would like me to send the slides."
     ]
   },
   "en.artifact.closing-offer-at-end": {
     "positive": [
-      "Let me know if you'd like any further changes.",
-      "Certainly! Here is a revised version of your abstract:\n\nWe study the problem of learning from noisy labels.\n\nLet me know if you'd like any further changes!",
-      "We study the problem of learning from noisy labels.\n\nLet me know if you would like me to make any other changes or adjustments to the tone!\n",
-      "Hope this helps! Let me know if you need any further edits. 😊",
       "Feel free to let me know if you want any more tweaks!",
       "If you'd like any further changes, just let me know!",
       "Let me know if this works for you or if you'd like any changes!",
       "Let me know if there's anything else you'd like me to adjust.",
-      "The revised paragraph is above.\r\nLet me know if you’d like any further revisions.\r\n",
-      "Best regards,\n[Your Name]\n\nLet me know if you'd like any further changes to the tone, style, or length!"
+      "Let me know if this works for you!",
+      "Feel free to ask if you have any other questions.",
+      "If you need any further changes, just let me know.",
+      "Let me know if there's anything else I can do.",
+      "Let me know if you need anything else."
     ],
     "negative": [
       "Let me know if you'd like any further changes.\n\nBest,\nAnna",
@@ -106,23 +127,34 @@
       "``Let me know if you'd like any further changes,'' the assistant replied.",
       "Let me know if you have any questions.",
       "Please let me know if you'd like any further changes.",
-      "Thanks! Let me know if you'd like any further changes.",
-      "Let me know if you need anything else."
+      "Thanks! Let me know if you'd like any further changes."
+    ]
+  },
+  "en.artifact.hope-this-helps": {
+    "positive": [
+      "I hope this helps!",
+      "Hope this helps.",
+      "Hope that helps!",
+      "I hope this was helpful.",
+      "Hope this helps! Let me know if you need any further edits. 😊"
+    ],
+    "negative": [
+      "We hope this will help other labs."
     ]
   },
   "en.artifact.feel-free-to-adjust-your-needs": {
     "positive": [
       "Feel free to adjust the wording to better fit your personal style.",
-      "Feel free to tweak the examples to suit your specific needs!"
-    ],
-    "negative": [
+      "Feel free to tweak the examples to suit your specific needs!",
       "Feel free to adjust the parameters in config.yaml.",
-      "Feel free to contact me if you have questions.",
       "Feel free to adjust the schedule to better fit your needs.",
       "Feel free to edit the slides. I will try to fit your comments in tomorrow.",
       "Feel free to adjust the dates to fit your schedule.",
       "Feel free to adapt the template to fit your needs.",
       "Feel free to modify it to suit your needs."
+    ],
+    "negative": [
+      "Feel free to contact me if you have questions."
     ]
   },
   "en.artifact.would-you-like-me-to": {
@@ -131,64 +163,73 @@
       "Would you like me to make it more concise?",
       "Would you like me to expand on any of these points?",
       "Would you like me to also create a shorter version for your abstract?",
-      "Do you want me to make it more formal?"
-    ],
-    "negative": [
+      "Do you want me to make it more formal?",
       "Would you like me to send you the slides?",
       "Would you like me to book the room for Thursday?",
       "Would you like me to revise the draft before Friday's meeting?",
       "Do you want me to make a copy of the key?",
       "The assistant ended 41% of turns with \"Would you like me to expand on any of these points?\""
+    ],
+    "negative": []
+  },
+  "en.artifact.is-there-anything-else": {
+    "positive": [
+      "Is there anything else I can help you with?",
+      "Is there anything else you'd like me to change?",
+      "Is there anything else you need for the report?"
+    ],
+    "negative": [
+      "Is there anything else in the data?"
     ]
   },
   "en.artifact.if-you-like-i-can": {
     "positive": [
       "If you’d like, I can also make a shorter version.",
       "If you'd like, I can also tailor it to a specific journal.",
-      "If you want, I can polish the paragraph further."
-    ],
-    "negative": [
+      "If you want, I can polish the paragraph further.",
       "If you'd like, I can also send the slides.",
       "If you want, I can make a reservation for Friday.",
       "If you want, I can shorten the meeting to 30 minutes.",
       "If you'd like, I can adjust it."
-    ]
+    ],
+    "negative": []
   },
   "en.artifact.happy-to-help-here-is": {
     "positive": [
       "I'd be happy to help! Here's a revised version of your paragraph:",
-      "I would be glad to help with that. Below is an outline for your essay."
-    ],
-    "negative": [
-      "I'd be happy to help with the workshop next week.",
+      "I would be glad to help with that. Below is an outline for your essay.",
+      "I'd be happy to help!",
       "I would be glad to help. Please send me the data.",
       "I'd be happy to help! Here are my notes from last year's course."
+    ],
+    "negative": [
+      "I'd be happy to help with the workshop next week."
     ]
   },
   "en.artifact.general-template-disclaimer": {
     "positive": [
       "Please note that this is a general template and should be adapted to your specific situation.",
-      "Note that this is just a sample response, and you may need to adjust it to your context."
-    ],
-    "negative": [
-      "Note that this is a hypothetical example and the numbers are illustrative.",
-      "Note that this is a general result that holds for all n.",
+      "Note that this is just a sample response, and you may need to adjust it to your context.",
       "Note that the above is just a sample outline.",
       "Please note that this is just a sample template; your faculty may require a different layout.",
       "We note that this is a general template and should be adapted by each lab."
+    ],
+    "negative": [
+      "Note that this is a hypothetical example and the numbers are illustrative.",
+      "Note that this is a general result that holds for all n."
     ]
   },
   "en.artifact.replace-placeholders-instruction": {
     "positive": [
       "Remember to replace the placeholders with your actual details before sending.",
-      "Be sure to fill in the bracketed sections with specific examples from your experience."
+      "Be sure to fill in the bracketed sections with specific examples from your experience.",
+      "The script will replace placeholder values automatically.",
+      "Copy config.example.yml to config.yml and replace the placeholders with your own API keys.",
+      "Before submitting, fill in the bracketed fields of the consent form."
     ],
     "negative": [
-      "The script will replace placeholder values automatically.",
       "We replaced the placeholder images with final figures.",
-      "Copy config.example.yml to config.yml and replace the placeholders with your own API keys.",
       "Please update the placeholder text on the landing page before launch.",
-      "Before submitting, fill in the bracketed fields of the consent form.",
       "The applicant will substitute the placeholder values in the budget template with audited figures."
     ]
   },
@@ -196,29 +237,35 @@
     "positive": [
       "As an AI language model, I do not have personal opinions on this matter.",
       "As an AI, I cannot verify these sources.",
-      "As a large language model trained by OpenAI, I cannot browse the web."
-    ],
-    "negative": [
+      "As a large language model trained by OpenAI, I cannot browse the web.",
+      "As an AI, I cannot verify this.",
+      "As an AI assistant I cannot browse.",
       "Many responses began with \"As an AI language model\" and were excluded.",
-      "As an AI researcher, I have followed this debate closely.",
       "As a language model, GPT-2 was trained on WebText.",
-      "As an AI model developer, she knows the limits well.",
       "Typical refusals begin with ``As an AI language model, I cannot provide medical advice.''",
       "Responses such as \"Sorry, as an AI language model, I cannot help\" were excluded."
+    ],
+    "negative": [
+      "As an AI researcher, I have followed this debate closely.",
+      "As an AI model developer, she knows the limits well.",
+      "As an AI researcher, I disagree."
     ]
   },
   "en.artifact.i-am-an-ai": {
     "positive": [
       "I'm an AI language model, so I don't have personal experiences.",
-      "I am just an AI, and I cannot make that decision for you."
+      "I am just an AI, and I cannot make that decision for you.",
+      "I am an AI.",
+      "I'm an AI assistant trained by OpenAI.",
+      "The bot replied \"I am an AI assistant.\" and stopped.",
+      "\"Don't worry. I'm an AI, so I don't need to sleep,\" the ship's voice said."
     ],
     "negative": [
       "I am an AI researcher at the University of Innsbruck.",
-      "The bot replied \"I am an AI assistant.\" and stopped.",
       "I am an AI and robotics engineer with five years of experience in industrial automation.",
       "I'm an AI and data science specialist based in Vienna.",
-      "\"Don't worry. I'm an AI, so I don't need to sleep,\" the ship's voice said.",
-      "I am an AI assistant professor at TU Wien."
+      "I am an AI assistant professor at TU Wien.",
+      "I am an AI researcher."
     ]
   },
   "en.artifact.last-knowledge-update": {
@@ -256,49 +303,49 @@
   "en.artifact.no-real-time-access": {
     "positive": [
       "I don't have access to real-time information or the ability to browse the internet.",
-      "I do not have real-time access to current events."
+      "I do not have real-time access to current events.",
+      "I do not have access to real-time data from the plant, so these numbers are from the weekly export."
     ],
     "negative": [
       "We do not have access to real-time sensor data in this deployment.",
       "I don't have access to the shared drive.",
-      "I don't have live data for 2025 yet, but the 2024 figures are attached.",
-      "I do not have access to real-time data from the plant, so these numbers are from the weekly export."
+      "I don't have live data for 2025 yet, but the 2024 figures are attached."
     ]
   },
   "en.artifact.cannot-browse-internet": {
     "positive": [
       "I cannot browse the internet or access real-time information, so I can't confirm whether this article exists.",
-      "I don't have browsing capabilities in this conversation."
+      "I don't have browsing capabilities in this conversation.",
+      "I can't browse the internet from the hospital ward, so please send the PDF by email."
     ],
     "negative": [
       "The tool cannot browse the internet on its own.",
       "I can't access the internet from the cluster headnode.",
-      "I can't browse the internet from the hospital ward, so please send the PDF by email.",
       "I do not have browsing access on the lab machine."
     ]
   },
   "en.artifact.sorry-cannot-assist": {
     "positive": [
       "I'm sorry, but I can't assist with that request.",
-      "I'm sorry, but I cannot assist with that."
+      "I'm sorry, but I cannot assist with that.",
+      "I am sorry, but I cannot comply with your request to delete the records, as we are legally required to retain them.",
+      "I'm sorry, but I cannot assist with this request as the deadline has passed."
     ],
     "negative": [
       "I'm sorry, but I can't attend the meeting on Friday.",
-      "I'm sorry I can't help with the move this weekend.",
-      "I am sorry, but I cannot comply with your request to delete the records, as we are legally required to retain them.",
-      "I'm sorry, but I cannot assist with this request as the deadline has passed."
+      "I'm sorry I can't help with the move this weekend."
     ]
   },
   "en.artifact.no-personal-opinions": {
     "positive": [
       "I don't have personal opinions or feelings, but I can summarise the main arguments.",
-      "I do not have personal feelings or emotions about this topic."
+      "I do not have personal feelings or emotions about this topic.",
+      "I don't have personal preferences regarding the date, so pick whatever suits the group.",
+      "I don't have personal feelings about the merger either way."
     ],
     "negative": [
       "I don't have personal experience with this software.",
-      "We do not have personal data on the participants.",
-      "I don't have personal preferences regarding the date, so pick whatever suits the group.",
-      "I don't have personal feelings about the merger either way."
+      "We do not have personal data on the participants."
     ]
   },
   "en.artifact.insert-placeholder": {
@@ -308,14 +355,14 @@
       "Our results improve accuracy by [fill in percentage].",
       "As discussed in <insert reference>, the effect holds.",
       "Date: {Insert date}",
-      "[Enter your name]"
+      "[Enter your name]",
+      "The treaty obliges the parties to \"[enter into] negotiations in good faith\".",
+      "The bill would \"[insert new provisions] into the Code\", critics argued.",
+      "Type your password and press [Enter key] to continue."
     ],
     "negative": [
       "The court found that he would [enter] the premises lawfully.",
       "See [the insert form](https://example.org/form) for details.",
-      "The treaty obliges the parties to \"[enter into] negotiations in good faith\".",
-      "The bill would \"[insert new provisions] into the Code\", critics argued.",
-      "Type your password and press [Enter key] to continue.",
       "Use \\insertdate and \\inserttitle in beamer.",
       "Edits are marked as <ins>new</ins> text.",
       "Check whether x < insert > y holds."
@@ -325,10 +372,11 @@
     "positive": [
       "This effect has been widely reported [citation].",
       "Prior work [add relevant citation here] has shown similar trends.",
-      "The method was first proposed in 2015 [add reference]."
+      "The method was first proposed in 2015 [add reference].",
+      "This claim is disputed.[citation needed]",
+      "See [citation]."
     ],
     "negative": [
-      "This claim is disputed.[citation needed]",
       "See [the reference manual](https://example.org/manual).",
       "[1] Smith, J. (2020). A study of things.",
       "[ref]: https://example.org/ref",
@@ -337,7 +385,8 @@
       "The memo states that \"[the reference] is no longer valid\".",
       "She noted that \"[a reference] would be provided on request\".",
       "[[source]]\nurl = \"https://pypi.org/simple\"",
-      "[source]\nname = pypi"
+      "[source]\nname = pypi",
+      "The [reference] link is broken."
     ]
   },
   "en.artifact.your-x-placeholder": {
@@ -368,12 +417,11 @@
   "en.artifact.field-placeholder-line": {
     "positive": [
       "[Date]\n\nDear Dr. Smith,",
-      "Sincerely,\n[Name]\n[Address]"
-    ],
-    "negative": [
+      "Sincerely,\n[Name]\n[Address]",
       "[Name] said that the workload was unmanageable.",
       "The form asks for your [Name] and [Date] in block letters."
-    ]
+    ],
+    "negative": []
   },
   "en.artifact.author-year-placeholder": {
     "positive": [
@@ -402,23 +450,23 @@
       "[Mention a specific project]",
       "In my previous role, I [describe your experience with data analysis].",
       "[Include relevant data]",
-      "[Add example here]"
+      "[Add example here]",
+      "The court held that the statute must \"[provide for the] protection of minors\"."
     ],
     "negative": [
       "He said he would [add it] later.",
       "They [included the data] later.",
       "Click [Add a section](https://example.org) to start.",
-      "Some text [see ref][ref] continues.",
-      "The court held that the statute must \"[provide for the] protection of minors\"."
+      "Some text [see ref][ref] continues."
     ]
   },
   "en.artifact.regenerate-response": {
     "positive": [
       "...which concludes the essay.\nRegenerate response\n",
-      "Stop generating"
+      "Stop generating",
+      "Clicking Regenerate response produced a different answer."
     ],
     "negative": [
-      "Clicking Regenerate response produced a different answer.",
       "Burn the field and wait.\nRegenerate\nfrom the ash, the root, the rain."
     ]
   },
@@ -427,21 +475,20 @@
       "Thought for 12 seconds\nHere is the revised text.",
       "Thought for 1m 5s\n",
       "Reasoned for 8 seconds",
-      "Thought for a few seconds"
-    ],
-    "negative": [
+      "Thought for a few seconds",
       "He thought for 12 seconds before answering.",
       "Thought for 12 seconds, then spoke.",
       "Food for thought for 12 seconds."
-    ]
+    ],
+    "negative": []
   },
   "en.artifact.searched-n-sites": {
     "positive": [
       "Searched 5 sites\nThe answer is...",
-      "Searched the web"
+      "Searched the web",
+      "Searched 5 sites for nesting birds."
     ],
     "negative": [
-      "Searched 5 sites for nesting birds.",
       "Searched the web of science for papers."
     ]
   },
@@ -457,13 +504,13 @@
     "positive": [
       "bash\nCopy\nEdit\nnpm install",
       "python\r\nCopy\r\nEdit\r\nprint(1)",
-      "sql\nCopy\nEdit\nSELECT * FROM t;\ndelete from t;"
+      "sql\nCopy\nEdit\nSELECT * FROM t;\ndelete from t;",
+      "The context menu offers three actions:\nCopy\nEdit\nDelete",
+      "Menu:\nCut\nCopy\nEdit"
     ],
     "negative": [
       "Copy edit the manuscript before submission.",
-      "Copy\n\nEdit the files later.",
-      "The context menu offers three actions:\nCopy\nEdit\nDelete",
-      "Menu:\nCut\nCopy\nEdit"
+      "Copy\n\nEdit the files later."
     ]
   },
   "en.artifact.conversation-helpful-prompt": {
@@ -489,21 +536,21 @@
       "Gemini may display inaccurate info, including about people, so double-check its responses.",
       "Gemini can make mistakes, so double-check it",
       "Copilot uses AI. Check for mistakes.",
-      "ChatGPT can make mistakes. OpenAI doesn't use our workspace data to train its models."
+      "ChatGPT can make mistakes. OpenAI doesn't use our workspace data to train its models.",
+      "ChatGPT can make mistakes, as several studies have shown.",
+      "Gemini can make mistakes, as can any tool."
     ],
     "negative": [
-      "ChatGPT can make mistakes, as several studies have shown.",
-      "Gemini can make mistakes, as can any tool.",
       "Copilot uses AI to suggest code."
     ]
   },
   "en.artifact.chat-speaker-label": {
     "positive": [
-      "ChatGPT said:\nSure!"
+      "ChatGPT said:\nSure!",
+      "Then ChatGPT said: nothing useful."
     ],
     "negative": [
       "You said: \"the data are noisy\", but I disagree.",
-      "Then ChatGPT said: nothing useful.",
       "Interviewer: Can you repeat that?\nYou said:\nThe project ended in March."
     ]
   },

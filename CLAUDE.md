@@ -43,7 +43,7 @@ Repo: github.com/ShuhongDai/ai-prescreen. Site: GitHub Pages.
 
 | Tier | ID | Meaning | Example | UI |
 |---|---|---|---|---|
-| 1 | `artifact` | Chatbot leftovers; almost zero false positives; must fix | "Certainly! Here is…", "As an AI language model", "as of my last knowledge update", "[Insert citation]", "Regenerate response", stray `**bold**` / `###` | red, solid underline + icon |
+| 1 | `artifact` | Chatbot leftovers; prefer recall (no exceptions for emails, literature or quotes); must fix | "Certainly! Here is…", "As an AI language model", "as of my last knowledge update", "[Insert citation]", "Regenerate response", stray `**bold**` / `###` | red, solid underline + icon |
 | 2 | `lexical` | Overused LLM words/phrases; author decides | delve, underscore, pivotal, intricate, "plays a crucial role in" | yellow, wavy underline |
 | 3 | `stylistic` | Weak signals; off by default | em-dash density, "not only… but also", "In conclusion," openers | grey, dotted underline |
 
@@ -102,7 +102,7 @@ Entry schema:
 
 - Scope: no text-type classification. Do not special-case literature, emails or quoted AI
   output. The UI will carry a short disclaimer later ("self-check tool; you judge your own
-  text"). The existing M1 same-line quote heuristic inside the artifact regexes stays as it is.
+  text"). Artifact patterns do not skip quoted text either.
 - Input: raw pasted text. Output: list of matches `{entryId, tier, start, end}` with
   offsets into the ORIGINAL text, plus summary stats (counts per tier, hits per 1,000 words).
 - Preprocessing must keep an offset map back to the original text:
@@ -264,3 +264,7 @@ Files: everything for this project stays inside this folder. Review files for Sh
   tests and lexicon validation run locally.
 - 2026-10-23 — Tier-2 batch rule: retire the top-30 firers; accept everything else. Self-check
   tool, so prefer recall over precision. Revisit the 1–5% band if default noise turns out too high.
+- 2026-10-23 — Tier 1 also prefers recall: artifact patterns no longer avoid emails, literature
+  or quoted text, and the same-line quote heuristic is removed. Line anchors stay only where
+  they define the artifact (Markdown syntax) or where the bare text is an everyday phrase
+  ("Copy code", "Searched the web", "Thought for a few seconds").

@@ -1,13 +1,13 @@
 [
   {
     "id": "en.artifact.certainly-here-is",
-    "pattern": "(?:\\b(?:Certainly|Absolutely)(?<!'(?:(?:Certainly|Absolutely)))!\\s+(?:Here(?:'s|\\s+is|\\s+are)|Below\\s+(?:is|are))\\s+(?:a|an|the|some|two|three|several)\\s+(?:(?:(?:more|slightly|much|a\\s+bit)\\s+)?(?:revised|rewritten|polished|refined|improved|edited|reworded|rephrased|paraphrased|condensed|shortened|concise|formal|academic|professional|streamlined|possible|suggested|potential|sample|structured|clearer|shorter|tightened)\\s+(?:[\\w-]{1,20}\\s+){0,2}?(?:version|draft|introduction|abstract|conclusion|paragraph|outline|cover\\s+letter|essay|sentence|title|rewrite|paraphrase|summary|statement)s?|(?:rewrite|paraphrase|rephrasing|rewording)s?|(?:version|introduction|abstract|conclusion|paragraph|outline|cover\\s+letter|essay)s?\\s+(?:for|of)\\s+your)\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\b(?:Certainly|Absolutely)!\\s+(?:Here(?:'s|\\s+is|\\s+are)|Below\\s+(?:is|are))\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Chat-assistant reply opener (\"Certainly! Here is a revised version…\") left at the start of pasted text. It addresses the person who asked, not the reader. Only flagged when a rewriting object follows (a revised version, a possible introduction, an outline for your…), and not inside quotation marks.",
+    "note": "Chat-assistant reply opener (\"Certainly! Here is…\", \"Absolutely! Here's…\"). It answers a request rather than addressing the reader.",
     "suggestions": [
       "Delete the opener and start with your own first sentence."
     ],
@@ -17,13 +17,13 @@
   },
   {
     "id": "en.artifact.sure-here-is",
-    "pattern": "(?:\\b(?:Sure(?:\\s+thing)?|Of\\s+course)(?<!'(?:(?:Sure(?:\\s+thing)?|Of\\s+course)))!\\s+(?:Here(?:'s|\\s+is|\\s+are)|Below\\s+(?:is|are))\\s+(?:a|an|the|some|two|three|several)\\s+(?:(?:(?:more|slightly|much|a\\s+bit)\\s+)?(?:revised|rewritten|polished|refined|improved|edited|reworded|rephrased|paraphrased|condensed|shortened|concise|formal|academic|professional|streamlined|possible|suggested|potential|sample|structured|clearer|shorter|tightened)\\s+(?:[\\w-]{1,20}\\s+){0,2}?(?:version|draft|introduction|abstract|conclusion|paragraph|outline|cover\\s+letter|essay|sentence|title|rewrite|paraphrase|summary|statement)s?|(?:rewrite|paraphrase|rephrasing|rewording)s?|(?:version|introduction|abstract|conclusion|paragraph|outline|cover\\s+letter|essay)s?\\s+(?:for|of)\\s+your)\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\b(?:Sure(?:\\s+thing)?|Of\\s+course)!\\s+(?:Here(?:'s|\\s+is|\\s+are)|Below\\s+(?:is|are))\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Chat-assistant reply opener (\"Sure! Here's a shorter version…\") left in the text. It answers a request rather than addressing the reader. Only flagged when a rewriting object follows, and not inside quotation marks.",
+    "note": "Chat-assistant reply opener (\"Sure! Here's…\", \"Of course! Here is…\"). It answers a request rather than addressing the reader.",
     "suggestions": [
       "Delete the opener and start with your own first sentence."
     ],
@@ -33,13 +33,13 @@
   },
   {
     "id": "en.artifact.here-is-revised-version",
-    "pattern": "(?:\\b(?:Here(?:'s|\\s+is)|Below\\s+is)(?<!'(?:(?:Here(?:'s|\\s+is)|Below\\s+is)))\\s+(?:a|an|the)\\s+(?:(?:more|slightly|much)\\s+)?(?:(?:polished|refined|rephrased|paraphrased|reworded|rewritten|streamlined|concise|formal|academic|professional|tightened)\\s+version(?:\\s+of\\s+your\\s+(?:paragraph|text|abstract|sentences?|passage|essay|introduction|conclusion|email|cover\\s+letter|statement|summary|bio)\\b|\\b[^\\n.:]{0,60}:[ \\t]*$)|(?:revised|edited|improved|updated|shortened|condensed|polished|refined|rephrased|paraphrased|reworded|rewritten|streamlined|concise|formal|academic|professional|tightened)\\s+version\\s+of\\s+your\\s+(?:paragraph|text|abstract|sentences?|passage|essay|introduction|conclusion|email|cover\\s+letter|statement|summary|bio)\\b[^\\n.:]{0,60}:[ \\t]*$))(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\b(?:Here(?:'s|\\s+is)|Below\\s+is)\\s+(?:a|an|the|your)\\s+(?:(?:more|slightly|much)\\s+)?(?:revised|edited|improved|updated|shortened|condensed|polished|refined|rephrased|paraphrased|reworded|rewritten|streamlined|concise|formal|academic|professional|tightened|clearer|shorter|corrected|proofread)\\s+version\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Hand-over line from a rewriting request (\"Here is a polished version of your paragraph:\"). It introduces the text instead of being part of it.",
+    "note": "Hand-over line for a rewrite (\"Here is a polished version…\"). It introduces generated text instead of being part of it.",
     "suggestions": [
       "Delete this line."
     ],
@@ -48,14 +48,30 @@
     "evidence": []
   },
   {
-    "id": "en.artifact.here-is-possible-draft-for-your",
-    "pattern": "(?:\\bHere(?:'s|\\s+is|\\s+are)(?<!'(?:Here(?:'s|\\s+is|\\s+are)))\\s+(?:a|an|one|some|a\\s+few|several|two|three)\\s+(?:possible|suggested|potential|sample)\\s+(?:introduction|abstract|conclusion|title|outline|response|reply|replies|email|draft|opening|rewrite|paraphrase|summary|cover\\s+letter|thesis\\s+statement|research\\s+question|topic\\s+sentence)s?\\s+(?:for|of|to)\\s+your\\b[^\\n.:]{0,60}:[ \\t]*$)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "id": "en.artifact.in-this-revised-version-i",
+    "pattern": "\\bIn\\s+this\\s+(?:revised|updated|edited|rewritten|refined|polished|improved)\\s+version,?\\s+I(?:'ve|\\s+have)?\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Hand-over line offering a generated draft (\"Here is a possible introduction for your paper:\") that ends in a colon. It speaks to the requester, not the reader.",
+    "note": "Chat-assistant explanation of its own edit (\"In this revised version, I have…\"). It describes the rewrite, not the subject.",
+    "suggestions": [
+      "Delete this sentence."
+    ],
+    "models": [],
+    "added": "2026-10-23",
+    "evidence": []
+  },
+  {
+    "id": "en.artifact.here-is-possible-draft-for-your",
+    "pattern": "\\bHere(?:'s|\\s+is|\\s+are)\\s+(?:a|an|one|some|a\\s+few|several|two|three|five)\\s+(?:possible|suggested|potential|sample)\\s+(?:introduction|abstract|conclusion|title|outline|response|reply|replies|email|draft|opening|rewrite|paraphrase|summary|cover\\s+letter|thesis\\s+statement|research\\s+question|topic\\s+sentence|caption|tagline|name)s?\\b",
+    "match": "regex",
+    "inflect": false,
+    "tier": "artifact",
+    "lang": "en",
+    "status": "accepted",
+    "note": "Hand-over line offering generated drafts (\"Here are some possible titles…\"). It speaks to the requester, not the reader.",
     "suggestions": [
       "Delete this line."
     ],
@@ -65,13 +81,13 @@
   },
   {
     "id": "en.artifact.let-me-know-adjustments",
-    "pattern": "(?:\\bLet(?<!'(?:Let))\\s+me\\s+know\\s+if\\s+you(?:'d|\\s+would)?\\s+(?:like|need|want)\\s+(?:me\\s+to\\s+(?:adjust|refine|rephrase|tweak|tailor|condense|expand\\s+on|elaborate\\s+on)\\s+(?:the\\s+(?:tone|wording|style|phrasing|length|language)|it\\s+further|(?:any|specific)\\s+(?:sections?|parts?|points?))|(?:any\\s+)?(?:further|additional|more)\\s+(?:refinements|(?:adjustments|modifications|tweaks)\\s+(?:to\\s+the\\s+(?:tone|wording|style|phrasing)|or\\s+(?:additions|refinements|tweaks)))|any\\s+(?:adjustments|modifications|tweaks)\\s+(?:to\\s+the\\s+(?:tone|wording|style|phrasing)|or\\s+(?:additions|refinements)))\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\bLet\\s+me\\s+know\\s+if\\s+you(?:'d|\\s+would)?\\s+(?:like|need|want|prefer)\\s+(?:me\\s+to\\s+(?:make\\s+)?(?:any\\s+)?(?:(?:further|other|additional|more)\\s+)?(?:changes|adjustments|modifications|tweaks|refinements|revisions|edits|improvements)|me\\s+to\\s+(?:adjust|refine|rephrase|tweak|tailor|condense|expand\\s+on|elaborate\\s+on|revise|edit|shorten|change)|(?:any\\s+)?(?:(?:further|other|additional|more)\\s+)?(?:changes|adjustments|modifications|tweaks|refinements|revisions|edits|improvements))\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Chat-assistant closing offer to keep editing (\"Let me know if you'd like me to adjust the tone…\"). It refers to the chat, not to the document.",
+    "note": "Chat-assistant offer to keep editing (\"Let me know if you'd like any further changes\"). It refers to the chat, not to the document.",
     "suggestions": [
       "Delete this sentence."
     ],
@@ -81,13 +97,13 @@
   },
   {
     "id": "en.artifact.closing-offer-at-end",
-    "pattern": "(?<=^[ \\t]*)(?:(?:I\\s+)?hope\\s+(?:this|that|it)\\s+helps(?:\\s+you)?[!.]\\s+)?(?:(?:just\\s+|feel\\s+free\\s+to\\s+)?let\\s+me\\s+know\\s+if\\s+(?:(?:(?:this|that|it)\\s+works(?:\\s+for\\s+you)?,?\\s+or\\s+if\\s+)?you(?:'d\\s+(?:like|prefer)|\\s+would\\s+(?:like|prefer)|\\s+want|\\s+need)\\s+(?:me\\s+to\\s+make\\s+)?(?:any\\s+(?:(?:further|other|additional|more)\\s+)?|(?:further|other|additional|more|some)\\s+)(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)(?:\\s+or\\s+(?:(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)|additions|anything\\s+else))?(?:\\s+to\\s+(?:the|this|your|its)\\s+(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)(?:,?\\s+(?:or\\s+|and\\s+)?(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)){0,3})?|there(?:'s|\\s+is)\\s+anything\\s+(?:else\\s+)?you(?:'d|\\s+would)\\s+like\\s+(?:me\\s+)?to\\s+(?:change|adjust|add|modify|tweak|refine|revise|edit|improve))|feel\\s+free\\s+to\\s+(?:ask|reach\\s+out)\\s+if\\s+you(?:'d\\s+(?:like|prefer)|\\s+would\\s+(?:like|prefer)|\\s+want|\\s+need)\\s+(?:me\\s+to\\s+make\\s+)?(?:any\\s+(?:(?:further|other|additional|more)\\s+)?|(?:further|other|additional|more|some)\\s+)(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)(?:\\s+or\\s+(?:(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)|additions|anything\\s+else))?(?:\\s+to\\s+(?:the|this|your|its)\\s+(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)(?:,?\\s+(?:or\\s+|and\\s+)?(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)){0,3})?|if\\s+you(?:'d\\s+(?:like|prefer)|\\s+would\\s+(?:like|prefer)|\\s+want|\\s+need)\\s+(?:me\\s+to\\s+make\\s+)?(?:any\\s+(?:(?:further|other|additional|more)\\s+)?|(?:further|other|additional|more|some)\\s+)(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)(?:\\s+or\\s+(?:(?:changes|adjustments|edits|revisions|modifications|tweaks|refinements|improvements)|additions|anything\\s+else))?(?:\\s+to\\s+(?:the|this|your|its)\\s+(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)(?:,?\\s+(?:or\\s+|and\\s+)?(?:tone|wording|style|structure|phrasing|length|format(?:ting)?|flow|content|text|draft|paragraph|abstract|introduction|conclusion|letter|email|version|summary|outline)){0,3})?,?\\s+(?:just\\s+)?(?:let\\s+me\\s+know|feel\\s+free\\s+to\\s+(?:ask|reach\\s+out|let\\s+me\\s+know)))[ \\t]*[!.]?(?:[ \\t]*[\\p{Extended_Pictographic}️]+)?(?=\\s*(?![\\s\\S]))",
+    "pattern": "\\bFeel\\s+free\\s+to\\s+(?:let\\s+me\\s+know|ask|reach\\s+out)\\s+if\\b|\\bIf\\s+you(?:'d\\s+like|\\s+would\\s+like|\\s+need|\\s+want)\\s+(?:any\\s+)?(?:(?:further|other|additional|more)\\s+)?(?:changes|adjustments|modifications|tweaks|refinements|revisions|edits|improvements|help|assistance)\\b[^.!?\\n]{0,40}?(?:,\\s*|\\s+)(?:just\\s+)?let\\s+me\\s+know\\b|\\bLet\\s+me\\s+know\\s+if\\s+(?:this|that|it)\\s+works\\b|\\bLet\\s+me\\s+know\\s+if\\s+(?:there(?:'s|\\s+is)\\s+anything\\s+else|you\\s+need\\s+anything\\s+else)\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
-    "status": "candidate",
-    "note": "Chat-assistant closing offer (\"Let me know if you'd like any further changes.\") as the last line of the text. It speaks to the person who asked for the edit, not to the reader. Only flagged when it stands on its own line with nothing after it, so a message that continues or ends with a sign-off is not flagged.",
+    "status": "accepted",
+    "note": "Chat-assistant closing offer (\"Let me know if this works for you\", \"Feel free to ask if…\"). It belongs to the conversation, not the draft.",
     "suggestions": [
       "Delete this line."
     ],
@@ -96,14 +112,30 @@
     "evidence": []
   },
   {
-    "id": "en.artifact.feel-free-to-adjust-your-needs",
-    "pattern": "(?:\\bFeel(?<!'(?:Feel))\\s+free\\s+to\\s+(?:adjust|modify|tweak|customi[sz]e|tailor|adapt|edit|refine)\\s+(?:the\\s+|any\\s+of\\s+the\\s+)?(?:wording|tone|text|language|phrasing|content|examples?|details|placeholders?)\\b[^\\n.!?]{0,60}?\\bto\\s+(?:better\\s+)?(?:fit|suit|match|align\\s+with|reflect)\\s+your\\s+(?:own\\s+)?(?:specific\\s+|unique\\s+|personal\\s+)?(?:needs|style|voice|requirements|preferences|tone|purpose|context|situation|experiences?|circumstances|audience)\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "id": "en.artifact.hope-this-helps",
+    "pattern": "\\b(?:I\\s+)?hope\\s+(?:this|that|it)\\s+(?:helps|was\\s+helpful|is\\s+helpful)\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Chat-assistant closing line inviting the requester to tailor the output (\"Feel free to adjust the wording to fit your style\"). It addresses the person who asked, not the reader.",
+    "note": "Chat-assistant sign-off (\"I hope this helps!\") left in the text. It addresses the person who asked.",
+    "suggestions": [
+      "Delete this sentence."
+    ],
+    "models": [],
+    "added": "2026-10-23",
+    "evidence": []
+  },
+  {
+    "id": "en.artifact.feel-free-to-adjust-your-needs",
+    "pattern": "\\bFeel\\s+free\\s+to\\s+(?:adjust|modify|tweak|customi[sz]e|tailor|adapt|edit|refine|personali[sz]e)\\b",
+    "match": "regex",
+    "inflect": false,
+    "tier": "artifact",
+    "lang": "en",
+    "status": "accepted",
+    "note": "Chat-assistant invitation to tailor the output (\"Feel free to adjust…\"). It addresses the person who asked, not the reader.",
     "suggestions": [
       "Delete this sentence."
     ],
@@ -113,13 +145,13 @@
   },
   {
     "id": "en.artifact.would-you-like-me-to",
-    "pattern": "(?:\\b(?:Would(?<!'(?:Would))\\s+you\\s+like|Do(?<!'(?:Do))\\s+you\\s+want)\\s+me\\s+to\\s+(?:also\\s+)?(?:(?:expand|elaborate)\\s+(?:further\\s+)?on\\s+(?:any\\s+(?:of\\s+)?(?:these|those|the)\\s+|any\\s+|these\\s+|those\\s+|(?:a\\s+)?(?:specific|particular|certain)\\s+)(?:points?|sections?|ideas?|aspects?|parts?|areas?|examples?|steps?|suggestions?)|(?:make|keep)\\s+(?:it|this|the\\s+(?:text|tone|paragraph|draft|abstract|introduction|letter))\\s+(?:(?:a\\s+bit|slightly|even|a\\s+little)\\s+)?(?:more|less)\\s+(?:formal|casual|concise|academic|persuasive|professional|engaging|detailed|technical|polished|conversational)|(?:tailor|adapt)\\s+(?:it|this|the\\s+(?:text|draft|letter|paragraph|abstract))\\s+(?:further|to\\s+(?:a|your)\\s+(?:specific|particular))|(?:adjust|refine|tweak|change)\\s+the\\s+(?:tone|wording|style|phrasing)|(?:make|create|write|draft|prepare|provide|give\\s+you|produce|generate)\\s+(?:a|an)\\s+(?:[\\w-]{1,20}\\s+){1,3}?version)\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\b(?:Would\\s+you\\s+like|Do\\s+you\\s+want)\\s+me\\s+to\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Chat-assistant follow-up question offering another round of edits (\"Would you like me to make it more concise?\", \"Do you want me to create a shorter version?\"). It belongs to the conversation, not the draft.",
+    "note": "Chat-assistant follow-up offer (\"Would you like me to…?\"). It belongs to the conversation, not the draft.",
     "suggestions": [
       "Delete this sentence."
     ],
@@ -128,14 +160,30 @@
     "evidence": []
   },
   {
-    "id": "en.artifact.if-you-like-i-can",
-    "pattern": "(?:\\bIf(?<!'(?:If))\\s+you(?:'d\\s+like|\\s+would\\s+like|\\s+want|\\s+prefer),?\\s+I\\s+can\\s+(?:also\\s+)?(?:(?:make|create|write|draft|prepare|provide|give\\s+you|produce|generate)\\s+(?:a|an)\\s+(?:[\\w-]{1,20}\\s+){1,3}?(?:version|variant)|(?:tailor|adapt|adjust|rephrase|rewrite|shorten|condense|polish|refine|tighten)\\s+(?:it|this|the\\s+(?:text|tone|wording|draft|paragraph|abstract|introduction|letter))\\s+(?:further|to|for|so|into))\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "id": "en.artifact.is-there-anything-else",
+    "pattern": "\\bIs\\s+there\\s+anything\\s+else\\s+(?:that\\s+)?(?:I\\s+can|you(?:'d|\\s+would)\\s+like|you\\s+need|you\\s+want)\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Chat-assistant closing offer (\"If you'd like, I can also make a shorter version.\") left at the end of the text. It belongs to the conversation, not the draft.",
+    "note": "Chat-assistant closing question (\"Is there anything else I can help with?\"). It belongs to the conversation, not the draft.",
+    "suggestions": [
+      "Delete this sentence."
+    ],
+    "models": [],
+    "added": "2026-10-23",
+    "evidence": []
+  },
+  {
+    "id": "en.artifact.if-you-like-i-can",
+    "pattern": "\\bIf\\s+you(?:'d\\s+like|\\s+would\\s+like|\\s+want|\\s+prefer|\\s+wish),?\\s+I\\s+(?:can|could)\\b",
+    "match": "regex",
+    "inflect": false,
+    "tier": "artifact",
+    "lang": "en",
+    "status": "accepted",
+    "note": "Chat-assistant offer (\"If you'd like, I can…\"). It belongs to the conversation, not the draft.",
     "suggestions": [
       "Delete this sentence."
     ],
@@ -145,13 +193,13 @@
   },
   {
     "id": "en.artifact.happy-to-help-here-is",
-    "pattern": "(?:\\bI(?:'d|\\s+would)(?<!'(?:I(?:'d|\\s+would)))\\s+be\\s+(?:happy|glad|delighted)\\s+to\\s+help(?:\\s+(?:you\\s+)?with\\s+(?:that|this))?[!.]\\s+(?:Here(?:'s|\\s+is|\\s+are)|Below\\s+(?:is|are))\\s+(?:a|an|the|some|two|three|several)\\s+(?:(?:(?:more|slightly|much|a\\s+bit)\\s+)?(?:revised|rewritten|polished|refined|improved|edited|reworded|rephrased|paraphrased|condensed|shortened|concise|formal|academic|professional|streamlined|possible|suggested|potential|sample|structured|clearer|shorter|tightened)\\s+(?:[\\w-]{1,20}\\s+){0,2}?(?:version|draft|introduction|abstract|conclusion|paragraph|outline|cover\\s+letter|essay|sentence|title|rewrite|paraphrase|summary|statement)s?|(?:rewrite|paraphrase|rephrasing|rewording)s?|(?:version|introduction|abstract|conclusion|paragraph|outline|cover\\s+letter|essay)s?\\s+(?:for|of)\\s+your)\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\bI(?:'d|\\s+would)\\s+be\\s+(?:happy|glad|delighted)\\s+to\\s+help(?:\\s+(?:you\\s+)?with\\s+(?:that|this))?[!.]",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Chat-assistant opener (\"I'd be happy to help! Here's a revised version…\") followed by the generated text. It addresses the requester.",
+    "note": "Chat-assistant opener (\"I'd be happy to help!\"). It addresses the person who asked, not the reader.",
     "suggestions": [
       "Delete the opener."
     ],
@@ -161,13 +209,13 @@
   },
   {
     "id": "en.artifact.general-template-disclaimer",
-    "pattern": "(?:\\b(?:Please(?<!'(?:Please))\\s+note|Note(?<!'(?:Note))(?<!\\b(?:we|I|they|you|to|also|should|must|will|please)\\s{1,3}Note))\\s+that\\s+(?:this|the\\s+above)\\s+is\\s+(?:just\\s+|only\\s+|merely\\s+)?(?:a|an)\\s+(?:general|generic|sample|basic)\\s+(?:template|response|outline|draft|guide|example)\\b[^\\n.;]{0,20}?(?:,\\s*|\\s+and\\s+)(?:it\\s+|you\\s+)?(?:should|may|might|will|would)\\s+(?:need\\s+to\\s+)?(?:be\\s+)?(?:customi[sz]ed?|tailored|tailor|adapted|adapt|adjusted|adjust|modified|modify)\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\b(?:Please\\s+)?note\\s+that\\s+(?:this|the\\s+above)\\s+is\\s+(?:just\\s+|only\\s+|merely\\s+)?(?:a|an)\\s+(?:general|generic|sample|basic)\\s+(?:template|response|outline|draft|guide|example)\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Disclaimer that the text is a generic template that should be customised (\"Please note that this is a general template and should be tailored…\"). It comments on the generated output rather than the subject.",
+    "note": "Disclaimer that the text is a generic template (\"Note that this is a general template…\"). It comments on generated output rather than the subject.",
     "suggestions": [
       "Delete this sentence and check that the text is specific to your case."
     ],
@@ -177,13 +225,13 @@
   },
   {
     "id": "en.artifact.replace-placeholders-instruction",
-    "pattern": "(?:\\b(?:Remember|Make\\s+sure|Be\\s+sure|Don't\\s+forget)(?<!'(?:(?:Remember|Make\\s+sure|Be\\s+sure|Don't\\s+forget)))\\s+to\\s+(?:replace|fill\\s+in|customi[sz]e|update)\\s+(?:the\\s+|any\\s+|all\\s+)?(?:placeholders?|placeholder\\s+text|bracketed\\s+(?:text|sections?|information|parts|fields|placeholders))(?:\\s+\\([^)\\n]{1,40}\\))?\\s+with\\s+(?:your\\s+(?:own\\s+)?(?:specific\\s+|personal\\s+|actual\\s+)?(?:details|information|info|data|experiences?|achievements)|specific\\s+(?:examples|details|information))\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\b(?:(?:Remember|Make\\s+sure|Be\\s+sure|Don't\\s+forget)\\s+to\\s+)?(?:replace|fill\\s+in|customi[sz]e)\\s+(?:the\\s+|any\\s+|all\\s+|these\\s+)?(?:placeholders?|placeholder\\s+text|bracketed\\s+(?:text|sections?|information|parts|fields|placeholders))\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Reminder to replace placeholders with your own details, left over from a generated template (\"Remember to replace the placeholders with your details\"). Its presence suggests unfilled fields elsewhere.",
+    "note": "Instruction to replace placeholders (\"Remember to replace the placeholders…\"), left over from a generated template. It suggests unfilled fields elsewhere.",
     "suggestions": [
       "Delete the instruction and fill in every placeholder."
     ],
@@ -193,13 +241,13 @@
   },
   {
     "id": "en.artifact.as-an-ai-language-model",
-    "pattern": "(?:\\bAs(?<!'(?:As))\\s+(?:an\\s+AI(?:\\s+(?:language\\s+model|model|assistant|chatbot))?|a\\s+(?:large\\s+)?language\\s+model)(?:,?\\s+I\\b|\\s+(?:developed|trained|created)\\s+by\\s+[\\w.-]{1,30},?\\s+I\\b))(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\bAs\\s+(?:an\\s+AI\\s+language\\s+model|a\\s+(?:large\\s+)?language\\s+model|an\\s+AI(?:\\s+(?:model|assistant|chatbot))?(?=\\s*[,.;:]|\\s+I\\b))\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Model self-reference (\"As an AI language model, I…\"). It is part of a chat reply, not of the author's text. Occurrences inside quotation marks are not flagged.",
+    "note": "Model self-reference (\"As an AI language model…\"). It is part of a chat reply, not of the author's text.",
     "suggestions": [
       "Delete the self-reference and rewrite the sentence in your own voice."
     ],
@@ -209,13 +257,13 @@
   },
   {
     "id": "en.artifact.i-am-an-ai",
-    "pattern": "(?:\\bI(?<!'(?:I))(?:'m|\\s+am)\\s+(?:just\\s+|only\\s+|merely\\s+)?(?:(?:an\\s+AI\\s+(?:language\\s+model|assistant|chatbot)|a\\s+(?:large\\s+)?language\\s+model)(?=\\s*[,.;!]|\\s+(?:trained|developed|created|designed|built)\\s+by\\b)|an\\s+AI(?=[,.]\\s+(?:and\\s+|so\\s+)?I\\s+(?:do\\s+not|don't|cannot|can't)\\s+(?:have|experience|feel|browse|access|form|hold|make|provide|give|offer)\\b)))(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\bI(?:'m|\\s+am)\\s+(?:just\\s+|only\\s+|merely\\s+)?(?:an\\s+AI\\s+language\\s+model|a\\s+(?:large\\s+)?language\\s+model|an\\s+AI(?:\\s+(?:model|assistant|chatbot))?(?=\\s*[,.;!]|\\s+(?:trained|developed|created|designed|built)\\s+by\\b))\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Model self-description (\"I'm an AI language model…\", \"I am an AI, so I don't have…\") from a chat reply. Occurrences inside quotation marks are not flagged.",
+    "note": "Model self-description (\"I'm an AI language model…\", \"I am an AI.\") from a chat reply.",
     "suggestions": [
       "Delete this sentence."
     ],
@@ -225,7 +273,7 @@
   },
   {
     "id": "en.artifact.last-knowledge-update",
-    "pattern": "(?:\\bas(?<!'(?:as))\\s+of\\s+my\\s+(?:last|latest|most\\s+recent)\\s+(?:knowledge|training)\\s+update\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\bas\\s+of\\s+my\\s+(?:last|latest|most\\s+recent)\\s+(?:knowledge|training)\\s+update\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
@@ -241,7 +289,7 @@
   },
   {
     "id": "en.artifact.knowledge-cutoff",
-    "pattern": "(?:\\bmy(?<!'(?:my))\\s+(?:knowledge|training(?:\\s+data)?)\\s+cut-?off\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\bmy\\s+(?:knowledge|training(?:\\s+data)?)\\s+cut-?off\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
@@ -257,7 +305,7 @@
   },
   {
     "id": "en.artifact.training-data-up-to",
-    "pattern": "(?:\\b(?:my(?<!'(?:my))\\s+(?:training\\s+data|knowledge)\\s+(?:only\\s+)?(?:goes|extends|includes\\s+information|covers\\s+(?:information|events))\\s+(?:up\\s+to|until|through)|I(?<!'(?:I))\\s+was\\s+(?:last\\s+)?trained\\s+on\\s+data\\s+(?:up\\s+to|until|through))\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\b(?:my\\s+(?:training\\s+data|knowledge)\\s+(?:only\\s+)?(?:goes|extends|includes\\s+information|covers\\s+(?:information|events))\\s+(?:up\\s+to|until|through)|I\\s+was\\s+(?:last\\s+)?trained\\s+on\\s+data\\s+(?:up\\s+to|until|through))\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
@@ -273,13 +321,13 @@
   },
   {
     "id": "en.artifact.no-real-time-access",
-    "pattern": "(?:\\bI(?<!'(?:I))\\s+(?:do\\s+not|don't|cannot|can't|am\\s+unable\\s+to)\\s+(?:have\\s+)?(?:access\\s+to\\s+real[-\\s]time\\s+(?:data|information|updates|news)\\s+or\\s+(?:the\\s+ability\\s+to\\s+(?:browse|access|search)|browse|browsing|current\\s+events|the\\s+internet)|real[-\\s]time\\s+access\\s+to\\s+(?:current\\s+events|the\\s+internet|the\\s+web|news))\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\bI\\s+(?:do\\s+not|don't|cannot|can't|am\\s+unable\\s+to)\\s+(?:have\\s+)?(?:access\\s+to\\s+real[-\\s]time\\s+(?:data|information|updates|news)|real[-\\s]time\\s+access)\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Model disclaimer about lacking real-time access (\"I don't have access to real-time information or the ability to browse…\"). It is a chat leftover.",
+    "note": "Model disclaimer about lacking real-time access (\"I don't have access to real-time information\"). It is a chat leftover.",
     "suggestions": [
       "Delete this sentence and check the facts against a current source."
     ],
@@ -289,13 +337,13 @@
   },
   {
     "id": "en.artifact.cannot-browse-internet",
-    "pattern": "(?:\\bI(?<!'(?:I))\\s+(?:(?:cannot|can't|can\\s+not|am\\s+(?:unable|not\\s+able)\\s+to|(?:do\\s+not|don't)\\s+have\\s+the\\s+ability\\s+to)\\s+browse\\s+(?:the\\s+)?(?:internet|web)\\s+(?:or|and)\\s+(?:access|retrieve|check|look\\s+up|provide)\\s+(?:real-time|current|live|up-to-date)|(?:do\\s+not|don't)\\s+have\\s+(?:web\\s+|internet\\s+)?browsing\\s+capabilit(?:y|ies))\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\bI\\s+(?:(?:cannot|can't|can\\s+not|am\\s+(?:unable|not\\s+able)\\s+to|(?:do\\s+not|don't)\\s+have\\s+the\\s+ability\\s+to)\\s+browse\\s+(?:the\\s+)?(?:internet|web)|(?:do\\s+not|don't)\\s+have\\s+(?:web\\s+|internet\\s+)?browsing\\s+capabilit(?:y|ies))\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Model disclaimer about not browsing the web (\"I cannot browse the internet or access real-time data\", \"I don't have browsing capabilities\"). It is a chat leftover.",
+    "note": "Model disclaimer about not browsing the web (\"I cannot browse the internet\"). It is a chat leftover.",
     "suggestions": [
       "Delete this sentence and verify any claims or sources yourself."
     ],
@@ -305,13 +353,13 @@
   },
   {
     "id": "en.artifact.sorry-cannot-assist",
-    "pattern": "(?:\\bI(?<!'(?:I))(?:'m|\\s+am)\\s+sorry,?\\s+(?:but\\s+)?I\\s+(?:can't|cannot|can\\s+not|am\\s+(?:unable|not\\s+able)\\s+to)\\s+assist\\s+with\\s+(?:that|this)(?:\\s+request)?(?=[ \\t]*[.!]))(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\bI(?:'m|\\s+am)\\s+sorry,?\\s+(?:but\\s+)?I\\s+(?:can't|cannot|can\\s+not|am\\s+(?:unable|not\\s+able)\\s+to)\\s+(?:assist\\s+with|help\\s+with|comply\\s+with|fulfil{1,2})\\s+(?:that|this|your)(?:\\s+request)?\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Chat-assistant refusal (\"I'm sorry, but I can't assist with that.\") ending a sentence. It is part of a chat, not of the text.",
+    "note": "Chat-assistant refusal (\"I'm sorry, but I can't assist with that.\"). It is part of a chat, not of the text.",
     "suggestions": [
       "Delete this sentence."
     ],
@@ -321,7 +369,7 @@
   },
   {
     "id": "en.artifact.no-personal-opinions",
-    "pattern": "(?:\\bI(?<!'(?:I))\\s+(?:do\\s+not|don't)\\s+have\\s+personal\\s+(?:opinions|feelings|beliefs|emotions|experiences)\\s+or\\s+(?:personal\\s+)?(?:feelings|emotions|opinions|beliefs|experiences|preferences)\\b)(?<!(?:(?:^|[\\s(\\[{:])\"|``)[^\"`\\n]{0,300})",
+    "pattern": "\\bI\\s+(?:do\\s+not|don't)\\s+have\\s+personal\\s+(?:opinions|feelings|beliefs|emotions|experiences|preferences)\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
@@ -337,7 +385,7 @@
   },
   {
     "id": "en.artifact.insert-placeholder",
-    "pattern": "[\\[<{]\\s*(?:insert|fill\\s+in|paste|enter)\\s+(?:[^\\[\\]<>{}\\n]{0,50}?\\s)?(?:here|names?|dates?|details|information|info|citations?|references?|sources?|statistics?|stat|examples?|figures?|number|data|quotes?|title|text|link|URL|address|amount|percentage|year|company|description|anecdote|results?|values?|email|location|role|position|logo|image|chart|table)\\s*[\\]>}](?!\\()",
+    "pattern": "[\\[<{]\\s*(?:insert|fill\\s+in|paste|enter|add)\\s+[^\\[\\]<>{}\\n]{1,60}?\\s*[\\]>}](?!\\()",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
@@ -353,13 +401,13 @@
   },
   {
     "id": "en.artifact.citation-placeholder",
-    "pattern": "(?<![\\p{L}\\p{N}_\\[\\]\\\\])\\[\\s*(?:(?:add|insert|cite|need|needs|missing)\\s+(?:a\\s+|an\\s+|relevant\\s+|appropriate\\s+|supporting\\s+)?(?:citation|reference|source|ref)s?(?:\\s+here)?|(?:citation|reference|source|ref)s?\\s+(?:here|TBD|TODO|to\\s+be\\s+added|needed\\s+here)|citations?)\\s*\\](?![(\\[:])",
+    "pattern": "(?<![\\p{L}\\p{N}_\\[\\]\\\\])\\[\\s*(?:(?:add|insert|cite|need|needs|missing)\\s+(?:a\\s+|an\\s+|relevant\\s+|appropriate\\s+|supporting\\s+)?(?:citation|reference|source|ref)s?(?:\\s+here)?|(?:citation|reference|source|ref)s?\\s+(?:here|TBD|TODO|to\\s+be\\s+added|needed(?:\\s+here)?)|citations?)\\s*\\](?![(\\[:])",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Unfilled citation placeholder (\"[citation]\", \"[add reference here]\", \"[source needed here]\"). The source it stands for is missing. \"[citation needed]\" is not flagged.",
+    "note": "Unfilled citation placeholder (\"[citation]\", \"[citation needed]\", \"[add reference here]\"). The source it stands for is missing.",
     "suggestions": [
       "Replace with the actual citation."
     ],
@@ -401,13 +449,13 @@
   },
   {
     "id": "en.artifact.field-placeholder-line",
-    "pattern": "^[ \\t]*\\[\\s*(?:Name|Full\\s+Name|Date|Address|Street\\s+Address|Title|Signature|Email(?:\\s+Address)?|Phone(?:\\s+Number)?|City,\\s+State(?:,?\\s+ZIP(?:\\s+Code)?)?|City,\\s+Country|Recipient|Position|Company|Organi[sz]ation)\\s*\\][ \\t]*$",
+    "pattern": "\\[\\s*(?:Name|Full\\s+Name|Date|Address|Street\\s+Address|Title|Signature|Email(?:\\s+Address)?|Phone(?:\\s+Number)?|City,\\s+State(?:,?\\s+ZIP(?:\\s+Code)?)?|City,\\s+Country|Recipient|Position|Company|Organi[sz]ation)\\s*\\](?![(\\[])",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "A line that holds only a template field such as \"[Date]\" or \"[Name]\", typical of a generated letter that was not filled in.",
+    "note": "Unfilled template field such as \"[Date]\" or \"[Name]\", typical of a generated letter that was not filled in.",
     "suggestions": [
       "Replace with the actual details, or delete the line."
     ],
@@ -449,7 +497,7 @@
   },
   {
     "id": "en.artifact.imperative-placeholder",
-    "pattern": "\\[\\s*(?:mention|describe|add|include|provide|specify|explain|briefly\\s+(?:describe|explain|mention)|summari[sz]e|highlight)\\s+(?=[^\\[\\]\\n]{0,80}\\b(?:your|specific|relevant|here|examples?|details?|achievements?|experiences?|skills?|data|statistics?|accomplishments?|reasons?|motivation)\\b)[^\\[\\]\\n]{3,80}\\](?![(\\[:])",
+    "pattern": "\\[\\s*(?:mention|describe|add|include|provide|specify|explain|briefly\\s+(?:describe|explain|mention)|summari[sz]e|highlight|list|state)\\s+[^\\[\\]\\n]{3,80}\\](?![(\\[:])",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
@@ -465,13 +513,13 @@
   },
   {
     "id": "en.artifact.regenerate-response",
-    "pattern": "^[ \\t]*(?:Regenerate[ \\t]+(?:response|draft)|Stop[ \\t]+generating|Continue[ \\t]+generating)[ \\t]*$",
+    "pattern": "\\b(?:Regenerate\\s+(?:response|draft)|Stop\\s+generating|Continue\\s+generating)\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Chat interface button label (\"Regenerate response\") copied along with the text. Only flagged when it stands on its own line.",
+    "note": "Chat interface button label (\"Regenerate response\") copied along with the text.",
     "suggestions": [
       "Delete this line."
     ],
@@ -481,13 +529,13 @@
   },
   {
     "id": "en.artifact.thought-for-seconds",
-    "pattern": "^[ \\t]*(?:Thought|Reasoned)[ \\t]+for[ \\t]+(?:\\d{1,3}[ \\t]*(?:s|sec|seconds?|m|min|minutes?)(?:[ \\t]+\\d{1,2}[ \\t]*(?:s|sec|seconds?))?|a[ \\t]+(?:few|couple[ \\t]+of)[ \\t]+seconds|a[ \\t]+second)[ \\t]*$",
+    "pattern": "\\b(?:Thought|Reasoned)\\s+for\\s+\\d{1,3}\\s*(?:s|sec|seconds?|m|min|minutes?)(?:\\s+\\d{1,2}\\s*(?:s|sec|seconds?))?\\b|^[ \\t]*(?:Thought|Reasoned)[ \\t]+for[ \\t]+(?:a[ \\t]+(?:few|couple[ \\t]+of)[ \\t]+seconds|a[ \\t]+second)[ \\t]*$",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Status line from a reasoning chat assistant (\"Thought for 12 seconds\") copied along with the answer.",
+    "note": "Status line from a reasoning chat assistant (\"Thought for 12 seconds\") copied along with the answer. The vague form (\"Thought for a few seconds\") is only flagged on its own line.",
     "suggestions": [
       "Delete this line."
     ],
@@ -497,13 +545,13 @@
   },
   {
     "id": "en.artifact.searched-n-sites",
-    "pattern": "^[ \\t]*Searched[ \\t]+(?:\\d{1,3}[ \\t]+sites?|the[ \\t]+web)[ \\t]*$",
+    "pattern": "\\bSearched\\s+\\d{1,3}\\s+sites?\\b|^[ \\t]*Searched[ \\t]+the[ \\t]+web[ \\t]*$",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Status line from a chat assistant's web search (\"Searched 5 sites\") copied along with the answer.",
+    "note": "Status line from a chat assistant's web search (\"Searched 5 sites\") copied along with the answer. \"Searched the web\" is only flagged on its own line.",
     "suggestions": [
       "Delete this line."
     ],
@@ -529,7 +577,7 @@
   },
   {
     "id": "en.artifact.copy-edit-buttons",
-    "pattern": "^[ \\t]*(?<!\\b(?:Cut|Paste|Undo|Redo|Open|Save|New|Delete|Share|Rename)[ \\t]*\\r?\\n[ \\t]*)Copy[ \\t]*\\r?\\n[ \\t]*Edit[ \\t]*$(?![ \\t]*\\r?\\n[ \\t]*(?:Delete|Cut|Paste|Share|Rename|Move|Duplicate|Remove|Print|Select(?:[ \\t]+all)?)[ \\t]*$)",
+    "pattern": "^[ \\t]*Copy[ \\t]*\\r?\\n[ \\t]*Edit[ \\t]*$",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
@@ -577,13 +625,13 @@
   },
   {
     "id": "en.artifact.model-disclaimer-footer",
-    "pattern": "\\b(?:ChatGPT|Claude|Gemini|Copilot)\\s+can\\s+make\\s+mistakes\\.\\s+(?:Check|Consider\\s+checking|Please\\s+double-check|Verify)\\b|\\bChatGPT\\s+may\\s+produce\\s+inaccurate\\s+information\\s+about\\s+people\\b|\\bGemini\\s+(?:may|can)\\s+display\\s+inaccurate\\s+info\\b|\\bCopilot\\s+uses\\s+AI\\.\\s+Check\\s+for\\s+mistakes\\b|\\bGemini\\s+can\\s+make\\s+mistakes,\\s+so\\s+double-check\\s+it\\b|\\bChatGPT\\s+can\\s+make\\s+mistakes\\.\\s+OpenAI\\s+doesn't\\s+use\\b",
+    "pattern": "\\b(?:ChatGPT|Claude|Gemini|Copilot)\\s+can\\s+make\\s+mistakes\\b|\\bChatGPT\\s+may\\s+produce\\s+inaccurate\\s+information\\s+about\\s+people\\b|\\bGemini\\s+(?:may|can)\\s+display\\s+inaccurate\\s+info\\b|\\bCopilot\\s+uses\\s+AI\\.\\s+Check\\s+for\\s+mistakes\\b",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Footer disclaimer from a chat interface (\"ChatGPT can make mistakes. Check important info.\", \"Copilot uses AI. Check for mistakes.\") copied along with the text.",
+    "note": "Disclaimer from a chat interface (\"ChatGPT can make mistakes. Check important info.\") copied along with the text.",
     "suggestions": [
       "Delete this line."
     ],
@@ -593,13 +641,13 @@
   },
   {
     "id": "en.artifact.chat-speaker-label",
-    "pattern": "^[ \\t]*ChatGPT[ \\t]+said:[ \\t]*$",
+    "pattern": "\\bChatGPT\\s+said:",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Speaker label (\"ChatGPT said:\") on its own line, copied from a chat transcript.",
+    "note": "Speaker label (\"ChatGPT said:\") copied from a chat transcript.",
     "suggestions": [
       "Delete this line."
     ],

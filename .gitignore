@@ -27,3 +27,6 @@ coverage/
 # measuring-stick data: abstracts and fire-rate output stay local; only the id list is committed
 data/*
 !data/arxiv-sample-ids.txt
+
+# review files for Shuhong (generated, e.g. by npm run fire-rate -- --review); not published
+reviews/

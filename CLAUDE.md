@@ -227,11 +227,14 @@ npm run build      # vite build → dist/ (this is all CI runs, then deploys to 
 npm run preview    # serve dist/ locally
 npm run fetch-arxiv       # draw the pre-2022 arXiv sample → data/arxiv/ (gitignored);
                           # `-- --ids data/arxiv-sample-ids.txt` re-fetches the committed sample
-npm run fire-rate -- --tier lexical --status candidate [--review file.md]
+npm run fire-rate -- --tier lexical --status candidate [--review reviews/<name>.md]
                           # human fire-rate per entry on that sample (measuring stick only)
 ```
 
 Before every push: `npm test && npm run validate-lexicon`.
+
+Files: everything for this project stays inside this folder. Review files for Shuhong go in
+`reviews/` (gitignored); temporary files go in the session scratchpad.
 
 ## Decision log
 

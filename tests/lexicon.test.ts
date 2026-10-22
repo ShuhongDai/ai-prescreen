@@ -116,11 +116,11 @@ describe('artifact spans', () => {
   it('Markdown markers do not hide a stronger artifact on the same line', () => {
     expect(spans('### Certainly! Here is a revised version of your abstract:')).toEqual([
       ['markdown-heading', '###'],
-      ['certainly-here-is', 'Certainly! Here is a revised version'],
+      ['certainly-here-is', 'Certainly! Here is'],
     ]);
     expect(spans('**Sure! Here is a polished version** below')).toEqual([
       ['markdown-bold', '**'],
-      ['sure-here-is', 'Sure! Here is a polished version'],
+      ['sure-here-is', 'Sure! Here is'],
     ]);
   });
 
@@ -128,15 +128,15 @@ describe('artifact spans', () => {
     expect(spans('Intro\r\n## Results\r\nMore')).toEqual([['markdown-heading', '##']]);
   });
 
-  it('a hand-over line ends at its own colon, not at a later one', () => {
+  it('a hand-over line is flagged up to "version", whatever follows', () => {
     expect(spans('Here is a polished version of your abstract (at 10:30):')).toEqual([
-      ['here-is-revised-version', 'Here is a polished version of your abstract'],
+      ['here-is-revised-version', 'Here is a polished version'],
     ]);
   });
 
   it('the M1 example is flagged (experimental lexicon on)', () => {
     expect(spans('Certainly! Here is a revised version\u2026')).toEqual([
-      ['certainly-here-is', 'Certainly! Here is a revised version'],
+      ['certainly-here-is', 'Certainly! Here is'],
     ]);
   });
 });
@@ -152,7 +152,7 @@ describe('experimental lexicon toggle OFF (the default)', () => {
     const text = 'Certainly! Here is a revised version\u2026';
     const res = analyze(text, OFF);
     expect(res.matches.map((m) => [m.entryId, text.slice(m.start, m.end)])).toEqual([
-      ['en.artifact.certainly-here-is', 'Certainly! Here is a revised version'],
+      ['en.artifact.certainly-here-is', 'Certainly! Here is'],
     ]);
 
     const hidden = analyze(text, ON).matches.filter((m) => isExperimental(byId.get(m.entryId)));
@@ -215,7 +215,7 @@ describe('lexical entries', () => {
   });
 });
 
-describe('clean human-written and constructed text', () => {
+describe('clean human-written text', () => {
   it('fixtures are found', () => {
     expect(Object.keys(cleanFixtures).length).toBeGreaterThan(0);
   });

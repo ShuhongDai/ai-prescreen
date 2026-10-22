@@ -141,7 +141,11 @@ function update(): void {
     experimentalShown,
     experimentalHidden,
     dismissedEntries: dismissed.size,
-    baseline: { years: baseline.years, pooledPer1k: baseline.levels[sensitivity].pooledPer1k },
+    // With tier 2 off there is nothing to compare against.
+    baseline:
+      sensitivity === 'off'
+        ? null
+        : { years: baseline.years, pooledPer1k: baseline.levels[sensitivity].pooledPer1k },
   });
 
   summaryBox.dataset.state = summary.state;

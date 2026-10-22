@@ -22,7 +22,8 @@ describe('human baseline', () => {
       expect(b.lexicalEntries).toBe(bySensitivity(defaultLexical(LEXICON), level, baseline).length);
       expect(b.medianPer1k).toBeLessThanOrEqual(b.p90Per1k);
     }
-    const { loose, standard, strict } = baseline.levels;
+    const { off, loose, standard, strict } = baseline.levels;
+    expect(off).toMatchObject({ lexicalEntries: 0, pooledPer1k: 0 });
     expect(loose.lexicalEntries).toBeLessThanOrEqual(standard.lexicalEntries);
     expect(standard.lexicalEntries).toBeLessThanOrEqual(strict.lexicalEntries);
     expect(strict.lexicalEntries).toBe(defaultLexical(LEXICON).length);

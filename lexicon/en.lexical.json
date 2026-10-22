@@ -55,7 +55,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Inflated quantifier, often over-used in LLM-polished text. 'Myriad' as a plain adjective ('myriad ways') is tighter, and 'many' usually suffices.",
     "suggestions": [
       "many",
@@ -491,7 +491,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Corporate cliché promising useful findings without stating them. Give the insight and the action it supports.",
     "suggestions": [
       "practical findings",
@@ -847,7 +847,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "All-purpose verb ('addresses this gap') whose use rose in research abstracts after 2023. A specific verb (solves, tests, reduces) says more; the noun (email address) is fine.",
     "suggestions": [
       "solve",
@@ -2643,7 +2643,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Reassuring noun LLMs add when polishing abstracts ('assurances of quality'). 'Quality assurance' is fine; otherwise 'guarantee' or 'promise' is plainer.",
     "suggestions": [
       "guarantee",
@@ -3252,7 +3252,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Older idiom for redundant safeguards, now heavily over-used in chatbot answers. 'Redundant' or 'double-checked' is plainer.",
     "suggestions": [
       "redundant",
@@ -4463,7 +4463,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Abstract noun whose use in research abstracts grew rapidly from 2023 ('capabilities of'). Often 'can' plus a verb, or 'ability', is clearer.",
     "suggestions": [
       "ability",
@@ -4850,7 +4850,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Latinate verb for 'group' or 'sort'; its forms rose markedly in biomedical abstracts in 2024. 'Group' or 'classify' is often plainer.",
     "suggestions": [
       "group",
@@ -5031,7 +5031,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "All-purpose problem word; 'challenges' tops word lists from LLM-written essays. Name the specific difficulty instead of the generic label.",
     "suggestions": [
       "problem",
@@ -5121,7 +5121,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Common in templated openings ('an era characterized by') and very frequent in LLM-written essays. Fine for describing measured properties.",
     "suggestions": [
       "marked by",
@@ -6073,7 +6073,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Faint-praise adjective common in LLM-written peer reviews. Specify what is done well or what falls short.",
     "suggestions": [
       "adequate",
@@ -6199,7 +6199,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Vague difficulty word ('complex issue', 'complex interplay'); it rose in PubMed abstracts in 2024. Technical senses (complex numbers, protein complex) are fine.",
     "suggestions": [
       "hard",
@@ -6359,7 +6359,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Vague plural ('navigating the complexities of X') that signals difficulty without naming it; common in chatbot-style prose.",
     "suggestions": [
       "details of",
@@ -6973,7 +6973,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Everyday research adjective that some recent LLMs use far more than human scientists. Fine for statistical consistency and 'consistent with'; watch for vague praise.",
     "suggestions": [
       "steady",
@@ -7104,7 +7104,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Engineering-flavoured noun that some recent LLMs over-use in science text. Fine for formal optimization constraints; otherwise 'limit' or 'restriction' is plainer.",
     "suggestions": [
       "limit",
@@ -8028,7 +8028,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Intensifier often used where 'important' would do in LLM-polished text; fine in technical senses (critical temperature, critical value).",
     "suggestions": [
       "important",
@@ -8590,7 +8590,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Gardening metaphor ('cultivate a culture of') common in chatbot-style prose; literal uses such as crops or cell cultures are fine.",
     "suggestions": [
       "build",
@@ -9008,7 +9008,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Figurative 'deep' (deep insights, deep understanding) is a stock intensifier in chatbot-style prose; literal and technical uses such as deep learning are fine.",
     "suggestions": [
       "thorough",
@@ -9139,7 +9139,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Admissions-essay cliché ('stems from a deep-seated passion'); show the interest through a concrete experience instead.",
     "suggestions": [
       "long-standing interest",
@@ -10907,7 +10907,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Evaluative adjective more frequent in research abstracts and LLM-assisted reviews; name the actual feature.",
     "suggestions": [
       "characteristic",
@@ -11699,7 +11699,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Frequent adverb that rose in research abstracts after 2023; often removable or better replaced by a measured result.",
     "suggestions": [
       "(cut it)",
@@ -11786,7 +11786,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Polished but empty praise word in chatbot-style prose; fine in technical senses, ideally backed by numbers (time, memory, cost).",
     "suggestions": [
       "fast",
@@ -12181,7 +12181,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Dramatic adjective ('remains elusive') common in chatbot-style prose; say what is unknown or hard to measure.",
     "suggestions": [
       "unclear",
@@ -12585,7 +12585,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Rose sharply in research abstracts after 2023, often in trailing clauses (', emphasizing the need…'); 'stress' or a direct statement is plainer.",
     "suggestions": [
       "stress",
@@ -12732,7 +12732,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Formal stand-in for 'use' that rose in research abstracts after 2023; 'use' is usually clearer.",
     "suggestions": [
       "use",
@@ -12907,7 +12907,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Generic linking verb ('enabling X to…') that chatbot-style prose leans on; say what actually becomes possible.",
     "suggestions": [
       "allow",
@@ -12972,7 +12972,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Rose sharply in research abstracts after 2023; 'include' or 'cover' usually says the same.",
     "suggestions": [
       "include",
@@ -13295,7 +13295,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Promotional cliché about lasting appeal; say why people still choose it.",
     "suggestions": [
       "lasting appeal",
@@ -13431,7 +13431,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Rose in research abstracts and conference talks after 2023; 'improve' or 'increase' is plainer, ideally with a number.",
     "suggestions": [
       "improve",
@@ -13941,7 +13941,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Sweeping time frame ('in the era of X', 'a new era of') used as a stock opener; it rarely adds information. Historical and cosmological eras are fine.",
     "suggestions": [
       "now that",
@@ -14535,7 +14535,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Cliché intensifier in chatbot-style prose; give the growth figure instead.",
     "suggestions": [
       "growing",
@@ -15064,7 +15064,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Intensifier common in LLM-polished text and peer reviews; give a number or comparison instead.",
     "suggestions": [
       "very",
@@ -15119,7 +15119,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Stock cover-letter enthusiasm that says little about you. Name what specifically draws you to the role.",
     "suggestions": [
       "I want to join because",
@@ -15323,7 +15323,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Formal stand-in for 'show' that rose in research abstracts after 2023; 'show' or 'have' is usually plainer.",
     "suggestions": [
       "show",
@@ -16173,7 +16173,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Very frequent list closer in chatbot output ('Finally, it is important…'); fine in moderation, but drop it where the order is obvious.",
     "suggestions": [
       "lastly",
@@ -16817,7 +16817,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Management cliché ('foster a culture of continuous improvement'); name the concrete practice or policy.",
     "suggestions": [
       "encourage",
@@ -17248,7 +17248,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Marketing metaphor for 'easy'; literal in physics, elsewhere say which steps were removed.",
     "suggestions": [
       "easy",
@@ -17656,7 +17656,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Heavy additive transition that many chat models put at sentence starts; 'also' or no connector often reads more naturally.",
     "suggestions": [
       "also",
@@ -17961,7 +17961,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Hype adjective; describe the effect and its size instead.",
     "suggestions": [
       "major",
@@ -19000,7 +19000,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Rhetorical hook typical of SEO and chatbot-style blog intros; in non-fiction, state the question or claim directly.",
     "suggestions": [
       "state the question directly",
@@ -19844,7 +19844,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Vague verb for weak evidence ('results hint at'); say how strong the evidence is.",
     "suggestions": [
       "suggest",
@@ -20678,7 +20678,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Stock phrase in essay-style and feedback text; say which areas and what should change.",
     "suggestions": [
       "find weaknesses",
@@ -20752,7 +20752,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Light metaphor for 'explain' ('illuminates the mechanism') that grew in 2024 abstracts; literal illumination in optics or imaging is fine.",
     "suggestions": [
       "explain",
@@ -20982,7 +20982,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Intensifier frequent in LLM-assisted reviews ('immensely valuable'); usually removable or replaceable by a figure.",
     "suggestions": [
       "(cut it)",
@@ -21891,7 +21891,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Ranked first among four-word sequences in one vendor's sample of chatbot text; fine for real adversity, otherwise 'despite' or 'given' is plainer.",
     "suggestions": [
       "despite",
@@ -21916,7 +21916,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Inspirational cliché; in non-fiction, name the actual difficulty.",
     "suggestions": [
       "despite problems",
@@ -22622,7 +22622,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Opener template ('In today's rapidly evolving …'); say what is changing and how fast.",
     "suggestions": [
       "(cut it)",
@@ -22969,7 +22969,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Became more frequent in biomedical abstracts in 2024; often 'include', 'use' or 'add' is plainer.",
     "suggestions": [
       "include",
@@ -24105,7 +24105,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Frequent verb in LLM-polished abstracts; fine for real combination, but 'combine', 'add' or 'use' is often more precise. Mathematical integration is fine.",
     "suggestions": [
       "combine",
@@ -25509,7 +25509,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Cliché opener that presents a claim as common knowledge instead of supporting it.",
     "suggestions": [
       "(cut it)",
@@ -26463,7 +26463,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "As an adjective ('key factor', 'key insight') it is a generic intensifier often over-used in polished prose. Cryptographic or literal keys are fine.",
     "suggestions": [
       "main",
@@ -29480,7 +29480,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Formal adverb over-represented in LLM-assisted reviews; 'the method is...' often reads more directly.",
     "suggestions": [
       "in terms of method",
@@ -30229,7 +30229,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Formal connective widely listed as over-used in LLM-polished text; 'also', or no connective, often reads better.",
     "suggestions": [
       "also",
@@ -32866,7 +32866,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Business-speak 'optimise your X' is widely listed as over-used in LLM-polished text; formal optimisation problems are fine.",
     "suggestions": [
       "improve",
@@ -34940,7 +34940,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "A headline excess word in post-2023 academic abstracts, often in hype ('holds great potential'); state the expected benefit. Technical uses (electric potential) are fine.",
     "suggestions": [
       "could",
@@ -35045,7 +35045,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Stock hedging phrase in chatbot-style writing; naming the specific risk is more informative.",
     "suggestions": [
       "risks of",
@@ -35197,7 +35197,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Intensifying adverb favoured in LLM-polished essays; usually it can be cut or replaced by a concrete description of the effect.",
     "suggestions": [
       "strongly",
@@ -35373,7 +35373,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Formal adverb that rose in academic abstracts after 2023; 'mostly' or 'mainly' is usually enough.",
     "suggestions": [
       "mostly",
@@ -36131,7 +36131,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "A default upbeat label ('promising results') that LLM-polished abstracts use even more than human ones; give the numbers instead.",
     "suggestions": [
       "encouraging",
@@ -36587,7 +36587,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Showy adjective for 'typical' found often in LLM-written essays; 'typical' or 'classic' usually suffices.",
     "suggestions": [
       "typical",
@@ -36791,7 +36791,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Stock framing ('a rapidly evolving field') in LLM-polished introductions; give evidence of the pace, or cut it.",
     "suggestions": [
       "fast-moving",
@@ -37328,7 +37328,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Reviewer praise word ('a refreshing perspective') over-represented in LLM-polished peer reviews; say what is new.",
     "suggestions": [
       "new",
@@ -37964,7 +37964,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "One of the most repeated prescriptions in chatbot-style essays; name the measures that need to be combined.",
     "suggestions": [
       "needs several measures",
@@ -38306,7 +38306,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Dramatic synonym of 'show' that LLM-polished abstracts favour ('reveals', 'revealing'); 'show' or 'find' is often plainer.",
     "suggestions": [
       "show",
@@ -40133,7 +40133,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Rose sharply in academic abstracts after 2023 as vague emphasis. Fine in its statistical sense; otherwise give the size of the effect.",
     "suggestions": [
       "large",
@@ -40405,7 +40405,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Doubled emphasis typical of chatbot-style essays; say what changed and when.",
     "suggestions": [
       "turning point",
@@ -40430,7 +40430,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Intensifier that LLM-polished prose uses loosely; fine for statistically tested differences, otherwise give the size of the change.",
     "suggestions": [
       "greatly",
@@ -40712,7 +40712,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Informal praise adverb ('smartly designed') over-represented in LLM-polished reviews; say what is clever about it.",
     "suggestions": [
       "cleverly",
@@ -41337,7 +41337,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Over-used claim of leading performance; in research, name the benchmark and baseline, elsewhere 'latest' or 'advanced' is plainer.",
     "suggestions": [
       "latest",
@@ -42199,7 +42199,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Over-used hedge adjective ('subtle differences', 'subtle interplay') in LLM-polished prose; say how small and why it matters.",
     "suggestions": [
       "small",
@@ -42578,7 +42578,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Vague link word ('the debate surrounding X'), frequent in LLM-generated essays; 'about' or 'on' is often more direct. Spatial uses (surrounding tissue) are fine.",
     "suggestions": [
       "about",
@@ -43071,7 +43071,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Weighty adjective ('systemic issues') that implies deep structural causes without naming them; frequent in LLM-generated essays. Medical uses (systemic disease) are fine.",
     "suggestions": [
       "structural",
@@ -44377,7 +44377,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Conversational opener ('There are a couple of ways…') typical of chat answers; in formal writing, state the number and the items.",
     "suggestions": [
       "two",
@@ -45257,7 +45257,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Contrast framing ('traditional methods fail to…') that LLM revisions and reviews tend to add; name the specific prior methods instead.",
     "suggestions": [
       "conventional",
@@ -45707,7 +45707,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Vague causal link ('translates into better outcomes') that hides the mechanism; common in chatbot-style prose. Literal translation is fine.",
     "suggestions": [
       "lead to",
@@ -45883,7 +45883,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Marketing hype verb for 'speed up' or 'boost'; literal engine use is fine.",
     "suggestions": [
       "speed up",
@@ -48055,7 +48055,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Inflated synonym for 'use' that rose in academic abstracts since 2023; 'use' is almost always clearer. 'Resource utilization' in systems work is standard.",
     "suggestions": [
       "use",
@@ -48393,7 +48393,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "retired",
     "note": "Vague quantifier ('various factors', 'various applications'), common in LLM-polished text; name the items or give the number.",
     "suggestions": [
       "several",
@@ -48738,7 +48738,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Slang ('vibing with', 'the vibe') that some chatbot outputs insert into casual text; out of place in formal writing.",
     "suggestions": [
       "fit",
@@ -48865,7 +48865,7 @@
     "inflect": true,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Stock call for caution ('requires ongoing vigilance') in generated news and policy prose; say who should monitor what. Fine as a psychology term.",
     "suggestions": [
       "monitoring",
@@ -50098,7 +50098,7 @@
     "inflect": false,
     "tier": "lexical",
     "lang": "en",
-    "status": "candidate",
+    "status": "accepted",
     "note": "Hedged advice addressed to the reader, typical of chat answers; in formal writing, state the recommendation directly.",
     "suggestions": [
       "we recommend",

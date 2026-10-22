@@ -5,6 +5,13 @@
   "words": 321139,
   "fingerprint": "3b864b19",
   "levels": {
+    "off": {
+      "lexicalEntries": 0,
+      "pooledPer1k": 0,
+      "meanPer1k": 0,
+      "medianPer1k": 0,
+      "p90Per1k": 0
+    },
     "loose": {
       "lexicalEntries": 1303,
       "pooledPer1k": 2.82,

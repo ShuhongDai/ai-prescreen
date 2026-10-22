@@ -1,16 +1,18 @@
 // Tier-2 sensitivity: a display filter on lexical entries by their human fire-rate (the
 // share of pre-2022 arXiv abstracts an entry fires in, measured by `npm run baseline`).
 // Every entry stays "accepted"; this only decides which lexical entries the page shows.
-// An entry without a measured fire-rate ("none") counts as 0, so every level shows it.
+// "Off" shows none. An entry without a measured fire-rate ("none") counts as 0, so every
+// other level shows it.
 
 import type { LexiconEntry } from '../engine/index.ts';
 
-export const SENSITIVITIES = ['loose', 'standard', 'strict'] as const;
+export const SENSITIVITIES = ['off', 'loose', 'standard', 'strict'] as const;
 export type Sensitivity = (typeof SENSITIVITIES)[number];
 export const DEFAULT_SENSITIVITY: Sensitivity = 'standard';
 
 /** Highest human fire-rate a lexical entry may have to be shown at each level. */
 export const MAX_FIRE_RATE: Record<Sensitivity, number> = {
+  off: Number.NEGATIVE_INFINITY,
   loose: 0.0025,
   standard: 0.01,
   strict: Number.POSITIVE_INFINITY,

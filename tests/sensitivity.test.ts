@@ -29,14 +29,20 @@ describe('sensitivity filter', () => {
   const entries = [entry('none'), entry('rare'), entry('mid'), entry('common'), entry('art', 'artifact')];
   const ids = (level: Parameters<typeof bySensitivity>[1]) => bySensitivity(entries, level, data).map((e) => e.id);
 
-  it('keeps lexical entries up to the level’s fire-rate, and "none" everywhere', () => {
+  it('keeps lexical entries up to the level’s fire-rate, and "none" everywhere but Off', () => {
+    expect(ids('off')).toEqual(['art']);
     expect(ids('loose')).toEqual(['none', 'rare', 'art']);
     expect(ids('standard')).toEqual(['none', 'rare', 'mid', 'art']);
     expect(ids('strict')).toEqual(['none', 'rare', 'mid', 'common', 'art']);
   });
 
   it('uses the documented thresholds', () => {
-    expect(MAX_FIRE_RATE).toEqual({ loose: 0.0025, standard: 0.01, strict: Number.POSITIVE_INFINITY });
+    expect(MAX_FIRE_RATE).toEqual({
+      off: Number.NEGATIVE_INFINITY,
+      loose: 0.0025,
+      standard: 0.01,
+      strict: Number.POSITIVE_INFINITY,
+    });
     expect(DEFAULT_SENSITIVITY).toBe('standard');
     expect(fireRate('missing', data)).toBe(0);
     expect(isSensitivity('strict') && !isSensitivity('medium')).toBe(true);
@@ -44,7 +50,7 @@ describe('sensitivity filter', () => {
 
   it('only changes what the page shows, with the real lexicon', () => {
     const text = 'We leverage this to delve into it.'; // leverage fires in >1% of human abstracts
-    const shown = (level: 'loose' | 'standard' | 'strict') =>
+    const shown = (level: 'off' | 'loose' | 'standard' | 'strict') =>
       analyzeDraft(
         text,
         compileLexicons(LEXICON, { experimental: false, dismissed: new Set(), sensitivity: { level, data: baseline } }),
@@ -52,6 +58,7 @@ describe('sensitivity filter', () => {
     expect(fireRate('en.lexical.leverage', baseline)).toBeGreaterThan(MAX_FIRE_RATE.standard);
     expect(shown('strict')).toEqual(['en.lexical.leverage', 'en.lexical.delve']);
     expect(shown('standard')).toEqual(['en.lexical.delve']);
+    expect(shown('off')).toEqual([]);
     expect(LEXICON.find((e) => e.id === 'en.lexical.leverage')?.status).toBe('accepted');
   });
 });
@@ -69,6 +76,8 @@ describe('sensitivity preference storage', () => {
     saveSensitivity('loose', storage);
     expect(storage().getItem(SENSITIVITY_KEY)).toBe('loose');
     expect(loadSensitivity(storage)).toBe('loose');
+    saveSensitivity('off', storage);
+    expect(loadSensitivity(storage)).toBe('off');
   });
 
   it('ignores invalid values and survives missing or throwing storage', () => {

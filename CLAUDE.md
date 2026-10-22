@@ -51,9 +51,9 @@ Tier must never be conveyed by colour alone (underline style + icon as well).
 Lexicon prefers recall (accept broadly); the default view stays readable via a
 fire-rate-based sensitivity filter. Lexical batches are reviewed by human fire-rate (see
 Lexicon): the top firers are retired, everything else is accepted. The page's tier-2
-sensitivity setting shows lexical entries by their human fire-rate — Loose ≤ 0.25% (and
-entries that fire on none), Standard ≤ 1% (default), Strict = all accepted lexical
-entries. It is a display filter only: statuses never change. The summary line shows the
+sensitivity setting shows lexical entries by their human fire-rate — Off = none, Loose ≤
+0.25% (and entries that fire on none), Standard ≤ 1% (default), Strict = all accepted
+lexical entries. It is a display filter only: statuses never change. The summary line shows the
 human baseline for the chosen level. Revisit the 1–5% band if default noise turns out too
 high (decision log, 2026-10-23).
 
@@ -145,8 +145,9 @@ Entry schema:
   human baseline "typical human papers (2019–21): ~X" (`web/src/baseline.json`: lexical
   hits per 1k words on the arXiv measuring stick with the default lexicon at the chosen
   tier-2 sensitivity; left out while experimental matches are shown).
-- Tier-2 sensitivity select (Loose / Standard / Strict, default Standard) next to the
-  experimental toggle; the choice is saved in localStorage (wrapped in try/catch).
+- Tier-2 sensitivity select (Off / Loose / Standard / Strict, default Standard) next to the
+  experimental toggle; the choice is saved in localStorage (wrapped in try/catch). With Off
+  the summary line shows no baseline.
 - Clicking a highlight opens a popover: tier, why it is flagged, suggestions,
   "Not AI-like (false positive)" button. Until M3 the button only hides that entry for
   the page session (memory only, Undo in the summary); M3 adds reporting in

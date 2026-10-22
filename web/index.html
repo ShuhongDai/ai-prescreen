@@ -4,13 +4,92 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="A self-check linter for drafts: highlights leftover chatbot text and wording that may read as templated. Runs entirely in your browser."
+    />
     <title>AI初筛 · ai-prescreen</title>
+    <!-- Empty icon so the browser does not request /favicon.ico. -->
+    <link rel="icon" href="data:," />
   </head>
   <body>
-    <main id="app">
-      <h1>AI初筛 · ai-prescreen</h1>
-      <p>Rule-based first-pass check for templated / AI-like wording. Everything runs locally in your browser.</p>
+    <header class="site-header">
+      <h1 class="site-title">AI初筛 · ai-prescreen</h1>
+      <p class="site-tagline">
+        A self-check linter for your drafts: it highlights leftover chatbot text and wording that
+        may read as templated / AI-like, so you can consider revising. It is not a detector and
+        makes no judgement about who wrote the text.
+      </p>
+    </header>
+
+    <div class="toolbar">
+      <div class="toggle">
+        <input type="checkbox" id="experimental" aria-describedby="experimental-help" />
+        <label for="experimental">Experimental lexicon</label>
+        <span id="experimental-help" class="toggle-help"
+          >also shows candidate entries that are still under review</span
+        >
+      </div>
+      <ul class="legend" aria-label="Legend">
+        <li><mark class="hl hl--artifact">Certainly!</mark> chatbot artifact — remove</li>
+        <li><mark class="hl hl--lexical">delve</mark> overused wording — your call</li>
+        <li><mark class="hl hl--stylistic">not only</mark> weak style signal</li>
+        <li>
+          <mark class="hl hl--artifact hl--experimental">dashed box</mark> experimental entry
+        </li>
+      </ul>
+    </div>
+
+    <main class="panes">
+      <section class="pane" aria-labelledby="input-label">
+        <div class="pane-head">
+          <label id="input-label" class="pane-title" for="input">Your draft</label>
+        </div>
+        <!-- Native paste is kept on purpose: a textarea only ever receives text/plain,
+             and the browser's own paste keeps the undo history intact. -->
+        <textarea
+          id="input"
+          class="editor"
+          placeholder="Paste text from LaTeX, Markdown or Word…"
+          autocomplete="off"
+          autocapitalize="off"
+        ></textarea>
+      </section>
+
+      <section class="pane" aria-labelledby="result-title">
+        <div class="pane-head">
+          <h2 id="result-title" class="pane-title">Result</h2>
+        </div>
+        <!-- One live region for the summary line and its note, so screen readers also
+             hear about hidden experimental matches. -->
+        <div class="summary" data-state="idle" role="status" aria-live="polite">
+          <p id="summary-text" class="summary-text">Paste or type a draft to check it.</p>
+          <p id="summary-note" class="summary-note" hidden>
+            <span id="summary-note-text"></span>
+            <button type="button" id="enable-experimental" class="link-button" hidden>
+              Turn on Experimental lexicon
+            </button>
+          </p>
+        </div>
+        <div
+          id="result"
+          class="result"
+          role="group"
+          tabindex="0"
+          aria-labelledby="result-title"
+          aria-describedby="summary-text summary-note-text"
+        ></div>
+      </section>
     </main>
+
+    <footer class="site-footer">
+      <p><strong>Your text stays in your browser — nothing is uploaded.</strong></p>
+      <p>
+        Code MIT · lexicon CC BY 4.0 ·
+        <a href="https://github.com/ShuhongDai/ai-prescreen">Source on GitHub</a>
+      </p>
+    </footer>
+
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>

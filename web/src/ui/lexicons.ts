@@ -13,12 +13,15 @@ import {
   type LexiconEntry,
 } from '../engine/index.ts';
 import { isExperimental } from './format.ts';
+import { bySensitivity, type FireData, type Sensitivity } from './sensitivity.ts';
 
 export interface LexiconChoice {
   /** The "Experimental lexicon" toggle: also show candidate entries. */
   experimental: boolean;
   /** Entry IDs dismissed as false positives during this page view. */
   dismissed: ReadonlySet<string>;
+  /** Tier-2 sensitivity and the fire counts it filters by; all lexical entries if absent. */
+  sensitivity?: { level: Sensitivity; data: FireData };
 }
 
 export interface PageLexicons {
@@ -32,13 +35,20 @@ export interface PageLexicons {
   candidates: ReadonlySet<string>;
 }
 
-/** Compile again whenever the toggle changes, an entry is dismissed, or Undo is pressed. */
+/**
+ * Compile again whenever the toggle or the sensitivity changes, an entry is dismissed, or
+ * Undo is pressed. Lexical entries above the sensitivity's fire-rate are left out of both
+ * lexicons, like dismissed ones, so the experimental count compares like with like.
+ */
 export function compileLexicons(
   entries: readonly LexiconEntry[],
   choice: LexiconChoice,
 ): PageLexicons {
+  const shown = choice.sensitivity
+    ? bySensitivity(entries, choice.sensitivity.level, choice.sensitivity.data)
+    : entries;
   const kept =
-    choice.dismissed.size === 0 ? entries : entries.filter((e) => !choice.dismissed.has(e.id));
+    choice.dismissed.size === 0 ? shown : shown.filter((e) => !choice.dismissed.has(e.id));
   const withCandidates = compileLexicon(kept, { includeCandidates: true });
   return {
     experimental: choice.experimental,

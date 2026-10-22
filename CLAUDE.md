@@ -48,11 +48,14 @@ Repo: github.com/ShuhongDai/ai-prescreen. Site: GitHub Pages.
 | 3 | `stylistic` | Weak signals; off by default | em-dash density, "not only… but also", "In conclusion," openers | grey, dotted underline |
 
 Tier must never be conveyed by colour alone (underline style + icon as well).
-Tier 2 prefers recall over precision: this is a self-check tool and the author decides
-what to change. Lexical batches are reviewed by human fire-rate (see Lexicon): the
-top firers are retired, everything else is accepted. The summary line shows the human
-baseline so the author can judge the noise. Revisit the 1–5% fire-rate band if default
-noise turns out too high (decision log, 2026-10-23).
+Lexicon prefers recall (accept broadly); the default view stays readable via a
+fire-rate-based sensitivity filter. Lexical batches are reviewed by human fire-rate (see
+Lexicon): the top firers are retired, everything else is accepted. The page's tier-2
+sensitivity setting shows lexical entries by their human fire-rate — Loose ≤ 0.25% (and
+entries that fire on none), Standard ≤ 1% (default), Strict = all accepted lexical
+entries. It is a display filter only: statuses never change. The summary line shows the
+human baseline for the chosen level. Revisit the 1–5% band if default noise turns out too
+high (decision log, 2026-10-23).
 
 ## Lexicon
 
@@ -140,8 +143,10 @@ Entry schema:
 - Summary line on top of results, e.g. "2 artifacts · 7 overused words · 3.1 per 1k words".
   The per-1k density is shown only from 200 words up (`DENSITY_MIN_WORDS`), followed by the
   human baseline "typical human papers (2019–21): ~X" (`web/src/baseline.json`: lexical
-  hits per 1k words on the arXiv measuring stick with the default lexicon; left out while
-  experimental matches are shown).
+  hits per 1k words on the arXiv measuring stick with the default lexicon at the chosen
+  tier-2 sensitivity; left out while experimental matches are shown).
+- Tier-2 sensitivity select (Loose / Standard / Strict, default Standard) next to the
+  experimental toggle; the choice is saved in localStorage (wrapped in try/catch).
 - Clicking a highlight opens a popover: tier, why it is flagged, suggestions,
   "Not AI-like (false positive)" button. Until M3 the button only hides that entry for
   the page session (memory only, Undo in the summary); M3 adds reporting in
@@ -235,8 +240,9 @@ npm run fetch-arxiv       # draw the pre-2022 arXiv sample → data/arxiv/ (giti
                           # `-- --ids data/arxiv-sample-ids.txt` re-fetches the committed sample
 npm run fire-rate -- --tier lexical --status candidate [--review reviews/<name>.md]
                           # human fire-rate per entry on that sample (measuring stick only)
-npm run baseline          # recompute web/src/baseline.json after changing which lexical
-                          # entries are accepted (tests/baseline.test.ts fails until you do)
+npm run baseline          # recompute web/src/baseline.json (per-entry fire counts and the
+                          # baseline per sensitivity level, ~3 min) after changing lexical
+                          # entries or their status (tests/baseline.test.ts fails until then)
 ```
 
 Before every push: `npm test && npm run validate-lexicon`.

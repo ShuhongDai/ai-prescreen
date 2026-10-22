@@ -2,7 +2,7 @@
 // Wording rule: describe what was flagged, never who or what wrote the text.
 
 import { TIERS, type AnalysisStats, type LexiconEntry, type Tier } from '../engine/index.ts';
-import { baselineText, type Baseline } from './baseline.ts';
+import { baselineText } from './baseline.ts';
 
 export interface TierInfo {
   /** Noun used in the summary line, singular and plural. */
@@ -45,8 +45,8 @@ export interface SummaryInput {
   experimentalHidden: number;
   /** Entries dismissed as false positives during this page session. */
   dismissedEntries?: number;
-  /** Human baseline appended to the density (see ui/baseline.ts). */
-  baseline?: Pick<Baseline, 'years' | 'pooledPer1k'> | null;
+  /** Human baseline for the current sensitivity, appended to the density (ui/baseline.ts). */
+  baseline?: { years: string; pooledPer1k: number } | null;
 }
 
 export type SummaryState = 'idle' | 'clean' | 'flagged';

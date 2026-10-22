@@ -30,6 +30,18 @@
           >also shows candidate entries that are still under review</span
         >
       </div>
+      <div class="sensitivity">
+        <label for="sensitivity">Overused-word sensitivity</label>
+        <select id="sensitivity" aria-describedby="sensitivity-help">
+          <option value="loose">Loose</option>
+          <option value="standard" selected>Standard</option>
+          <option value="strict">Strict</option>
+        </select>
+        <span id="sensitivity-help" class="toggle-help"
+          >Loose shows only words in ≤0.25% of human papers (2019–21), Standard ≤1%, Strict
+          all</span
+        >
+      </div>
       <ul class="legend" aria-label="Legend">
         <li><mark class="hl hl--artifact">Certainly!</mark> chatbot artifact — remove</li>
         <li><mark class="hl hl--lexical">delve</mark> overused wording — your call</li>

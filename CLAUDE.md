@@ -82,9 +82,14 @@ Entry schema:
   database (M4), not in the JSON, to keep lexicon diffs clean.
 - `npm run validate-lexicon` (run locally, not in CI) validates every lexicon file:
   schema, unique IDs, valid regexes, no duplicate patterns.
+- Review of large batches: Shuhong reviews the highest-firing entries (by human fire-rate)
+  individually plus a random sample, and then accepts or rejects whole batches.
 
 ## Engine requirements (`src/engine/`, pure TypeScript, no DOM)
 
+- Scope: no text-type classification. Do not special-case literature, emails or quoted AI
+  output. The UI will carry a short disclaimer later ("self-check tool; you judge your own
+  text"). The existing M1 same-line quote heuristic inside the artifact regexes stays as it is.
 - Input: raw pasted text. Output: list of matches `{entryId, tier, start, end}` with
   offsets into the ORIGINAL text, plus summary stats (counts per tier, hits per 1,000 words).
 - Preprocessing must keep an offset map back to the original text:
@@ -153,9 +158,9 @@ ai-prescreen/
   summary line, popover with explanation and suggestions, seed tier-2 lexicon (candidates
   for Shuhong to review). Done when: tests incl. false-positive set pass; perf target met.
   Notes:
-  - False-positive fixtures must include modern academic text (arXiv abstracts, CC0 metadata).
-  - The quote check (in M1 a same-line heuristic inside the artifact regexes) must cover
-    LaTeX ``…'', verbatim and figure/listing environments.
+  - Use pre-2022 arXiv abstracts (CC0 metadata) only as a measuring stick: for each lexical
+    candidate, compute the share of human abstracts it fires in. This is a lexicon-quality
+    metric, not engine logic.
 - **M3 Contribution flow v1 (no backend)** — "report phrase" / "false positive" buttons
   open pre-filled GitHub issues; issue templates; lexicon validation as a local script
   (`npm run validate-lexicon`);

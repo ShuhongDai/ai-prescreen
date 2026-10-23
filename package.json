@@ -15,7 +15,8 @@
     "validate-lexicon": "node scripts/validate-lexicon.ts",
     "fetch-arxiv": "node scripts/fetch-arxiv.ts",
     "fire-rate": "node scripts/fire-rate.ts",
-    "baseline": "node scripts/baseline.ts"
+    "baseline": "node scripts/baseline.ts",
+    "triage": "node scripts/triage.ts"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

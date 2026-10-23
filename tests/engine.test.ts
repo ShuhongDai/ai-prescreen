@@ -15,7 +15,6 @@ import {
   type Match,
 } from '../web/src/engine/index.ts';
 import { LEXICON } from '../web/src/lexicon.ts';
-import artifactExamples from './fixtures/artifact-examples.json';
 
 // ---------------------------------------------------------------- helpers
 
@@ -889,16 +888,12 @@ describe('Markdown fences in analyze()', () => {
     expect(run([delve], text).matches[0]!.start).toBe(text.lastIndexOf('delve'));
   });
 
-  it('keeps the ~~~ negative example of the fence entry negative, with its prose analysable', () => {
+  it('flags a ~~~ line (tier-1 recall policy) and keeps the prose around it analysable', () => {
     const fence = LEXICON.find((e) => e.id === 'en.artifact.markdown-code-fence')!;
-    const negatives = (artifactExamples as Record<string, { negative: string[] }>)[fence.id]!.negative;
-    const sceneBreak = negatives.find((t) => t.includes('~~~'))!;
-    expect(sceneBreak).toBeDefined();
+    const text = 'She closed the door behind her.\n\n~~~\n\nThe next morning, the snow had stopped.';
     const own = compileLexicon([fence], { includeCandidates: true, tiers: TIERS });
-    expect(analyze(sceneBreak, own).matches).toEqual([]);
-    // The prose after the break is not masked.
-    const after = sceneBreak.slice(sceneBreak.lastIndexOf('~~~') + 3).trim();
-    expect(preprocess(sceneBreak).text).toContain(after);
+    expect(analyze(text, own).matches.map((m) => text.slice(m.start, m.end))).toEqual(['~~~']);
+    expect(preprocess(text).text).toContain('The next morning, the snow had stopped.');
   });
 });
 

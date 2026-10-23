@@ -1,0 +1,39 @@
+name: Report a false positive
+description: A highlight that flagged ordinary, human wording.
+title: "False positive: "
+labels: ["report", "report:false-positive"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. False-positive reports are counted per lexicon entry and
+        reviewed in batches.
+  - type: input
+    id: entry_id
+    attributes:
+      label: Entry id
+      description: Shown in the report link, e.g. en.lexical.delve.
+      placeholder: "en.lexical.delve"
+    validations:
+      required: true
+  - type: input
+    id: matched_text
+    attributes:
+      label: Matched text
+      description: The highlighted words.
+    validations:
+      required: false
+  - type: textarea
+    id: example
+    attributes:
+      label: Example sentence
+      description: Optional. The sentence around the highlight.
+    validations:
+      required: false
+  - type: textarea
+    id: comment
+    attributes:
+      label: Comment
+      description: Optional. Why this should not be flagged.
+    validations:
+      required: false

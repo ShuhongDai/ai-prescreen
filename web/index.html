@@ -23,24 +23,17 @@
     </header>
 
     <div class="toolbar">
-      <div class="toggle">
-        <input type="checkbox" id="experimental" aria-describedby="experimental-help" />
-        <label for="experimental">Experimental lexicon</label>
-        <span id="experimental-help" class="toggle-help"
-          >also shows candidate entries that are still under review</span
-        >
-      </div>
       <div class="sensitivity">
         <label for="sensitivity">Overused-word sensitivity</label>
         <select id="sensitivity" aria-describedby="sensitivity-help">
-          <option value="off">Off</option>
+          <option value="off">Off (artifacts only)</option>
           <option value="loose">Loose</option>
           <option value="standard" selected>Standard</option>
           <option value="strict">Strict</option>
         </select>
         <span id="sensitivity-help" class="toggle-help"
-          >Off hides them; Loose shows only words in ≤0.25% of human papers (2019–21),
-          Standard ≤1%, Strict all</span
+          >Loose shows only words found in ≤0.25% of human papers (2019–21), Standard ≤1%,
+          Strict all</span
         >
       </div>
       <ul class="legend" aria-label="Legend">
@@ -77,6 +70,10 @@
           <h2 id="result-title" class="pane-title">Result</h2>
           <p id="result-hint" class="pane-hint" hidden>Select a highlight for details</p>
         </div>
+        <p class="pane-note">
+          Self-check tool. Highlights are hints, not verdicts; you decide what to change and
+          remain responsible for your text.
+        </p>
         <!-- Two live regions: the counts, and the notes under them. The per-1k rate sits
              right after the counts but outside both, because it changes on nearly every
              keystroke and would make screen readers repeat the summary while typing. -->
@@ -114,12 +111,38 @@
           aria-labelledby="result-title"
           aria-describedby="summary-text summary-density summary-note-text"
         ></div>
-        <!-- The highlight popover (role="dialog") is inserted here by src/ui/popover.ts. -->
+        <!-- Inserted here by script: the highlight popover (role="dialog", src/ui/popover.ts)
+             and the "Report as AI-like" link for selected text (src/ui/phrase-report.ts). -->
       </section>
     </main>
 
+    <details id="advanced" class="advanced">
+      <summary>Advanced</summary>
+      <div class="advanced-body">
+        <div class="toggle">
+          <input type="checkbox" id="experimental" aria-describedby="experimental-help" />
+          <label for="experimental">Experimental lexicon</label>
+          <span id="experimental-help" class="toggle-help"
+            >also shows candidate entries that are still under review</span
+          >
+        </div>
+        <p class="advanced-report">
+          <!-- href is filled in by script (src/ui/report.ts); this is the plain form. -->
+          <a
+            id="report-phrase"
+            href="https://github.com/ShuhongDai/ai-prescreen/issues/new?template=report-ai-phrase.yml"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Report a phrase<span aria-hidden="true"> ↗</span
+            ><span class="sr-only"> (opens GitHub in a new tab)</span></a
+          >
+          <span class="toggle-help">wording that may read as AI-like but is not highlighted</span>
+        </p>
+      </div>
+    </details>
+
     <footer class="site-footer">
-      <p><strong>Your text stays in your browser — nothing is uploaded.</strong></p>
+      <p><strong>Your text stays in your browser. Nothing is sent unless you open a report on GitHub.</strong></p>
       <p>
         Code MIT · lexicon CC BY 4.0 ·
         <a href="https://github.com/ShuhongDai/ai-prescreen">Source on GitHub</a>

@@ -116,7 +116,7 @@ a {
   color: var(--muted);
 }
 
-/* ---- Toolbar: experimental toggle + legend ---- */
+/* ---- Toolbar: tier-2 sensitivity + legend (the experimental toggle is in Advanced) ---- */
 
 .toolbar {
   display: flex;
@@ -233,6 +233,14 @@ a {
 .pane-hint {
   margin: 0 0 0 auto;
   font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* The disclaimer under the Result heading. */
+.pane-note {
+  margin: 0 0 0.375rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
   color: var(--muted);
 }
 
@@ -606,9 +614,43 @@ mark.hl--experimental {
 }
 
 .popover-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
   margin-top: 0.875rem;
   padding-top: 0.75rem;
   border-top: 1px solid var(--border);
+}
+
+/* Links that open a pre-filled GitHub issue form in a new tab. */
+.report-link {
+  font-size: 0.875rem;
+}
+
+/* "Report as AI-like" next to a text selection in the result pane (src/ui/phrase-report.ts). */
+.phrase-report {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9; /* under the popover */
+  padding: 0.1875rem 0.5rem;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius);
+  background: var(--raised);
+  box-shadow: var(--shadow);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .phrase-report:hover {
+    background: var(--hover);
+    text-decoration: underline;
+  }
 }
 
 /* Motion only for people who have not asked to reduce it. */
@@ -657,10 +699,39 @@ mark.hl--experimental {
   user-select: none;
 }
 
+/* ---- Advanced (experimental lexicon, report a phrase) ---- */
+
+.advanced {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+
+.advanced summary {
+  width: fit-content;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.advanced-body {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0 0 0.75rem;
+}
+
+.advanced-report {
+  margin: 0;
+}
+
+.advanced-report .toggle-help {
+  margin-left: 0.25rem;
+}
+
 /* ---- Footer ---- */
 
 .site-footer {
-  margin-top: 1.5rem;
+  margin-top: 0.5rem;
   padding: 1rem 0 2rem;
   border-top: 1px solid var(--border);
   font-size: 0.875rem;

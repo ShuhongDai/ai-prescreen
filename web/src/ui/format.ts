@@ -3,6 +3,7 @@
 
 import { TIERS, type AnalysisStats, type LexiconEntry, type Tier } from '../engine/index.ts';
 import { baselineText } from './baseline.ts';
+import { falsePositiveReportUrl, NEW_TAB_HINT } from './report.ts';
 
 export interface TierInfo {
   /** Noun used in the summary line, singular and plural. */
@@ -168,6 +169,7 @@ export const POPOVER_TEXT = {
   why: "Why it's flagged",
   suggestions: 'Suggestions',
   falsePositive: 'Not AI-like (false positive)',
+  report: 'Report false positive',
   close: 'Close',
   noNote: 'No explanation has been written for this entry yet.',
 } as const;
@@ -195,6 +197,8 @@ export interface PopoverModel {
   /** Null when the entry has no suggestions: the section is left out. */
   suggestions: { heading: string; items: string[] } | null;
   falsePositive: string;
+  /** Link to the pre-filled public GitHub issue form; it also dismisses the entry. */
+  report: { label: string; hint: string; href: string };
   close: string;
 }
 
@@ -208,6 +212,11 @@ export function popoverModel(entry: LexiconEntry, matchedText: string): PopoverM
     why: { heading: POPOVER_TEXT.why, text: entry.note.trim() || POPOVER_TEXT.noNote },
     suggestions: items.length > 0 ? { heading: POPOVER_TEXT.suggestions, items } : null,
     falsePositive: POPOVER_TEXT.falsePositive,
+    report: {
+      label: POPOVER_TEXT.report,
+      hint: NEW_TAB_HINT,
+      href: falsePositiveReportUrl(entry.id, matchedText),
+    },
     close: POPOVER_TEXT.close,
   };
 }

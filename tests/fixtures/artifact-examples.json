@@ -618,11 +618,14 @@
   },
   "en.artifact.markdown-code-fence": {
     "positive": [
-      "```python\nprint(1)\n```"
+      "```python\nprint(1)\n```",
+      "~~~python",
+      "Here is the code:\n~~~\nprint(1)\n~~~",
+      "She closed the door behind her.\n\n~~~\n\nThe next morning, the snow had stopped."
     ],
     "negative": [
       "Use triple backticks (```) to format code.",
-      "She closed the door behind her.\n\n~~~\n\nThe next morning, the snow had stopped."
+      "Fig.~1 shows ~5% gains."
     ]
   }
 }

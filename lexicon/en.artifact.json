@@ -753,13 +753,13 @@
   },
   {
     "id": "en.artifact.markdown-code-fence",
-    "pattern": "^[ \\t]*```[\\w+#.-]{0,20}[ \\t]*$",
+    "pattern": "^[ \\t]*(?:```|~~~)[\\w+#.-]{0,20}[ \\t]*$",
     "match": "regex",
     "inflect": false,
     "tier": "artifact",
     "lang": "en",
     "status": "accepted",
-    "note": "Markdown code fence (\"```\") on its own line, usually from pasted chat output.",
+    "note": "Markdown code fence (\"```\" or \"~~~\") on its own line, usually from pasted chat output.",
     "suggestions": [
       "Remove the fence and format the code with your editor (e.g. a listing environment)."
     ],

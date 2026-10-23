@@ -44,17 +44,29 @@ export function placePopover(
   gap = POPOVER_GAP,
   margin = VIEWPORT_MARGIN,
 ): Position {
-  const spaceBelow = viewport.height - margin - (anchor.bottom + gap);
-  const spaceAbove = anchor.top - gap - margin;
+  const bounds = { top: 0, right: viewport.width, bottom: viewport.height, left: 0 };
+  return placeWithin(anchor, popover, bounds, gap, margin);
+}
+
+/** Like placePopover, but kept inside `bounds` (e.g. the visible part of a pane). */
+export function placeWithin(
+  anchor: Box,
+  size: Size,
+  bounds: Box,
+  gap = POPOVER_GAP,
+  margin = VIEWPORT_MARGIN,
+): Position {
+  const spaceBelow = bounds.bottom - margin - (anchor.bottom + gap);
+  const spaceAbove = anchor.top - gap - (bounds.top + margin);
   let placement: Placement;
-  if (popover.height <= spaceBelow) placement = 'below';
-  else if (popover.height <= spaceAbove) placement = 'above';
+  if (size.height <= spaceBelow) placement = 'below';
+  else if (size.height <= spaceAbove) placement = 'above';
   else placement = spaceBelow >= spaceAbove ? 'below' : 'above';
 
-  const top = placement === 'below' ? anchor.bottom + gap : anchor.top - gap - popover.height;
+  const top = placement === 'below' ? anchor.bottom + gap : anchor.top - gap - size.height;
   return {
-    top: Math.round(clamp(top, margin, viewport.height - margin - popover.height)),
-    left: Math.round(clamp(anchor.left, margin, viewport.width - margin - popover.width)),
+    top: Math.round(clamp(top, bounds.top + margin, bounds.bottom - margin - size.height)),
+    left: Math.round(clamp(anchor.left, bounds.left + margin, bounds.right - margin - size.width)),
     placement,
   };
 }

@@ -82,6 +82,8 @@ const MATH_ENVIRONMENTS = new Set(
 // Characters the main loop stops at. Everything else is copied as is.
 const SPECIAL = /[\\$%`{}~\-\n\r\u00AD\u200B-\u200D\u2060\uFEFF]/g;
 const FENCE_OPEN = /[ \t]*(`{3,})([^\n\r]*)/y;
+// A "~~~" fence line: three or more tildes, an optional info string, nothing else.
+const TILDE_FENCE = /~{3,}[\w+#.-]{0,20}[ \t]*(?=\r\n|\n|\r|$)/y;
 const LINE_BREAK = /\r\n|\n|\r/g;
 const BLANK_LINE = /(?:\r\n|\n|\r(?!\n))[ \t]*(?:\r\n|\n|\r)/g;
 const ENV_NAME = /[ \t]*\{([A-Za-z]+\*?)\}/y;
@@ -464,6 +466,17 @@ export function preprocess(original: string): Preprocessed {
     mask(skipLineBreak(openEnd), fences!.start[close]!);
     return fences!.end[close]!;
   };
+  /** End of the tilde run if `p` starts a "~~~" fence line (after optional blanks), else -1. */
+  const tildeFenceEnd = (p: number): number => {
+    let k = p - 1;
+    while (k >= 0 && (t.charCodeAt(k) === 0x20 || t.charCodeAt(k) === 0x09)) k--;
+    if (k >= 0 && t.charCodeAt(k) !== LF && t.charCodeAt(k) !== CR) return -1;
+    TILDE_FENCE.lastIndex = p;
+    if (!TILDE_FENCE.test(t)) return -1;
+    let e = p;
+    while (t.charCodeAt(e) === TILDE) e++;
+    return e;
+  };
   const skipLineBreak = (p: number): number => {
     if (t.charCodeAt(p) === CR) return t.charCodeAt(p + 1) === LF ? p + 2 : p + 1;
     return t.charCodeAt(p) === LF ? p + 1 : p;
@@ -713,10 +726,18 @@ export function preprocess(original: string): Preprocessed {
         if (flagged !== null && flagged[j] === 1) mask(j, j + 1);
         i = j + 1;
         break;
-      case TILDE:
+      case TILDE: {
+        // A "~~~" code-fence line stays as it is, so the artifact entry can flag it;
+        // any other "~" (LaTeX no-break space, "approximately") becomes a space.
+        const fence = tildeFenceEnd(j);
+        if (fence > j) {
+          i = fence;
+          break;
+        }
         replace(j, ' ');
         i = j + 1;
         break;
+      }
       case HYPHEN:
       case SOFT_HYPHEN:
         i = hyphen(j, c === SOFT_HYPHEN);

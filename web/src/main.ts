@@ -5,10 +5,12 @@ import { LEXICON } from './lexicon.ts';
 import { focusIndexAfterDismiss } from './ui/dismiss.ts';
 import { buildSummary, densitySuffix, popoverModel } from './ui/format.ts';
 import { analyzeDraft, compileLexicons } from './ui/lexicons.ts';
+import { createPhraseReport } from './ui/phrase-report.ts';
 import { createPopover } from './ui/popover.ts';
 import { loadExperimental, loadSensitivity, saveExperimental, saveSensitivity } from './ui/prefs.ts';
-import { isSensitivity } from './ui/sensitivity.ts';
 import { renderMirror, type RenderedHighlight } from './ui/render.ts';
+import { newPhraseReportUrl } from './ui/report.ts';
+import { isSensitivity } from './ui/sensitivity.ts';
 
 function byId<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
@@ -39,6 +41,11 @@ const enableButton = byId<HTMLButtonElement>('enable-experimental');
 const dismissedLine = byId<HTMLParagraphElement>('summary-dismissed');
 const dismissedLabel = byId<HTMLSpanElement>('summary-dismissed-text');
 const undoButton = byId<HTMLButtonElement>('undo-dismiss');
+const advanced = byId<HTMLDetailsElement>('advanced');
+const reportPhraseLink = byId<HTMLAnchorElement>('report-phrase');
+
+// The empty "report an AI-like phrase" form, for keyboard users and phrases not on screen.
+reportPhraseLink.href = newPhraseReportUrl('');
 
 const entries: ReadonlyMap<string, LexiconEntry> = new Map(LEXICON.map((e) => [e.id, e]));
 
@@ -74,12 +81,18 @@ const popover = createPopover<RenderedHighlight>({
 });
 result.after(popover.element);
 
+// "Report as AI-like" next to text selected in the result pane.
+const phraseReport = createPhraseReport(result);
+popover.element.after(phraseReport.element);
+
 /**
- * "Not AI-like (false positive)" in the popover. M2 scope: every highlight of the entry
- * is dismissed for the rest of this page view (memory only; nothing is stored or sent),
- * and the summary offers Undo.
- * M3 adds the option to report the false positive to GitHub here (a pre-filled issue).
- * The matched text may only go into such a report if the user explicitly ticks a box.
+ * A false positive from the popover: both "Not AI-like (false positive)" and the
+ * "Report false positive" link land here. Every highlight of the entry is dismissed for
+ * the rest of this page view (memory only), and the summary offers Undo.
+ * M3 reports by opening the public GitHub issue form: the link itself (a plain <a>, which
+ * the browser opens in a new tab) carries the entry ID and the matched text, so the
+ * matched text goes into the URL only when the user clicks Report. Nothing is sent by
+ * script.
  */
 function onFalsePositive(entry: LexiconEntry, _matchedText: string): void {
   dismissed.add(entry.id);
@@ -124,6 +137,7 @@ function schedule(): void {
 
 function update(): void {
   const started = performance.now();
+  phraseReport.hide();
   // Re-rendering replaces every highlight: never leave a popover on a stale one.
   if (popover.anchor) {
     const hadFocus = popover.element.contains(document.activeElement);
@@ -180,6 +194,7 @@ function toggleFor(item: RenderedHighlight, point?: { x: number; y: number }): v
     popover.close({ returnFocus: true });
     return;
   }
+  phraseReport.hide();
   popover.open({
     anchor: item.el,
     model: popoverModel(item.entry, matchedText(item)),
@@ -236,9 +251,13 @@ sensitivitySelect.addEventListener('change', () => {
   schedule();
 });
 enableButton.addEventListener('click', () => {
+  // The toggle lives in the Advanced area: open it, so the new state is visible there.
+  advanced.open = true;
   toggle.checked = true;
   toggle.dispatchEvent(new Event('change'));
-  toggle.focus();
+  // This button disappears with the update; stay with the results rather than jump to
+  // the Advanced area (the summary's live region announces the change).
+  result.focus({ preventScroll: true });
 });
 undoButton.addEventListener('click', () => {
   dismissed.clear();

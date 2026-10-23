@@ -18,11 +18,13 @@ Repo: github.com/ShuhongDai/ai-prescreen. Site: GitHub Pages.
 ## Hard rules (do not break without asking Shuhong)
 
 1. No ML models, no LLM/API calls anywhere in the detection path.
-2. Pasted text never leaves the browser. The page makes zero network requests while
-   analyzing: no external fonts, no CDNs, no analytics, no trackers.
-   The only network traffic is user-initiated feedback (M3/M4) and, from M4, anonymous
-   hit counts that contain lexicon entry IDs only — disclosed on the page, can be switched off.
-   An example sentence is uploaded only if the user explicitly ticks a box.
+2. Pasted text never leaves the browser unless the user reports it. The page makes zero
+   network requests while analyzing: no external fonts, no CDNs, no analytics, no trackers.
+   The only network traffic is user-initiated feedback and, from M4, anonymous hit counts
+   that contain lexicon entry IDs only — disclosed on the page, can be switched off.
+   M3 reports are links to public GitHub issue forms: the page prefills only the entry id
+   and matched text (false positive) or the selected phrase (new phrase); the example
+   sentence is an ordinary optional field the reporter fills in on GitHub (decision 2026-10-23).
 3. Lexicon decisions (accepting entries, changing tier, retiring) are Shuhong's.
    Claude may propose entries, but only with `"status": "candidate"`.
 4. Minimal dependencies. Ask before adding any runtime dependency.
@@ -87,7 +89,8 @@ Entry schema:
 
 - `evidence` lists the sources consulted for the entry: short citations and URLs only, never
   copied passages. An item that only repeats another source's list carries `derivedFrom`;
-  `independentSources` counts the other items (the validator checks it).
+  `independentSources` counts the other items (the validator checks it). User reports add
+  `{ "type": "user-report", "ref": "#<issue>", "url": "…" }` items (`npm run triage`).
 
 - Only `accepted` (and `watch`, shown normally) entries are active by default; `candidate`
   entries appear only with an "experimental lexicon" toggle; `retired` are ignored.
@@ -101,8 +104,8 @@ Entry schema:
 ## Engine requirements (`src/engine/`, pure TypeScript, no DOM)
 
 - Scope: no text-type classification. Do not special-case literature, emails or quoted AI
-  output. The UI will carry a short disclaimer later ("self-check tool; you judge your own
-  text"). Artifact patterns do not skip quoted text either.
+  output. The page carries a short disclaimer instead ("Self-check tool. Highlights are
+  hints, not verdicts; …", see Frontend). Artifact patterns do not skip quoted text either.
 - Input: raw pasted text. Output: list of matches `{entryId, tier, start, end}` with
   offsets into the ORIGINAL text, plus summary stats (counts per tier, hits per 1,000 words).
 - Preprocessing must keep an offset map back to the original text:
@@ -145,13 +148,18 @@ Entry schema:
   human baseline "typical human papers (2019–21): ~X" (`web/src/baseline.json`: lexical
   hits per 1k words on the arXiv measuring stick with the default lexicon at the chosen
   tier-2 sensitivity; left out while experimental matches are shown).
-- Tier-2 sensitivity select (Off / Loose / Standard / Strict, default Standard) next to the
-  experimental toggle; the choice is saved in localStorage (wrapped in try/catch). With Off
-  the summary line shows no baseline.
+- Tier-2 sensitivity select (Off (artifacts only) / Loose / Standard / Strict, default
+  Standard) in the toolbar; the choice is saved in localStorage (wrapped in try/catch).
+  With Off the summary line shows no baseline.
 - Clicking a highlight opens a popover: tier, why it is flagged, suggestions,
-  "Not AI-like (false positive)" button. Until M3 the button only hides that entry for
-  the page session (memory only, Undo in the summary); M3 adds reporting in
-  `onFalsePositive()` in `main.ts`.
+  "Not AI-like (false positive)" (hides that entry for the page session, memory only, Undo
+  in the summary) and "Report false positive" (opens the prefilled public GitHub form in a
+  new tab and also hides the entry). Selecting text in the result shows a "Report as
+  AI-like" link (prefilled new-phrase form). URLs are built in `web/src/ui/report.ts`.
+- A short disclaimer sits near the result: "Self-check tool. Highlights are hints, not
+  verdicts; you decide what to change and remain responsible for your text."
+- The experimental-lexicon toggle and a "Report a phrase" link live in an "Advanced" area
+  near the footer.
 - The build strips `evidence`, `models` and `independentSources` from the bundled lexicon
   (`vite.config.ts`); the page needs only patterns, notes and suggestions.
 - Visual style: clean, minimal, editor-like. Iterate from screenshots.
@@ -241,6 +249,8 @@ npm run fetch-arxiv       # draw the pre-2022 arXiv sample → data/arxiv/ (giti
                           # `-- --ids data/arxiv-sample-ids.txt` re-fetches the committed sample
 npm run fire-rate -- --tier lexical --status candidate [--review reviews/<name>.md]
                           # human fire-rate per entry on that sample (measuring stick only)
+npm run triage            # open "report" issues → candidates/evidence + reviews/triage-<date>.md
+npm run triage -- --close [--yes]   # after the decision: comment on and close processed issues
 npm run baseline          # recompute web/src/baseline.json (per-entry fire counts and the
                           # baseline per sensitivity level, ~3 min) after changing lexical
                           # entries or their status (tests/baseline.test.ts fails until then)
@@ -264,6 +274,9 @@ Files: everything for this project stays inside this folder. Review files for Sh
   tests and lexicon validation run locally.
 - 2026-10-23 — Tier-2 batch rule: retire the top-30 firers; accept everything else. Self-check
   tool, so prefer recall over precision. Revisit the 1–5% band if default noise turns out too high.
+- 2026-10-23 — M3: reports go to public GitHub issues through issue forms prefilled by URL;
+  the example sentence is an ordinary optional field; no privacy warning beyond GitHub's own
+  UI; no backend until M4 (Worker + D1 stays planned).
 - 2026-10-23 — Tier 1 also prefers recall: artifact patterns no longer avoid emails, literature
   or quoted text, and the same-line quote heuristic is removed. Line anchors stay only where
   they define the artifact (Markdown syntax) or where the bare text is an everyday phrase

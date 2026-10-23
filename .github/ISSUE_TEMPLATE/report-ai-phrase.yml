@@ -1,0 +1,42 @@
+name: Report an AI-like phrase
+description: Suggest a word or phrase that ai-prescreen should flag.
+title: "AI-like phrase: "
+labels: ["report", "report:new-phrase"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping the lexicon grow. Reports are reviewed in batches; accepted
+        phrases are added to `lexicon/*.json` (CC BY 4.0).
+  - type: input
+    id: phrase
+    attributes:
+      label: Phrase
+      description: The word or phrase, as it appears in text.
+      placeholder: "delve into"
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Suggested tier
+      options:
+        - artifact (chatbot leftover)
+        - overused word
+        - style
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Example sentence
+      description: Optional. A sentence where the phrase occurs.
+    validations:
+      required: false
+  - type: input
+    id: model
+    attributes:
+      label: Model it came from
+      description: Optional, e.g. GPT-4o, Claude, Gemini.
+    validations:
+      required: false

@@ -6,10 +6,12 @@ import {
   intersects,
   lineIndexAt,
   placePopover,
+  placeWithin,
   POPOVER_GAP,
   VIEWPORT_MARGIN,
   type Box,
 } from '../web/src/ui/position.ts';
+import { falsePositiveReportUrl } from '../web/src/ui/report.ts';
 
 const lexical: LexiconEntry = {
   id: 'en.lexical.delve-into',
@@ -35,8 +37,22 @@ describe('popover content model', () => {
       why: { heading: "Why it's flagged", text: lexical.note },
       suggestions: { heading: 'Suggestions', items: ['examine', 'explore', 'look at'] },
       falsePositive: 'Not AI-like (false positive)',
+      report: {
+        label: 'Report false positive',
+        hint: ' (opens GitHub in a new tab)',
+        href: falsePositiveReportUrl('en.lexical.delve-into', 'delve into'),
+      },
       close: 'Close',
     });
+  });
+
+  it('links the report to the pre-filled false-positive form for this entry and text', () => {
+    const href = popoverModel(lexical, 'Delved\n into').report.href;
+    const u = new URL(href);
+    expect(`${u.origin}${u.pathname}`).toBe('https://github.com/ShuhongDai/ai-prescreen/issues/new');
+    expect(u.searchParams.get('template')).toBe('report-false-positive.yml');
+    expect(u.searchParams.get('entry_id')).toBe('en.lexical.delve-into');
+    expect(u.searchParams.get('matched_text')).toBe('Delved into');
   });
 
   it('marks candidate entries as experimental', () => {
@@ -158,6 +174,42 @@ describe('placePopover', () => {
   it('rounds to whole pixels', () => {
     const p = placePopover({ top: 10.4, left: 20.6, right: 80.2, bottom: 30.3 }, size, desktop);
     expect(Number.isInteger(p.top) && Number.isInteger(p.left)).toBe(true);
+  });
+});
+
+describe('placeWithin (the selection link, kept inside the visible pane)', () => {
+  const pane: Box = { top: 200, left: 600, bottom: 700, right: 1200 };
+  const link = { width: 140, height: 24 };
+  const caret = (top: number, x: number): Box => ({ top, bottom: top + 20, left: x, right: x + 1 });
+
+  it('goes just below the end of the selection', () => {
+    expect(placeWithin(caret(300, 800), link, pane, 4, 4)).toEqual({
+      top: 324,
+      left: 800,
+      placement: 'below',
+    });
+  });
+
+  it('flips above at the bottom of the pane and clamps to its right edge', () => {
+    expect(placeWithin(caret(670, 1150), link, pane, 4, 4)).toEqual({
+      top: 670 - 4 - 24,
+      left: 1200 - 4 - 140,
+      placement: 'above',
+    });
+  });
+
+  it('never leaves the pane on the left or top', () => {
+    const p = placeWithin(caret(150, 500), link, pane, 4, 4);
+    expect(p.left).toBe(604);
+    expect(p.top).toBeGreaterThanOrEqual(204);
+  });
+
+  it('matches placePopover when the bounds are the viewport', () => {
+    const a = caret(100, 300);
+    const size = { width: 352, height: 200 };
+    expect(placeWithin(a, size, { top: 0, left: 0, right: 1280, bottom: 800 })).toEqual(
+      placePopover(a, size, { width: 1280, height: 800 }),
+    );
   });
 });
 

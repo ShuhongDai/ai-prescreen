@@ -370,9 +370,11 @@ describe('preprocess: Markdown code', () => {
     expect(text(odd)).toBe(blanked(odd, 'a'));
   });
 
-  it('does not treat ~~~ lines as fences (they are often scene breaks)', () => {
+  it('never masks the text between ~~~ lines (they are often scene breaks)', () => {
+    // The fence lines themselves stay visible (the artifact entry may flag them), but only
+    // closed backtick fences mask their content.
     const input = 'She left.\n\n~~~\n\nNext morning.\n\n~~~\n\nThe end.';
-    expect(text(input)).toBe(input.replace(/~/g, ' '));
+    expect(text(input)).toBe(input);
   });
 
   it('does not treat triple backticks inside a line as a fence', () => {
@@ -464,5 +466,21 @@ describe('preprocess: robustness', () => {
         '```js\nconst a = `b`;\n```\n**Note:** use `code` and ``quotes\'\'.\n' +
         'compre-\nhensive 😀 \\begin{align*}a\\end{align*} 50% of $5 and $10.\uFEFF',
     );
+  });
+});
+
+describe('tilde code fences', () => {
+  it('keeps a "~~~" fence line and turns other tildes into spaces', () => {
+    expect(preprocess('~~~python\ncode\n~~~').text).toBe('~~~python\ncode\n~~~');
+    expect(preprocess('  ~~~\r\n').text).toBe('  ~~~\r\n');
+    expect(preprocess('Fig.~1 shows ~5% gains').text).toBe('Fig. 1 shows  5% gains');
+    expect(preprocess('a ~~~ b').text).toBe('a     b');
+    expect(preprocess('~~~~ scene break').text).toBe('     scene break');
+  });
+
+  it('stays linear on many tildes', () => {
+    const t0 = performance.now();
+    preprocess('~x'.repeat(100_000) + '\n' + '  ~\n'.repeat(50_000));
+    expect(performance.now() - t0).toBeLessThan(500);
   });
 });

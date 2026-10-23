@@ -2,7 +2,7 @@
 // share of pre-2022 arXiv abstracts an entry fires in, measured by `npm run baseline`).
 // Every entry stays "accepted"; this only decides which lexical entries the page shows.
 // "Off" shows none. An entry without a measured fire-rate ("none") counts as 0, so every
-// other level shows it.
+// other level shows it. Tier 3 (stylistic) is shown only at Strict.
 
 import type { LexiconEntry } from '../engine/index.ts';
 
@@ -33,12 +33,18 @@ export function fireRate(id: string, data: FireData): number {
   return data.abstracts > 0 ? (data.fires[id] ?? 0) / data.abstracts : 0;
 }
 
-/** Leaves out lexical entries whose fire-rate is above the level; other tiers pass. */
+/**
+ * Leaves out lexical entries whose fire-rate is above the level, and stylistic entries
+ * below Strict; artifact entries always pass.
+ */
 export function bySensitivity(
   entries: readonly LexiconEntry[],
   level: Sensitivity,
   data: FireData,
 ): LexiconEntry[] {
   const max = MAX_FIRE_RATE[level];
-  return entries.filter((e) => e.tier !== 'lexical' || fireRate(e.id, data) <= max);
+  return entries.filter((e) => {
+    if (e.tier === 'stylistic') return level === 'strict';
+    return e.tier !== 'lexical' || fireRate(e.id, data) <= max;
+  });
 }

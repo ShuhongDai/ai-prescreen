@@ -1,70 +1,94 @@
-/* Plain CSS, no framework. Colours are tokens; dark mode follows the system setting.
+/* "Academic paper": the left pane is the manuscript source, the right pane a printed page
+   proofread with a red pen, a highlighter and a pencil (CLAUDE.md, Design).
+   Plain CSS, no framework. Colours are tokens; dark "night paper" follows the system.
    Contrast (WCAG 2.x), both themes: text >= 4.5:1 on every background it sits on,
-   including the highlight tints; focus outline, tier underlines, tier icons and control
-   borders >= 3:1. */
+   including the highlighter; marks, focus outline and control borders >= 3:1. */
+
+/* Source Serif 4, Latin subset, self-hosted (web/src/fonts/, SIL Open Font License). */
+@font-face {
+  font-family: "Source Serif 4";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/source-serif-4-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Source Serif 4";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./fonts/source-serif-4-latin-600-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
 
 :root {
-  --bg: #ffffff;
-  --surface: #f6f8fa;
-  /* The popover, and hover backgrounds of buttons. */
-  --raised: #ffffff;
-  --hover: #eff2f5;
-  --fg: #1f2328;
-  --muted: #59636e;
-  --border: #d1d9e0;
-  /* Edge of form controls: at least 3:1 against the page (WCAG 1.4.11). */
-  --border-control: #818b98;
-  --accent: #0969da;
-  --focus: #0969da;
-  --shadow: 0 1px 3px rgb(31 35 40 / 0.12), 0 8px 24px rgb(66 74 83 / 0.16);
+  --paper: #fbf8f1;
+  /* The proofread sheet, the editor and cards: a fresh sheet on the paper. */
+  --sheet: #fffefa;
+  --ink: #1f1d1a;
+  --muted: #6b655c;
+  --rule: #e4ddd0;
+  /* Edges of form controls: at least 3:1 against paper and sheet (WCAG 1.4.11). */
+  --control: #8c8477;
+  --hover: #f1ece2;
+  --link: #1f5fad;
+  --focus: #1f5fad;
+  --shadow-sheet: 0 1px 2px rgb(60 48 30 / 0.06), 0 10px 28px rgb(60 48 30 / 0.08);
+  --shadow-card: 0 2px 6px rgb(60 48 30 / 0.12), 0 12px 32px rgb(60 48 30 / 0.14);
 
-  /* Tier colours. Tier is never conveyed by colour alone: underline style + icon too.
-     The -strong tints mark a hovered highlight and the one whose popover is open. */
-  --artifact: #cf222e;
-  --artifact-bg: rgb(207 34 46 / 0.1);
-  --artifact-bg-strong: rgb(207 34 46 / 0.18);
-  --lexical: #9a6700;
-  --lexical-bg: rgb(212 167 44 / 0.2);
-  --lexical-bg-strong: rgb(212 167 44 / 0.36);
-  --stylistic: #6e7781;
-  --stylistic-bg: rgb(110 119 129 / 0.12);
-  --stylistic-bg-strong: rgb(110 119 129 / 0.22);
-  --experimental: #59636e;
+  /* Tiers. Never colour alone: underline style, margin mark or background as well.
+     The tints mark a hovered highlight and the one whose card is open. */
+  --red-pen: #b3261e;
+  --red-tint: rgb(179 38 30 / 0.1);
+  --highlighter: #f3e3a0;
+  --highlighter-strong: #e9cf6a;
+  --highlighter-line: #8a6d0f;
+  --pencil: #7a7368;
+  --pencil-tint: rgb(122 115 104 / 0.12);
+  --experimental: #6b655c;
 
+  --font-serif: "Source Serif 4", "Noto Serif CJK SC", "Songti SC", serif;
   --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-text: var(--font-ui);
-  --radius: 6px;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --radius: 4px;
+  /* Where the red pen's margin mark sits, from the sheet's left edge. */
+  --margin-mark-left: 1.35rem;
 
   color-scheme: light dark;
   font-family: var(--font-ui);
-  color: var(--fg);
-  background: var(--bg);
+  color: var(--ink);
+  background: var(--paper);
 }
 
 @media (prefers-color-scheme: dark) {
+  /* Night paper. */
   :root {
-    --bg: #0d1117;
-    --surface: #151b23;
-    --raised: #1b222b;
-    --hover: #262c36;
-    --fg: #e6edf3;
-    --muted: #9198a1;
-    --border: #3d444d;
-    --border-control: #6e7681;
-    --accent: #4493f8;
-    --focus: #4493f8;
-    --shadow: 0 0 0 1px rgb(1 4 9 / 0.4), 0 8px 24px rgb(1 4 9 / 0.8);
+    --paper: #1c1a17;
+    --sheet: #24211d;
+    --ink: #e8e2d6;
+    --muted: #a69e90;
+    --rule: #3a352e;
+    --control: #7a7266;
+    --hover: #2e2a25;
+    --link: #8ab4f8;
+    --focus: #8ab4f8;
+    --shadow-sheet: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px rgb(0 0 0 / 0.35);
+    --shadow-card: 0 0 0 1px rgb(0 0 0 / 0.3), 0 12px 32px rgb(0 0 0 / 0.55);
 
-    --artifact: #ff7b72;
-    --artifact-bg: rgb(255 123 114 / 0.16);
-    --artifact-bg-strong: rgb(255 123 114 / 0.26);
-    --lexical: #d29922;
-    --lexical-bg: rgb(210 153 34 / 0.2);
-    --lexical-bg-strong: rgb(210 153 34 / 0.32);
-    --stylistic: #9198a1;
-    --stylistic-bg: rgb(145 152 161 / 0.16);
-    --stylistic-bg-strong: rgb(145 152 161 / 0.26);
-    --experimental: #9198a1;
+    --red-pen: #f2867c;
+    --red-tint: rgb(242 134 124 / 0.14);
+    --highlighter: rgb(230 190 70 / 0.28);
+    --highlighter-strong: rgb(230 190 70 / 0.38);
+    --highlighter-line: #d8b954;
+    --pencil: #a69e90;
+    --pencil-tint: rgb(166 158 144 / 0.16);
+    --experimental: #a69e90;
   }
 }
 
@@ -81,15 +105,16 @@
 
 body {
   margin: 0 auto;
-  max-width: 90rem;
-  padding: 0 1rem;
-  background: var(--bg);
-  color: var(--fg);
+  max-width: 92rem;
+  padding: 0 1.25rem;
+  background: var(--paper);
+  color: var(--ink);
   line-height: 1.5;
 }
 
 a {
-  color: var(--accent);
+  color: var(--link);
+  text-underline-offset: 0.15em;
 }
 
 :focus-visible {
@@ -97,114 +122,170 @@ a {
   outline-offset: 2px;
 }
 
-/* ---- Header ---- */
+/* ---- Header: one line ---- */
 
 .site-header {
-  padding: 1.5rem 0 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.75rem;
+  padding: 1rem 0 0.55rem;
 }
 
 .site-title {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 650;
-  letter-spacing: -0.01em;
+  font-family: var(--font-serif);
+  font-size: 1.625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
 }
 
 .site-tagline {
-  margin: 0.35rem 0 0;
-  max-width: 48rem;
+  margin: 0;
+  font-size: 0.875rem;
   color: var(--muted);
 }
 
-/* ---- Toolbar: tier-2 sensitivity + legend (the experimental toggle is in Advanced) ---- */
+.site-name {
+  font-weight: 600;
+}
+
+/* ---- Toolbar: sensitivity and Key (left), the reviewer's note (right) ---- */
 
 .toolbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 0.5rem 1.5rem;
-  padding: 0.75rem 0;
-  border-top: 1px solid var(--border);
+  margin-bottom: 0.75rem;
+  padding: 0.45rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.875rem;
 }
 
-.toggle {
+.controls {
+  position: relative; /* the Key panel opens under this row */
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.25rem 0.5rem;
+  align-items: center;
+  gap: 0.4rem 0.5rem;
 }
 
-.toggle input {
-  margin: 0;
-  width: 1rem;
-  height: 1rem;
-  accent-color: var(--accent);
-  align-self: center;
-}
-
-.toggle label {
+.control-label {
   font-weight: 600;
+  color: var(--muted);
+}
+
+.select {
+  font: inherit;
+  color: var(--ink);
+  background: var(--sheet);
+  border: 1px solid var(--control);
+  border-radius: var(--radius);
+  padding: 0.2rem 0.4rem;
+}
+
+.select:focus-visible {
+  outline-offset: 1px;
+}
+
+.chip {
+  padding: 0.15rem 0.7rem;
+  border: 1px solid var(--control);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.5;
   cursor: pointer;
 }
 
-.toggle-help {
-  color: var(--muted);
-  font-size: 0.875rem;
+.chip[aria-expanded="true"] {
+  background: var(--hover);
 }
 
-.sensitivity {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.25rem 0.5rem;
-}
-
-.sensitivity label {
-  font-weight: 600;
-}
-
-.sensitivity select {
-  font: inherit;
-  color: var(--fg);
-  background: var(--bg);
-  border: 1px solid var(--border-control);
+.key-panel {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  left: 0;
+  z-index: 8;
+  width: min(24rem, calc(100vw - 2rem));
+  padding: 0.75rem 0.9rem 0.8rem 1.9rem; /* the left margin holds the red pen's mark */
+  --margin-mark-left: 0.7rem;
+  background: var(--sheet);
+  color: var(--ink);
+  border: 1px solid var(--rule);
   border-radius: var(--radius);
-  padding: 0.125rem 0.375rem;
+  box-shadow: var(--shadow-card);
+  font-size: 0.8125rem;
+  line-height: 1.5;
 }
 
-.sensitivity select:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-}
-
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1rem;
+.key-list {
+  display: grid;
+  gap: 0.45rem;
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 0.875rem;
+}
+
+.key-list li {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.6rem;
+  align-items: baseline;
+}
+
+.key-sample {
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+}
+
+.key-note {
+  margin: 0.7rem 0 0;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--rule);
   color: var(--muted);
 }
 
-.legend mark {
-  margin-right: 0.15rem;
+/* The reviewer's note: counts (live region) and the rate (not live), notes under them. */
+.summary {
+  flex: 1 1 20rem;
+  min-width: 0;
+  text-align: right;
+}
+
+.summary-line {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.35;
+}
+
+.summary-density {
+  color: var(--muted);
+}
+
+.summary[data-state="idle"] .summary-line {
+  color: var(--muted);
+}
+
+.summary-note {
+  margin: 0.1rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
 }
 
 /* ---- Panes ---- */
 
 .panes {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-@media (min-width: 52rem) {
-  .panes {
-    grid-template-columns: 1fr 1fr;
-  }
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem 1.5rem;
 }
 
 .pane {
@@ -218,15 +299,25 @@ a {
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.25rem 1rem;
-  min-height: 2rem;
+  min-height: 1.9rem;
+}
+
+/* The result's heading row is as wide as the sheet below it. */
+.pane--sheet .pane-head {
+  max-width: calc(70ch + 6rem);
 }
 
 .pane-title {
   margin: 0;
-  font-size: 0.875rem;
+  font-family: var(--font-serif);
+  font-size: 1rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.fn-ref {
+  margin-left: 0.1em;
+  font-size: 0.7em;
   color: var(--muted);
 }
 
@@ -236,38 +327,24 @@ a {
   color: var(--muted);
 }
 
-/* The disclaimer under the Result heading. */
-.pane-note {
-  margin: 0 0 0.375rem;
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  color: var(--muted);
-}
-
-/* The editor and the result mirror share font metrics so the text reads the same. */
-.editor,
-.result {
+/* The manuscript source: monospace, since people paste LaTeX and Markdown. */
+.editor {
   display: block;
   width: 100%;
+  height: clamp(12rem, 40vh, 24rem);
   margin: 0;
-  padding: 0.75rem 0.875rem;
-  border: 1px solid var(--border);
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--control);
   border-radius: var(--radius);
-  font-family: var(--font-text);
-  font-size: 1rem;
-  line-height: 1.65;
-  color: var(--fg);
+  background: var(--sheet);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  word-break: normal;
   tab-size: 4;
-}
-
-.editor {
-  height: clamp(12rem, 40vh, 24rem);
   resize: vertical;
-  background: var(--bg);
-  border-color: var(--border-control);
 }
 
 .editor::placeholder {
@@ -280,82 +357,122 @@ a {
   outline-offset: -1px;
 }
 
-.result {
-  min-height: 8rem;
-  background: var(--surface);
+/* The printed page. */
+.sheet-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.result.sheet {
+  position: relative; /* containing block for the red pen's margin marks */
+  width: 100%;
+  max-width: calc(70ch + 6rem); /* text width <= 70ch plus the side margins */
+  min-height: 14rem;
+  margin: 0;
+  padding: 2.25rem 2.5rem 2.5rem 3.5rem; /* wider left margin for the marks */
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  box-shadow: var(--shadow-sheet);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  tab-size: 4;
 }
 
 .result:focus-visible {
-  outline-offset: -1px;
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 
-.result[data-state="idle"]::before {
-  content: "Highlights appear here.";
-  content: "Highlights appear here." / "";
+/* Empty state, laid over the blank sheet. */
+.sheet-empty {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(100%, calc(70ch + 6rem));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 2rem 1.5rem;
+  color: var(--muted);
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+.sheet-empty > * {
+  pointer-events: auto;
+}
+
+.sheet-empty p {
+  margin: 0;
+}
+
+/* The disclaimer, a footnote under the sheet. */
+.footnote {
+  max-width: calc(70ch + 6rem);
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 0.8125rem;
+  line-height: 1.45;
   color: var(--muted);
 }
 
-/* Wide screens: side by side. Both panes get the same fixed height; the editor and the
-   result fill what is left under their headings, so their bottoms line up even though
-   the summary sits only above the result. Each scrolls on its own. */
+.fn-mark {
+  margin-right: 0.1em;
+}
+
+/* Wide screens: side by side, both panes the same height, each scrolling on its own;
+   the footnote sits under the sheet. */
 @media (min-width: 52rem) {
-  .pane {
-    height: clamp(20rem, calc(100vh - 17rem), 54rem);
+  .panes {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   }
-  .editor,
-  .result {
+  .pane {
+    height: clamp(22rem, calc(100vh - 12rem), 56rem);
+  }
+  .editor {
     flex: 1 1 0;
     min-height: 0;
     height: auto;
     resize: none;
     overflow: auto;
   }
-}
-
-/* ---- Summary ---- */
-
-.summary {
-  min-height: 2.25rem;
-  margin-bottom: 0.5rem;
-}
-
-/* Counts (live region) and the per-1k rate (not live) on one line. */
-.summary-line {
-  margin: 0;
-  font-weight: 600;
-}
-
-.summary[data-state="idle"] .summary-line {
-  font-weight: 400;
-  color: var(--muted);
-}
-
-.summary-note {
-  margin: 0.15rem 0 0;
-  font-size: 0.875rem;
-  color: var(--muted);
-}
-
-.link-button {
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  color: var(--accent);
-  text-decoration: underline;
-  cursor: pointer;
+  .sheet-wrap {
+    flex: 1 1 0;
+  }
+  .result.sheet {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+  .footnote {
+    grid-column: 2;
+  }
 }
 
 /* ---- Buttons ---- */
 
 .button {
   display: inline-block;
-  padding: 0.3125rem 0.75rem;
-  border: 1px solid var(--border-control);
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--control);
   border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--fg);
+  background: var(--sheet);
+  color: var(--ink);
   font: inherit;
+  font-family: var(--font-ui);
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.4;
@@ -374,147 +491,124 @@ a {
   background: transparent;
   color: var(--muted);
   font: inherit;
+  font-family: var(--font-ui);
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
 }
 
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
 @media (hover: hover) {
-  .button:hover {
+  .button:hover,
+  .chip:hover {
     background: var(--hover);
   }
   .icon-button:hover {
     background: var(--hover);
-    color: var(--fg);
+    color: var(--ink);
   }
 }
 
-/* ---- Highlights ---- */
+/* ---- Marks ---- */
 
 mark.hl {
   color: inherit;
   background: transparent;
-  border-radius: 2px;
+  border-radius: 1px;
   text-decoration-line: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.2em;
   text-decoration-skip-ink: none;
+  text-underline-offset: 0.2em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
-/* Tier icons: drawn by CSS, so they are neither part of the text (copying) nor of its
-   accessible name. Shared by the highlights, the legend and the popover title. */
-mark.hl::before,
-.popover-title::before {
-  display: inline-block;
-  width: 1.1em;
-  height: 1.1em;
-  margin-right: 0.2em;
-  border: 1px solid transparent; /* stays visible in forced-colours mode */
-  font-family: var(--font-ui);
-  font-size: 0.75em;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  text-indent: 0;
-  vertical-align: 0.15em;
-  text-decoration: none;
-  user-select: none;
-}
-
-/* Tier 1: red, solid underline, filled "!" badge. */
+/* Tier 1, red pen: a 2px solid underline and a mark in the left margin of the line. */
 mark.hl--artifact {
-  background: var(--artifact-bg);
   text-decoration-style: solid;
-  text-decoration-color: var(--artifact);
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--red-pen);
 }
 
-mark.hl--artifact::before,
-.popover-title[data-tier="artifact"]::before {
-  content: "!";
-  content: "!" / "";
-  border-radius: 50%;
-  background: var(--artifact);
-  color: var(--bg);
+/* Absolutely positioned with only `left` set: it keeps its static vertical position (the
+   line where the highlight starts) and moves into the margin of the positioned sheet. */
+.result mark.hl--artifact::before,
+.key-panel mark.hl--artifact::before {
+  content: "";
+  position: absolute;
+  left: var(--margin-mark-left);
+  width: 0;
+  height: 1.15em;
+  margin-top: 0.22em;
+  border-left: 3px solid var(--red-pen);
+  border-radius: 1px;
 }
 
-/* Tier 2: yellow, wavy underline, outlined "~" badge (lighter than tier 1: your call). */
+/* Tier 2, highlighter: soft yellow background and a thin wavy underline. */
 mark.hl--lexical {
-  background: var(--lexical-bg);
+  background: var(--highlighter);
   text-decoration-style: wavy;
-  text-decoration-thickness: 1.5px;
-  text-decoration-color: var(--lexical);
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--highlighter-line);
+  text-underline-offset: 0.22em;
 }
 
-mark.hl--lexical::before,
-.popover-title[data-tier="lexical"]::before {
-  content: "~";
-  content: "~" / "";
-  border-color: var(--lexical);
-  border-radius: 3px;
-  color: var(--lexical);
-}
-
-/* Tier 3: grey, dotted underline, dotted "¶" badge. */
+/* Tier 3, pencil: grey dotted underline, no background. */
 mark.hl--stylistic {
-  background: var(--stylistic-bg);
   text-decoration-style: dotted;
-  text-decoration-color: var(--stylistic);
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: var(--pencil);
 }
 
-mark.hl--stylistic::before,
-.popover-title[data-tier="stylistic"]::before {
-  content: "¶";
-  content: "¶" / "";
-  border-style: dotted;
-  border-color: var(--stylistic);
-  border-radius: 3px;
-  color: var(--stylistic);
-  font-weight: 400;
-}
-
-/* Candidate (experimental) entries: dashed outline in addition to the tier style. */
+/* Candidate (experimental) entries: a dashed box in addition to the tier style. */
 mark.hl--experimental {
   outline: 1px dashed var(--experimental);
   outline-offset: 1px;
 }
 
-/* Highlights in the result open the popover (click, Enter or Space). */
+/* Marks on the sheet open the annotation card (click, Enter or Space). */
 .result mark.hl {
   cursor: pointer;
 }
 
 .result mark.hl--artifact[aria-expanded="true"] {
-  background: var(--artifact-bg-strong);
+  background: var(--red-tint);
 }
 .result mark.hl--lexical[aria-expanded="true"] {
-  background: var(--lexical-bg-strong);
+  background: var(--highlighter-strong);
 }
 .result mark.hl--stylistic[aria-expanded="true"] {
-  background: var(--stylistic-bg-strong);
+  background: var(--pencil-tint);
 }
 
 @media (hover: hover) {
   .result mark.hl--artifact:hover {
-    background: var(--artifact-bg-strong);
+    background: var(--red-tint);
   }
   .result mark.hl--lexical:hover {
-    background: var(--lexical-bg-strong);
+    background: var(--highlighter-strong);
   }
   .result mark.hl--stylistic:hover {
-    background: var(--stylistic-bg-strong);
+    background: var(--pencil-tint);
   }
 }
 
-/* Must beat the dashed outline of experimental entries. */
+/* Must beat the dashed box of experimental entries. */
 .result mark.hl:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 
-/* ---- Popover (role="dialog", one at a time; placed by src/ui/popover.ts) ---- */
+/* ---- Annotation card (role="dialog", one at a time; placed by src/ui/popover.ts) ---- */
 
 .popover {
   position: fixed;
@@ -528,17 +622,30 @@ mark.hl--experimental {
   overflow: auto;
   overscroll-behavior: contain;
   margin: 0;
-  padding: 0.625rem 0.875rem 0.875rem;
-  background: var(--raised);
-  color: var(--fg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
+  padding: 0.65rem 0.9rem 0.85rem 1rem;
+  background: var(--sheet);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--card-pen, var(--rule));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-serif);
   font-size: 0.9375rem;
   line-height: 1.5;
 }
 
-/* Focus lands on the dialog itself when it opens; the ring shows for keyboard users. */
+.popover[data-tier="artifact"] {
+  --card-pen: var(--red-pen);
+}
+.popover[data-tier="lexical"] {
+  --card-pen: var(--highlighter-line);
+}
+.popover[data-tier="stylistic"] {
+  --card-pen: var(--pencil);
+  border-left-style: dotted;
+}
+
+/* Focus lands on the card itself when it opens; the ring shows for keyboard users. */
 .popover:focus {
   outline: none;
 }
@@ -554,15 +661,15 @@ mark.hl--experimental {
   gap: 0.5rem;
 }
 
+/* The tier, in small caps. */
 .popover-title {
   margin: 0.25rem 0 0;
-  font-size: 0.9375rem;
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
   font-weight: 600;
-  line-height: 1.4;
-}
-
-.popover-title::before {
-  margin-right: 0.4em;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.05em;
+  line-height: 1.3;
 }
 
 .popover-close {
@@ -571,29 +678,31 @@ mark.hl--experimental {
 
 .popover-experimental {
   display: inline-block;
-  margin: 0.375rem 0 0;
-  padding: 0 0.375rem;
+  margin: 0.35rem 0 0;
+  padding: 0 0.4rem;
   border: 1px dashed var(--experimental);
-  border-radius: 4px;
-  font-size: 0.8125rem;
+  border-radius: 3px;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
   color: var(--muted);
 }
 
 .popover-quote {
-  margin: 0.375rem 0 0;
-  font-family: var(--font-text);
+  margin: 0.35rem 0 0;
+  font-size: 1rem;
   overflow-wrap: anywhere;
 }
 
 .popover-section {
-  margin-top: 0.75rem;
+  margin-top: 0.65rem;
 }
 
 .popover-heading {
-  margin: 0 0 0.125rem;
-  font-size: 0.75rem;
+  margin: 0 0 0.1rem;
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -605,7 +714,7 @@ mark.hl--experimental {
 
 .popover-list {
   margin: 0;
-  padding-left: 1.25rem;
+  padding-left: 1.2rem;
   overflow-wrap: anywhere;
 }
 
@@ -618,9 +727,10 @@ mark.hl--experimental {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem 1rem;
-  margin-top: 0.875rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border);
+  margin-top: 0.85rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-ui);
 }
 
 /* Links that open a pre-filled GitHub issue form in a new tab. */
@@ -628,17 +738,18 @@ mark.hl--experimental {
   font-size: 0.875rem;
 }
 
-/* "Report as AI-like" next to a text selection in the result pane (src/ui/phrase-report.ts). */
+/* "Report as AI-like" next to a text selection on the sheet (src/ui/phrase-report.ts). */
 .phrase-report {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9; /* under the popover */
-  padding: 0.1875rem 0.5rem;
-  border: 1px solid var(--border-control);
+  z-index: 9; /* under the card */
+  padding: 0.1875rem 0.55rem;
+  border: 1px solid var(--control);
   border-radius: var(--radius);
-  background: var(--raised);
-  box-shadow: var(--shadow);
+  background: var(--sheet);
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-ui);
   font-size: 0.8125rem;
   font-weight: 500;
   line-height: 1.4;
@@ -656,32 +767,88 @@ mark.hl--experimental {
 /* Motion only for people who have not asked to reduce it. */
 @media (prefers-reduced-motion: no-preference) {
   .popover {
-    animation: popover-in 120ms ease-out;
+    animation: card-in 120ms ease-out;
   }
 }
 
-@keyframes popover-in {
+@keyframes card-in {
   from {
     opacity: 0;
   }
 }
 
-/* ---- Forced colours (Windows high contrast) ---- */
+/* ---- Advanced (experimental lexicon, report a phrase) ---- */
 
-@media (forced-colors: active) {
-  mark.hl {
-    text-decoration-color: CanvasText;
-  }
-  mark.hl::before,
-  .popover-title::before {
-    border-color: CanvasText;
-  }
-  .result mark.hl[aria-expanded="true"] {
-    outline: 2px solid Highlight;
-  }
-  .popover {
-    border-color: CanvasText;
-  }
+.advanced {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.875rem;
+}
+
+.advanced summary {
+  width: fit-content;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.advanced-body {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0 0 0.75rem;
+}
+
+.toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+}
+
+.toggle input {
+  margin: 0;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--link);
+  align-self: center;
+}
+
+.toggle label {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toggle-help {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.advanced-report {
+  margin: 0;
+}
+
+.advanced-report .toggle-help {
+  margin-left: 0.25rem;
+}
+
+/* ---- Footer ---- */
+
+.site-footer {
+  margin-top: 0.25rem;
+  padding: 0.9rem 0 2rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.site-footer p {
+  margin: 0.2rem 0;
+}
+
+.site-footer strong {
+  color: var(--ink);
+  font-weight: 600;
 }
 
 /* Read by assistive technology, invisible on screen and left out of copied text. */
@@ -699,52 +866,50 @@ mark.hl--experimental {
   user-select: none;
 }
 
-/* ---- Advanced (experimental lexicon, report a phrase) ---- */
+/* ---- Small screens: stacked panes, the sheet full width with smaller margins ---- */
 
-.advanced {
-  margin-top: 1.5rem;
-  border-top: 1px solid var(--border);
-  font-size: 0.875rem;
+@media (max-width: 40rem) {
+  body {
+    padding: 0 0.75rem;
+  }
+  .summary {
+    flex-basis: 100%;
+    text-align: left;
+  }
+  .result.sheet {
+    min-height: 11rem;
+    padding: 1.25rem 1rem 1.5rem 1.9rem;
+    --margin-mark-left: 0.6rem;
+    font-size: 1rem;
+  }
+  .sheet-empty {
+    font-size: 1rem;
+  }
 }
 
-.advanced summary {
-  width: fit-content;
-  padding: 0.5rem 0;
-  font-weight: 600;
-  cursor: pointer;
-}
+/* ---- Forced colours (Windows high contrast) ---- */
 
-.advanced-body {
-  display: grid;
-  gap: 0.5rem;
-  padding: 0 0 0.75rem;
-}
-
-.advanced-report {
-  margin: 0;
-}
-
-.advanced-report .toggle-help {
-  margin-left: 0.25rem;
-}
-
-/* ---- Footer ---- */
-
-.site-footer {
-  margin-top: 0.5rem;
-  padding: 1rem 0 2rem;
-  border-top: 1px solid var(--border);
-  font-size: 0.875rem;
-  color: var(--muted);
-}
-
-.site-footer p {
-  margin: 0.25rem 0;
-}
-
-.site-footer strong {
-  color: var(--fg);
-  font-weight: 600;
+@media (forced-colors: active) {
+  mark.hl {
+    text-decoration-color: CanvasText;
+  }
+  mark.hl--lexical {
+    forced-color-adjust: none;
+    background: Mark;
+    color: MarkText;
+    text-decoration-color: MarkText;
+  }
+  .result mark.hl--artifact::before,
+  .key-panel mark.hl--artifact::before {
+    border-left-color: CanvasText;
+  }
+  .result mark.hl[aria-expanded="true"] {
+    outline: 2px solid Highlight;
+  }
+  .popover,
+  .key-panel {
+    border-color: CanvasText;
+  }
 }
 
 /* Guards anything animated, now or later. */

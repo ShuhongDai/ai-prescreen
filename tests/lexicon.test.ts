@@ -10,6 +10,7 @@ import { findDuplicates, validateLexicon, validateLexiconFiles } from '../web/sr
 import { LEXICON } from '../web/src/lexicon.ts';
 import { buildSummary, isExperimental } from '../web/src/ui/format.ts';
 import examplesJson from './fixtures/artifact-examples.json';
+import stylisticExamples from './fixtures/stylistic-examples.json';
 
 interface Examples {
   positive: string[];
@@ -164,7 +165,7 @@ describe('experimental lexicon toggle OFF (the default)', () => {
     });
     expect(summary.state).toBe('flagged');
     // Six words: below the 200-word threshold, so no per-1k density.
-    expect(summary.text).toBe('1 artifact');
+    expect(summary.text).toBe('1 to remove');
     expect(summary.note).toBeNull();
   });
 
@@ -188,6 +189,31 @@ describe('experimental lexicon toggle OFF (the default)', () => {
           const hits = analyze(text, OFF).matches.filter((m) => m.entryId === entry.id);
           expect(hits, describeMatches(text, hits)).toEqual([]);
         }
+      });
+    }
+  }
+});
+
+describe('stylistic entries match their examples', () => {
+  const STYLISTIC = LEXICON.filter((e) => e.tier === 'stylistic');
+  const examples = stylisticExamples as Record<string, Examples>;
+
+  it('have examples for every entry, and only for existing entries', () => {
+    expect(STYLISTIC.length).toBeGreaterThan(0);
+    expect(STYLISTIC.map((e) => e.id).sort()).toEqual(Object.keys(examples).sort());
+  });
+
+  for (const entry of STYLISTIC) {
+    const ex = examples[entry.id] ?? { positive: [], negative: [] };
+    for (const text of ex.positive) {
+      it(`${entry.id} matches ${JSON.stringify(text)}`, () => {
+        expect(analyze(text, only(entry)).matches.some((m) => m.entryId === entry.id)).toBe(true);
+      });
+    }
+    for (const text of ex.negative) {
+      it(`${entry.id} does not match ${JSON.stringify(text)}`, () => {
+        const hits = analyze(text, only(entry)).matches.filter((m) => m.entryId === entry.id);
+        expect(hits, describeMatches(text, hits)).toEqual([]);
       });
     }
   }

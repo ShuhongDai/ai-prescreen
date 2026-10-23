@@ -78,7 +78,7 @@ describe('dismissing an entry (real lexicon)', () => {
     expect(ids(after)).toEqual([REVISED]);
     expect(summaryOf(after, 1)).toMatchObject({
       state: 'flagged',
-      text: '1 artifact',
+      text: '1 to remove',
       dismissed: '1 entry dismissed',
     });
   });

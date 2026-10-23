@@ -2,21 +2,20 @@
 // Wording rule: describe what was flagged, never who or what wrote the text.
 
 import { TIERS, type AnalysisStats, type LexiconEntry, type Tier } from '../engine/index.ts';
-import { baselineText } from './baseline.ts';
 import { falsePositiveReportUrl, NEW_TAB_HINT } from './report.ts';
 
 export interface TierInfo {
-  /** Noun used in the summary line, singular and plural. */
+  /** What follows the count in the summary line (a reviewer's note), singular and plural. */
   one: string;
   many: string;
-  /** Short label for the popover title, the legend and screen readers. */
+  /** Short label for the popover title and screen readers. */
   label: string;
 }
 
 export const TIER_INFO: Record<Tier, TierInfo> = {
-  artifact: { one: 'artifact', many: 'artifacts', label: 'Chatbot artifact' },
-  lexical: { one: 'overused word', many: 'overused words', label: 'Overused wording' },
-  stylistic: { one: 'style signal', many: 'style signals', label: 'Style signal' },
+  artifact: { one: 'to remove', many: 'to remove', label: 'Chatbot artifact' },
+  lexical: { one: 'to consider', many: 'to consider', label: 'Overused wording' },
+  stylistic: { one: 'style note', many: 'style notes', label: 'Style note' },
 };
 
 export function countNoun(n: number, one: string, many: string): string {
@@ -54,14 +53,17 @@ export type SummaryState = 'idle' | 'clean' | 'flagged';
 
 export interface Summary {
   state: SummaryState;
-  /** Counts line, e.g. "2 artifacts · 7 overused words". Goes in the live region. */
+  /** Counts line, e.g. "3 to remove · 12 to consider". Goes in the live region. */
   text: string;
   /**
-   * E.g. "3.1 per 1k words": shown right after the counts but kept OUT of the live region,
-   * since it changes on nearly every keystroke. Null below DENSITY_MIN_WORDS words and
-   * when nothing is flagged.
+   * E.g. "7.3 per 1k words, typical ~8.6": shown right after the counts but kept OUT of
+   * the live region, since it changes on nearly every keystroke. Null below
+   * DENSITY_MIN_WORDS words and when nothing is flagged.
    */
   density: string | null;
+  /** What "typical" means, e.g. "typical human papers, 2019–21" (tooltip and screen
+   * readers); null when the density has no baseline. */
+  densityDetail: string | null;
   /** Secondary line, e.g. about experimental entries; null when there is nothing to add. */
   note: string | null;
   /** True when the note is about hidden experimental matches (UI offers a "turn on" button). */
@@ -108,6 +110,7 @@ export function buildSummary(input: SummaryInput): Summary {
       state: 'idle',
       text: IDLE_TEXT,
       density: null,
+      densityDetail: null,
       note: null,
       offerExperimental: false,
       dismissed: null,
@@ -123,6 +126,7 @@ export function buildSummary(input: SummaryInput): Summary {
       state: 'clean',
       text: hidden ? CLEAN_REVIEWED_TEXT : CLEAN_TEXT,
       density: null,
+      densityDetail: null,
       note,
       offerExperimental: hidden,
       dismissed,
@@ -135,14 +139,15 @@ export function buildSummary(input: SummaryInput): Summary {
 
   // The baseline was measured with the default lexicon, so it is left out while
   // experimental matches are shown.
-  const baseline =
-    input.baseline && experimentalShown === 0 ? `${SEPARATOR}${baselineText(input.baseline)}` : '';
+  const baseline = input.baseline && experimentalShown === 0 ? input.baseline : null;
+  const rated = stats.words >= DENSITY_MIN_WORDS;
+  const typical = baseline ? `, typical ~${baseline.pooledPer1k.toFixed(1)}` : '';
 
   return {
     state: 'flagged',
     text: parts.join(SEPARATOR),
-    density:
-      stats.words >= DENSITY_MIN_WORDS ? `${formatPer1k(stats.per1k)} per 1k words${baseline}` : null,
+    density: rated ? `${formatPer1k(stats.per1k)} per 1k words${typical}` : null,
+    densityDetail: rated && baseline ? `typical human papers, ${baseline.years}` : null,
     note: hidden ? note : experimentalShown > 0 ? shownNote(experimentalShown, stats.total) : null,
     offerExperimental: hidden,
     dismissed,

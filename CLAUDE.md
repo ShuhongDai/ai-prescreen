@@ -45,11 +45,11 @@ Repo: github.com/ShuhongDai/ai-prescreen. Site: GitHub Pages.
 
 | Tier | ID | Meaning | Example | UI |
 |---|---|---|---|---|
-| 1 | `artifact` | Chatbot leftovers; prefer recall (no exceptions for emails, literature or quotes); must fix | "Certainly! Here is…", "As an AI language model", "as of my last knowledge update", "[Insert citation]", "Regenerate response", stray `**bold**` / `###` | red, solid underline + icon |
-| 2 | `lexical` | Overused LLM words/phrases; author decides | delve, underscore, pivotal, intricate, "plays a crucial role in" | yellow, wavy underline |
-| 3 | `stylistic` | Weak signals; off by default | em-dash density, "not only… but also", "In conclusion," openers | grey, dotted underline |
+| 1 | `artifact` | Chatbot leftovers; prefer recall (no exceptions for emails, literature or quotes); must fix | "Certainly! Here is…", "As an AI language model", "as of my last knowledge update", "[Insert citation]", "Regenerate response", stray `**bold**` / `###` | red pen: 2px solid underline + mark in the left margin |
+| 2 | `lexical` | Overused LLM words/phrases; author decides | delve, underscore, pivotal, intricate, "plays a crucial role in" | highlighter: soft yellow background + thin wavy underline |
+| 3 | `stylistic` | Weak signals; shown only at sensitivity Strict | "not only… but also", "In conclusion," openers, "it's not X, it's Y" (`en.stylistic.json`); density signals (em dashes per 1k words etc.) are postponed | pencil: grey dotted underline, no background |
 
-Tier must never be conveyed by colour alone (underline style + icon as well).
+Tier must never be conveyed by colour alone (underline style, margin mark or background as well).
 Lexicon prefers recall (accept broadly); the default view stays readable via a
 fire-rate-based sensitivity filter. Lexical batches are reviewed by human fire-rate (see
 Lexicon): the top firers are retired, everything else is accepted. The page's tier-2
@@ -96,6 +96,8 @@ Entry schema:
   entries appear only with an "experimental lexicon" toggle; `retired` are ignored.
 - Runtime statistics (hit counts, false-positive reports, last reported) live in the
   database (M4), not in the JSON, to keep lexicon diffs clean.
+- Files: `en.artifact.json` (tier 1), `en.lexical.json` (tier 2), `en.stylistic.json` (tier 3,
+  regex pattern signals only; density-type signals are postponed).
 - `npm run validate-lexicon` (run locally, not in CI) validates every lexicon file:
   schema, unique IDs, valid regexes, no duplicate patterns.
 - Review of large batches: Shuhong reviews the highest-firing entries (by human fire-rate)
@@ -143,7 +145,8 @@ Entry schema:
   `prefers-color-scheme`; system font stack.
 - Layout: left = plain textarea (on paste, take `text/plain` only); right = read-only
   highlighted result. Stacked on mobile. No in-place highlighting inside the editor (v1).
-- Summary line on top of results, e.g. "2 artifacts · 7 overused words · 3.1 per 1k words".
+- Summary line as a reviewer's note, e.g. "3 to remove · 12 to consider · 7.3 per 1k words,
+  typical ~8.6" (tier 3: "N style notes").
   The per-1k density is shown only from 200 words up (`DENSITY_MIN_WORDS`), followed by the
   human baseline "typical human papers (2019–21): ~X" (`web/src/baseline.json`: lexical
   hits per 1k words on the arXiv measuring stick with the default lexicon at the chosen
@@ -162,9 +165,36 @@ Entry schema:
   near the footer.
 - The build strips `evidence`, `models` and `independentSources` from the bundled lexicon
   (`vite.config.ts`); the page needs only patterns, notes and suggestions.
-- Visual style: clean, minimal, editor-like. Iterate from screenshots.
+- Visual style: see Design below. Iterate from screenshots.
 - UI language: English. Product name shown as "AI初筛 · ai-prescreen".
 - Vite `base` must be `/ai-prescreen/` for GitHub Pages.
+
+## Design ("academic paper")
+
+Concept: the left pane is the manuscript source; the right pane is a printed page being
+proofread with a red pen, a highlighter and a pencil.
+
+- Typography: result pane and headings in Source Serif 4, self-hosted (`web/src/fonts/`:
+  woff2, Latin subset, weights 400 and 600, OFL; bundled by Vite, no external fonts). CJK
+  fallback for "AI初筛": "Noto Serif CJK SC", "Songti SC", serif. Input pane monospace
+  (ui-monospace, "SF Mono", Menlo, Consolas, monospace), since users paste LaTeX source.
+  UI controls in the system sans stack at a small size, so they read as tool chrome.
+- Colour (CSS variables, WCAG AA in both themes): light paper #FBF8F1, ink #1F1D1A, muted
+  ink #6B655C, rules/borders #E4DDD0; dark "night paper" #1C1A17, ink #E8E2D6, with matching
+  muted and rule tones.
+- Tiers: artifact = red pen #B3261E, 2px solid underline plus a small red mark in the left
+  margin of the line; lexical = highlighter (soft yellow ≈ #F3E3A0, reduced in dark mode)
+  plus a thin wavy underline; stylistic = pencil, grey dotted underline, no background.
+- Layout: one-line header ("AI初筛" in serif and a short muted tagline); one compact toolbar
+  row (sensitivity select left, the summary right as a reviewer's note); the legend lives in
+  a small "Key" popover; the result is a paper sheet with generous margins, a subtle shadow,
+  line height ≈ 1.6 and text width ≤ about 70ch; the highlight popover is a margin
+  annotation card (tier label in small caps, note, suggestions, report links); the
+  disclaimer is a footnote under the sheet (small, superscript marker); the empty state
+  offers "Try an example" (a short sample with all three tiers, shown at Strict for that
+  view without saving the preference); on mobile the panes stack, the sheet is full width
+  and the margins shrink.
+- Keep visible focus states and screen-reader text; never trade accessibility for looks.
 
 ## Architecture
 
@@ -277,6 +307,10 @@ Files: everything for this project stays inside this folder. Review files for Sh
 - 2026-10-23 — M3: reports go to public GitHub issues through issue forms prefilled by URL;
   the example sentence is an ordinary optional field; no privacy warning beyond GitHub's own
   UI; no backend until M4 (Worker + D1 stays planned).
+- 2026-10-23 — Tier 3 ships as pattern signals in `lexicon/en.stylistic.json` (sentence-initial
+  conclusion/summary openers and Moreover/Furthermore, "not only … but", "it's not X, it's Y"),
+  shown only at Strict; density-type signals (em dashes per 1k words etc.) are postponed. Visual
+  design "academic paper" (see Design), with self-hosted Source Serif 4.
 - 2026-10-23 — Tier 1 also prefers recall: artifact patterns no longer avoid emails, literature
   or quoted text, and the same-line quote heuristic is removed. Line anchors stay only where
   they define the artifact (Markdown syntax) or where the bare text is an everyday phrase

@@ -1,0 +1,505 @@
+[
+  {
+    "id": "en.stylistic.in-conclusion-opener",
+    "pattern": "(?<=^[ \\t]*|[.!?][\"')\\]]?[ \\t\\r\\n]+)In\\s+(?:conclusion|summary),",
+    "match": "regex",
+    "inflect": false,
+    "tier": "stylistic",
+    "lang": "en",
+    "status": "accepted",
+    "note": "A formulaic opener (\"In conclusion,\" / \"In summary,\") that LLM-polished text uses for nearly every closing paragraph. The last paragraph can usually make its point without it.",
+    "suggestions": [
+      "(cut it)",
+      "state the conclusion directly"
+    ],
+    "models": [],
+    "added": "2026-10-23",
+    "evidence": [
+      {
+        "type": "paper",
+        "ref": "Jiang F, Hyland K (2024). Does ChatGPT argue like students? Bundles in argumentative essays. Applied Linguistics (accepted manuscript, UEA repository)",
+        "url": "https://ueaeprints.uea.ac.uk/id/eprint/96245"
+      },
+      {
+        "type": "paper",
+        "ref": "Matsui K (2025). Delving Into PubMed Records: How AI-Influenced Vocabulary has Transformed Medical Writing since ChatGPT. Perspectives on Medical Education 14(1)",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12679996/"
+      },
+      {
+        "type": "dataset",
+        "ref": "Paech, S., 2024, antislop-sampler: slop_phrase_prob_adjustments.json (default ban list)",
+        "url": "https://github.com/sam-paech/antislop-sampler/blob/main/slop_phrase_prob_adjustments.json"
+      },
+      {
+        "type": "wiki",
+        "ref": "Wikipedia (WikiProject AI Cleanup), Wikipedia:Signs of AI writing (community guide, 2023-2026)",
+        "url": "https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing"
+      },
+      {
+        "type": "word-list",
+        "ref": "ahmedak, 2026, defluff (prose linter): lexicon-v1.json and packs/ai-llm.txt",
+        "url": "https://github.com/ahmedak/defluff"
+      },
+      {
+        "type": "word-list",
+        "ref": "AI Phrase Finder, 2024-02-12, 100 Common ChatGPT Phrases",
+        "url": "https://aiphrasefinder.com/common-chatgpt-phrases/"
+      },
+      {
+        "type": "word-list",
+        "ref": "Jodie Cook (personal site), 2024 (updated 2026), How to write with ChatGPT without it sounding like ChatGPT: ban list",
+        "url": "https://www.jodiecook.com/ban-list/"
+      },
+      {
+        "type": "word-list",
+        "ref": "P. Yang, 2026, no-ai-slop (agent skill, SKILL.md)",
+        "url": "https://github.com/petergyang/no-ai-slop"
+      },
+      {
+        "type": "media",
+        "ref": "EdScoop (Colin Wood), 2024, New GPTZero feature flags AI's favorite words and phrases",
+        "url": "https://edscoop.com/gptzero-common-ai-words-detection-education-2024/"
+      },
+      {
+        "type": "media",
+        "ref": "The Decoder (M. Bastian), 2024-05-01, Reddit users compile list of words and phrases that unmask ChatGPT's writing style",
+        "url": "https://the-decoder.com/reddit-users-compile-list-of-words-and-phrases-that-unmask-chatgpts-writing-style/"
+      },
+      {
+        "type": "blog",
+        "ref": "AiSDR, 2024-07-08, Words to avoid so you don't sound like AI",
+        "url": "https://aisdr.com/blog/words-to-avoid-so-you-dont-sound-like-ai/"
+      },
+      {
+        "type": "blog",
+        "ref": "DEV Community ('AI Writer'), 2026-06-05, 300+ AI Words and Phrases to Avoid in 2026",
+        "url": "https://dev.to/q404365631/300-ai-words-and-phrases-to-avoid-in-2026-complete-list-20f0"
+      },
+      {
+        "type": "blog",
+        "ref": "Embryo (J. Welch), 2025-03-16 (mod. 2025-05-13), A list of words that AI over-uses",
+        "url": "https://embryo.com/blog/list-words-ai-overuses/"
+      },
+      {
+        "type": "blog",
+        "ref": "Greg Beazley (the beaz, beehiiv), 2024-12-11, Top 50 AI-Detectable Words and Phrases for ChatGPT",
+        "url": "https://gregbeazley.beehiiv.com/p/top-50-ai-detectable-words-and-phrases-for-chatgpt"
+      },
+      {
+        "type": "blog",
+        "ref": "Hastewire Editorial Team, 2025-12-03 (upd. 2026-10-16), AI Words List: Spot Overused Phrases in AI Text",
+        "url": "https://hastewire.com/blog/ai-words-list-spot-overused-phrases-in-ai-text"
+      },
+      {
+        "type": "blog",
+        "ref": "Microsoft 365 Life Hacks, 2024-09-13, Six obvious AI words to avoid in your writing",
+        "url": "https://web.archive.org/web/20250512193337/https://www.microsoft.com/en-us/microsoft-365-life-hacks/everyday-ai/six-obvious-ai-words-to-avoid-in-your-writing"
+      },
+      {
+        "type": "blog",
+        "ref": "Originality.ai (J. Gillham), updated 2025-10-17, Most Commonly Used ChatGPT Words & Phrases",
+        "url": "https://originality.ai/blog/can-humans-detect-chatgpt"
+      },
+      {
+        "type": "blog",
+        "ref": "Originality.ai blog, 2025, 15% of all Forbes Business Council Posts Were Likely AI-Generated in 2024",
+        "url": "https://originality.ai/blog/ai-forbes-business-council-study"
+      },
+      {
+        "type": "blog",
+        "ref": "Undetectable AI (C. Perry), 2025-08-23 (mod. 2026-10-14), Most Common ChatGPT Phrases That Sound Too AI",
+        "url": "https://undetectable.ai/blog/gpt-phrases/"
+      },
+      {
+        "type": "blog",
+        "ref": "Winston AI, 2026-02-25, Most Common ChatGPT Words and Phrases (2026 Edition)",
+        "url": "https://gowinston.ai/most-common-chatgpt-words/"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2023, Ask HN: Why does ChatGPT sound like every BS paper you wrote in college?",
+        "url": "https://news.ycombinator.com/item?id=34974194"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2024, Cheap, outsourced labour in Africa is shaping AI English",
+        "url": "https://news.ycombinator.com/item?id=40623629"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2026, Don't post generated/AI-edited comments. HN is for conversation between humans",
+        "url": "https://news.ycombinator.com/item?id=47340079"
+      },
+      {
+        "type": "forum",
+        "ref": "MetaTalk (MetaFilter), 2025, the case for banning chatgp",
+        "url": "https://metatalk.metafilter.com/26575/the-case-for-banning-chatgp"
+      },
+      {
+        "type": "forum",
+        "ref": "Tildes, 2025, Have you altered the way you write to avoid being perceived as AI?",
+        "url": "https://tildes.net/~tech/1m1v/have_you_altered_the_way_you_write_to_avoid_being_perceived_as_ai"
+      }
+    ],
+    "independentSources": 25
+  },
+  {
+    "id": "en.stylistic.summary-opener",
+    "pattern": "(?<=^[ \\t]*|[.!?][\"')\\]]?[ \\t\\r\\n]+)(?:To\\s+conclude|To\\s+summari[sz]e|To\\s+sum\\s+up|In\\s+sum|In\\s+closing|In\\s+short|All\\s+in\\s+all|In\\s+a\\s+nutshell),",
+    "match": "regex",
+    "inflect": false,
+    "tier": "stylistic",
+    "lang": "en",
+    "status": "accepted",
+    "note": "A stock summary opener (\"To sum up,\", \"All in all,\") common in chatbot-style prose. Consider whether the sentence needs it.",
+    "suggestions": [
+      "(cut it)",
+      "state the point directly"
+    ],
+    "models": [],
+    "added": "2026-10-23",
+    "evidence": [
+      {
+        "type": "dataset",
+        "ref": "Paech, S., 2024, antislop-sampler: slop_phrase_prob_adjustments.json (default ban list)",
+        "url": "https://github.com/sam-paech/antislop-sampler/blob/main/slop_phrase_prob_adjustments.json"
+      },
+      {
+        "type": "word-list",
+        "ref": "ahmedak, 2026, defluff (prose linter): lexicon-v1.json and packs/ai-llm.txt",
+        "url": "https://github.com/ahmedak/defluff"
+      },
+      {
+        "type": "word-list",
+        "ref": "Jodie Cook (personal site), 2024 (updated 2026), How to write with ChatGPT without it sounding like ChatGPT: ban list",
+        "url": "https://www.jodiecook.com/ban-list/"
+      },
+      {
+        "type": "blog",
+        "ref": "AiSDR, 2024-07-08, Words to avoid so you don't sound like AI",
+        "url": "https://aisdr.com/blog/words-to-avoid-so-you-dont-sound-like-ai/"
+      },
+      {
+        "type": "blog",
+        "ref": "DEV Community ('AI Writer'), 2026-06-05, 300+ AI Words and Phrases to Avoid in 2026",
+        "url": "https://dev.to/q404365631/300-ai-words-and-phrases-to-avoid-in-2026-complete-list-20f0"
+      },
+      {
+        "type": "blog",
+        "ref": "Greg Beazley (the beaz, beehiiv), 2024-12-11, Top 50 AI-Detectable Words and Phrases for ChatGPT",
+        "url": "https://gregbeazley.beehiiv.com/p/top-50-ai-detectable-words-and-phrases-for-chatgpt"
+      },
+      {
+        "type": "blog",
+        "ref": "Originality.ai (J. Gillham), updated 2025-10-17, Most Commonly Used ChatGPT Words & Phrases",
+        "url": "https://originality.ai/blog/can-humans-detect-chatgpt"
+      },
+      {
+        "type": "blog",
+        "ref": "Undetectable AI (C. Perry), 2025-08-23 (mod. 2026-10-14), Most Common ChatGPT Phrases That Sound Too AI",
+        "url": "https://undetectable.ai/blog/gpt-phrases/"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2024, Cheap, outsourced labour in Africa is shaping AI English",
+        "url": "https://news.ycombinator.com/item?id=40623629"
+      }
+    ],
+    "independentSources": 9
+  },
+  {
+    "id": "en.stylistic.not-only-but-also",
+    "pattern": "\\bnot\\s+(?:only|just|merely)\\b(?=[^.!?\\n]{1,80}?,?\\s+but\\b)",
+    "match": "regex",
+    "inflect": false,
+    "tier": "stylistic",
+    "lang": "en",
+    "status": "accepted",
+    "note": "The \"not only … but also\" / \"not just … but\" contrast is a favourite rhetorical template of LLM-polished prose. A plain \"and\" often reads better.",
+    "suggestions": [
+      "and",
+      "both … and",
+      "state both points plainly"
+    ],
+    "models": [],
+    "added": "2026-10-23",
+    "evidence": [
+      {
+        "type": "dataset",
+        "ref": "Paech, S., 2024, antislop-sampler: slop_phrase_prob_adjustments.json (default ban list)",
+        "url": "https://github.com/sam-paech/antislop-sampler/blob/main/slop_phrase_prob_adjustments.json"
+      },
+      {
+        "type": "wiki",
+        "ref": "Wikipedia (WikiProject AI Cleanup), Wikipedia:Signs of AI writing (community guide, 2023-2026)",
+        "url": "https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing"
+      },
+      {
+        "type": "word-list",
+        "ref": "Jodie Cook (personal site), 2024 (updated 2026), How to write with ChatGPT without it sounding like ChatGPT: ban list",
+        "url": "https://www.jodiecook.com/ban-list/"
+      },
+      {
+        "type": "media",
+        "ref": "Decrypt (Josh Quittner), 2025, The 5 Biggest 'Tells' That Something Was Written By AI",
+        "url": "https://decrypt.co/348923/5-biggest-tells-something-written-ai"
+      },
+      {
+        "type": "media",
+        "ref": "The Economist (republished under licence by BizNews), 2026, How to actually spot AI-written text",
+        "url": "https://biznews.com/tech/spot-ai-written-text"
+      },
+      {
+        "type": "media",
+        "ref": "The Washington Post analysis, republished by The Boston Globe, 2025, How can you tell if something was written by ChatGPT?",
+        "url": "https://www.bostonglobe.com/2025/11/13/business/chatgpt-writing-style-clues/"
+      },
+      {
+        "type": "blog",
+        "ref": "Async (formerly Podcastle), 2025-03-10 (mod. 2026-03-02), Overused AI words? How to spot them and avoid them entirely",
+        "url": "https://async.com/blog/overused-ai-words/"
+      },
+      {
+        "type": "blog",
+        "ref": "DEV Community ('AI Writer'), 2026-06-05, 300+ AI Words and Phrases to Avoid in 2026",
+        "url": "https://dev.to/q404365631/300-ai-words-and-phrases-to-avoid-in-2026-complete-list-20f0"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2025, Wikipedia: Signs of AI Writing",
+        "url": "https://news.ycombinator.com/item?id=44700558",
+        "derivedFrom": "Wikipedia (WikiProject AI Cleanup), Wikipedia:Signs of AI writing (community guide, 2023-2026)"
+      },
+      {
+        "type": "forum",
+        "ref": "OpenAI Developer Community, 2024, How to stop getting replies with AI sounded boring words?",
+        "url": "https://community.openai.com/t/how-to-stop-getting-replies-with-ai-sounded-bording-words/921109"
+      }
+    ],
+    "independentSources": 9
+  },
+  {
+    "id": "en.stylistic.its-not-x-its-y",
+    "pattern": "\\b(?:it|this|that)(?:'s\\s+not|\\s+is\\s+not|\\s+isn't)\\b(?=[^.!?\\n]{1,60}?[,;:—–-]\\s*(?:it|this|that|they)(?:'s|\\s+is|'re|\\s+are)\\b)",
+    "match": "regex",
+    "inflect": false,
+    "tier": "stylistic",
+    "lang": "en",
+    "status": "accepted",
+    "note": "The \"it's not X, it's Y\" contrast is a familiar chatbot template that sets up a straw man. Stating Y directly is usually stronger.",
+    "suggestions": [
+      "state Y directly",
+      "(cut the \"not X\" part)"
+    ],
+    "models": [],
+    "added": "2026-10-23",
+    "evidence": [
+      {
+        "type": "paper",
+        "ref": "Paech S, Roush A, Goldfeder J, et al. (2025). Antislop: A Comprehensive Framework for Identifying and Eliminating Repetitive Patterns in Language Models. arXiv:2510.15061",
+        "url": "https://arxiv.org/abs/2510.15061v2"
+      },
+      {
+        "type": "word-list",
+        "ref": "Jodie Cook (personal site), 2024 (updated 2026), How to write with ChatGPT without it sounding like ChatGPT: ban list",
+        "url": "https://www.jodiecook.com/ban-list/"
+      },
+      {
+        "type": "media",
+        "ref": "Decrypt (Josh Quittner), 2025, The 5 Biggest 'Tells' That Something Was Written By AI",
+        "url": "https://decrypt.co/348923/5-biggest-tells-something-written-ai"
+      },
+      {
+        "type": "media",
+        "ref": "Pew Research Center (Data Labs), 2026, How much of the internet is written with AI?",
+        "url": "https://www.pewresearch.org/data-labs/2026/08/20/how-much-of-the-internet-is-written-with-ai/"
+      },
+      {
+        "type": "blog",
+        "ref": "DEV Community ('AI Writer'), 2026-06-05, 300+ AI Words and Phrases to Avoid in 2026",
+        "url": "https://dev.to/q404365631/300-ai-words-and-phrases-to-avoid-in-2026-complete-list-20f0"
+      },
+      {
+        "type": "blog",
+        "ref": "How to AI newsletter (Ruben Hassid, Substack), 2025, Ban these ChatGPT words",
+        "url": "https://ruben.substack.com/p/delve"
+      },
+      {
+        "type": "blog",
+        "ref": "MagicPost blog (Naile Titah), 2026, AI Words to Avoid on LinkedIn (129,000 Posts, 2026)",
+        "url": "https://magicpost.in/blog/ai-words-to-avoid-linkedin"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2025, LLM-assisted writing in biomedical publications through excess vocabulary",
+        "url": "https://news.ycombinator.com/item?id=44466751"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2025, Why do LLMs overuse these patterns of speech that aren't overused in the wild?",
+        "url": "https://news.ycombinator.com/item?id=45671160"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2026, Ask HN: How can you instantly tell something was written by AI?",
+        "url": "https://news.ycombinator.com/item?id=46646939"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2026, Don't post generated/AI-edited comments. HN is for conversation between humans",
+        "url": "https://news.ycombinator.com/item?id=47340079"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2026, How to stop Claude from saying load-bearing",
+        "url": "https://news.ycombinator.com/item?id=48905248"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2026, LLM Writing Tropes.md",
+        "url": "https://news.ycombinator.com/item?id=47291513"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2026, Show HN: The load-bearing vocabulary of Claude",
+        "url": "https://news.ycombinator.com/item?id=49461817"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2026, The Biggest Tell That Something Was Written by AI (The Atlantic)",
+        "url": "https://news.ycombinator.com/item?id=48332936"
+      },
+      {
+        "type": "forum",
+        "ref": "LessWrong, 2025, Dialects for Humans: Sounding Distinct from LLMs",
+        "url": "https://www.lesswrong.com/posts/yRoXmjBKJFbc6zSFq/dialects-for-humans-sounding-distinct-from-llms"
+      },
+      {
+        "type": "forum",
+        "ref": "MetaTalk (MetaFilter), 2026, Opinion on AI-generated comments",
+        "url": "https://metatalk.metafilter.com/26951/Opinion-on-AI-generated-comments"
+      },
+      {
+        "type": "forum",
+        "ref": "OpenAI Developer Community, 2024, Avoiding common ChatGPT writing styles and structures",
+        "url": "https://community.openai.com/t/avoiding-common-chatgpt-writing-styles-and-structures/624869"
+      }
+    ],
+    "independentSources": 18
+  },
+  {
+    "id": "en.stylistic.moreover-furthermore",
+    "pattern": "(?<=^[ \\t]*|[.!?][\"')\\]]?[ \\t\\r\\n]+)(?:Moreover|Furthermore)\\b",
+    "match": "regex",
+    "inflect": false,
+    "tier": "stylistic",
+    "lang": "en",
+    "status": "accepted",
+    "note": "Sentence-initial \"Moreover\" / \"Furthermore\" is over-used in LLM-polished text to stack points. Check whether the link is needed at all.",
+    "suggestions": [
+      "also",
+      "and",
+      "(cut it)"
+    ],
+    "models": [],
+    "added": "2026-10-23",
+    "evidence": [
+      {
+        "type": "paper",
+        "ref": "Juzek TS, Ming X, Hernandez JA (2026). Fully Automated Identification of Lexical Alignment and Preference-Stage Shifts in Large Language Models. LREC 2026; arXiv:2606.03165",
+        "url": "https://arxiv.org/abs/2606.03165v1"
+      },
+      {
+        "type": "paper",
+        "ref": "Matsui K (2025). Delving Into PubMed Records: How AI-Influenced Vocabulary has Transformed Medical Writing since ChatGPT. Perspectives on Medical Education 14(1)",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12679996/"
+      },
+      {
+        "type": "paper",
+        "ref": "Zhou L, Zhang R, Dai X, et al. (2025). Large Language Models Penetration in Scholarly Writing and Peer Review. arXiv:2502.11193",
+        "url": "https://arxiv.org/abs/2502.11193v1"
+      },
+      {
+        "type": "dataset",
+        "ref": "Paech, S., 2024, antislop-sampler: slop_phrase_prob_adjustments.json (default ban list)",
+        "url": "https://github.com/sam-paech/antislop-sampler/blob/main/slop_phrase_prob_adjustments.json"
+      },
+      {
+        "type": "word-list",
+        "ref": "ahmedak, 2026, defluff (prose linter): lexicon-v1.json and packs/ai-llm.txt",
+        "url": "https://github.com/ahmedak/defluff"
+      },
+      {
+        "type": "word-list",
+        "ref": "berelevant.ai, 2026, slopless (textlint rules): llm-vocabulary, density, prohibited, seo-filler, academic-boilerplate, llm-openers",
+        "url": "https://github.com/berelevant-ai/slopless"
+      },
+      {
+        "type": "media",
+        "ref": "The Decoder (M. Bastian), 2024-05-01, Reddit users compile list of words and phrases that unmask ChatGPT's writing style",
+        "url": "https://the-decoder.com/reddit-users-compile-list-of-words-and-phrases-that-unmask-chatgpts-writing-style/"
+      },
+      {
+        "type": "blog",
+        "ref": "Blake Stockton (AI Writers Room), 2025-07-07, Don't Write Like AI (4 of 101): Red Flag Words",
+        "url": "https://www.blakestockton.com/p/red-flag-words"
+      },
+      {
+        "type": "blog",
+        "ref": "Carly Ayres (Substack, with Elizabeth Goodspeed), 2024, Spotting machine-made prose",
+        "url": "https://carly.substack.com/p/spotting-machine-made-prose"
+      },
+      {
+        "type": "blog",
+        "ref": "DEV Community ('AI Writer'), 2026-06-05, 300+ AI Words and Phrases to Avoid in 2026",
+        "url": "https://dev.to/q404365631/300-ai-words-and-phrases-to-avoid-in-2026-complete-list-20f0"
+      },
+      {
+        "type": "blog",
+        "ref": "Embryo (J. Welch), 2025-03-16 (mod. 2025-05-13), A list of words that AI over-uses",
+        "url": "https://embryo.com/blog/list-words-ai-overuses/"
+      },
+      {
+        "type": "blog",
+        "ref": "Greg Beazley (the beaz, beehiiv), 2024-12-11, Top 50 AI-Detectable Words and Phrases for ChatGPT",
+        "url": "https://gregbeazley.beehiiv.com/p/top-50-ai-detectable-words-and-phrases-for-chatgpt"
+      },
+      {
+        "type": "blog",
+        "ref": "Hastewire Editorial Team, 2025-12-03 (upd. 2026-10-16), AI Words List: Spot Overused Phrases in AI Text",
+        "url": "https://hastewire.com/blog/ai-words-list-spot-overused-phrases-in-ai-text"
+      },
+      {
+        "type": "blog",
+        "ref": "Matrix Group International blog (Leah Monica), 2025, How to Customize ChatGPT to Avoid Overused AI Words",
+        "url": "https://www.matrixgroup.net/?p=12093"
+      },
+      {
+        "type": "blog",
+        "ref": "Originality.ai blog, 2025, 15% of all Forbes Business Council Posts Were Likely AI-Generated in 2024",
+        "url": "https://originality.ai/blog/ai-forbes-business-council-study"
+      },
+      {
+        "type": "blog",
+        "ref": "Plus AI (D. Li), 2025-12-15, The most overused ChatGPT words",
+        "url": "https://plusai.com/blog/the-most-overused-chatgpt-words"
+      },
+      {
+        "type": "blog",
+        "ref": "Undetectable AI (C. Perry), 2025-08-23 (mod. 2026-10-14), Most Common ChatGPT Phrases That Sound Too AI",
+        "url": "https://undetectable.ai/blog/gpt-phrases/"
+      },
+      {
+        "type": "blog",
+        "ref": "Winston AI, 2026-02-25, Most Common ChatGPT Words and Phrases (2026 Edition)",
+        "url": "https://gowinston.ai/most-common-chatgpt-words/"
+      },
+      {
+        "type": "forum",
+        "ref": "Hacker News, 2024, Ask HN: Why does ChatGPT love the word \"eager\" so much?",
+        "url": "https://news.ycombinator.com/item?id=41224909"
+      }
+    ],
+    "independentSources": 19
+  }
+]

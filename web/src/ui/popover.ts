@@ -1,4 +1,5 @@
-// The highlight popover: a single non-modal dialog, anchored to one highlight at a time.
+// The highlight popover: a single non-modal dialog, anchored to one highlight at a time,
+// styled as a margin annotation card.
 // Text goes in through textContent only (never innerHTML).
 //
 // Focus flow: opening moves focus into the dialog. Escape and the close button close it
@@ -128,6 +129,8 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
   let pointerDownOutside = false;
 
   function fill(model: PopoverModel): void {
+    // The card's left rule shows the tier's pen (style.css).
+    root.dataset.tier = model.tier;
     title.dataset.tier = model.tier;
     title.textContent = model.title;
     experimental.textContent = model.experimental ?? '';

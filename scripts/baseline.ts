@@ -1,6 +1,7 @@
 // Measures, on the pre-2022 arXiv sample, (1) each lexical entry's human fire count (the
-// entry compiled on its own) and (2) the human baseline per tier-2 sensitivity level:
-// lexical hits per 1,000 words with the default (non-experimental) lexicon. Writes
+// entry compiled on its own) and (2) the human baseline per sensitivity level: hits per
+// 1,000 words with the default (non-experimental) entries that level shows (tier 3 only
+// at Strict). Writes
 // web/src/baseline.json. Re-run after changing lexical entries or their status;
 // tests/baseline.test.ts fails until you do. Takes a few minutes.
 //
@@ -9,7 +10,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { TIERS, analyze, compileLexicon, type LexiconEntry } from '../web/src/engine/index.ts';
 import {
-  defaultLexical,
+  defaultEntries,
   lexiconFingerprint,
   measuredLexical,
   type Baseline,
@@ -43,24 +44,25 @@ measured.forEach((entry, n) => {
 });
 const fireData: FireData = { abstracts: abstracts.length, fires };
 
-// (2) Baseline per level, with the default lexical entries the page shows at that level.
+// (2) Baseline per level, with the default entries the page shows at that level.
 const round = (x: number) => Math.round(x * 100) / 100;
 let words = 0;
 function measure(entries: LexiconEntry[]): LevelBaseline {
-  const compiled = compileLexicon(entries);
+  const compiled = compileLexicon(entries, { tiers: TIERS });
   let hits = 0;
   words = 0;
   const rates: number[] = [];
   for (const a of abstracts) {
     const { stats } = analyze(a.abstract, compiled);
-    hits += stats.counts.lexical;
+    hits += stats.total;
     words += stats.words;
-    if (stats.words > 0) rates.push((stats.counts.lexical / stats.words) * 1000);
+    if (stats.words > 0) rates.push((stats.total / stats.words) * 1000);
   }
   rates.sort((x, y) => x - y);
   const quantile = (q: number) => rates[Math.min(rates.length - 1, Math.floor(q * rates.length))] ?? 0;
   return {
-    lexicalEntries: entries.length,
+    lexicalEntries: entries.filter((e) => e.tier === 'lexical').length,
+    stylisticEntries: entries.filter((e) => e.tier === 'stylistic').length,
     pooledPer1k: round((hits / words) * 1000),
     meanPer1k: round(rates.reduce((s, r) => s + r, 0) / rates.length),
     medianPer1k: round(quantile(0.5)),
@@ -68,7 +70,7 @@ function measure(entries: LexiconEntry[]): LevelBaseline {
   };
 }
 const levels = Object.fromEntries(
-  SENSITIVITIES.map((level) => [level, measure(bySensitivity(defaultLexical(lexicon), level, fireData))]),
+  SENSITIVITIES.map((level) => [level, measure(bySensitivity(defaultEntries(lexicon), level, fireData))]),
 ) as Baseline['levels'];
 
 const years = [...new Set(abstracts.map((a) => a.published.slice(0, 4)))].sort();

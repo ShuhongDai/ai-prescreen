@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import baseline from '../web/src/baseline.json';
 import { LEXICON } from '../web/src/lexicon.ts';
-import { defaultLexical, lexiconFingerprint, measuredLexical } from '../web/src/ui/baseline.ts';
+import { defaultEntries, defaultLexical, lexiconFingerprint, measuredLexical } from '../web/src/ui/baseline.ts';
 import { buildSummary } from '../web/src/ui/format.ts';
 import { SENSITIVITIES, bySensitivity } from '../web/src/ui/sensitivity.ts';
 
@@ -19,7 +19,9 @@ describe('human baseline', () => {
   it('has one level per sensitivity, consistent with the filter', () => {
     for (const level of SENSITIVITIES) {
       const b = baseline.levels[level];
-      expect(b.lexicalEntries).toBe(bySensitivity(defaultLexical(LEXICON), level, baseline).length);
+      const shown = bySensitivity(defaultEntries(LEXICON), level, baseline);
+      expect(b.lexicalEntries).toBe(shown.filter((e) => e.tier === 'lexical').length);
+      expect(b.stylisticEntries).toBe(shown.filter((e) => e.tier === 'stylistic').length);
       expect(b.medianPer1k).toBeLessThanOrEqual(b.p90Per1k);
     }
     const { off, loose, standard, strict } = baseline.levels;
@@ -27,6 +29,9 @@ describe('human baseline', () => {
     expect(loose.lexicalEntries).toBeLessThanOrEqual(standard.lexicalEntries);
     expect(standard.lexicalEntries).toBeLessThanOrEqual(strict.lexicalEntries);
     expect(strict.lexicalEntries).toBe(defaultLexical(LEXICON).length);
+    // Tier 3 counts only at Strict.
+    expect([off, loose, standard].map((l) => l.stylisticEntries)).toEqual([0, 0, 0]);
+    expect(strict.stylisticEntries).toBeGreaterThan(0);
     expect(loose.pooledPer1k).toBeLessThanOrEqual(standard.pooledPer1k);
     expect(standard.pooledPer1k).toBeLessThanOrEqual(strict.pooledPer1k);
   });
@@ -49,7 +54,7 @@ describe('summary line with the baseline', () => {
     });
 
   it('follows the density from 200 words on', () => {
-    expect(summary(250).density).toBe('20.0 per 1k words · typical human papers (2019–21): ~8.6');
+    expect(summary(250).density).toBe('20.0 per 1k words, typical ~8.6');
     expect(summary(199).density).toBeNull();
   });
 

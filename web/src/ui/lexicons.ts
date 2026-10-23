@@ -6,6 +6,7 @@
 // entry is flagged again instead of disappearing with it.
 
 import {
+  TIERS,
   analyze,
   compileLexicon,
   type AnalysisResult,
@@ -49,10 +50,13 @@ export function compileLexicons(
     : entries;
   const kept =
     choice.dismissed.size === 0 ? shown : shown.filter((e) => !choice.dismissed.has(e.id));
-  const withCandidates = compileLexicon(kept, { includeCandidates: true });
+  // All tiers: which stylistic entries are shown is decided by the sensitivity filter.
+  const withCandidates = compileLexicon(kept, { includeCandidates: true, tiers: TIERS });
   return {
     experimental: choice.experimental,
-    active: choice.experimental ? withCandidates : compileLexicon(kept, { includeCandidates: false }),
+    active: choice.experimental
+      ? withCandidates
+      : compileLexicon(kept, { includeCandidates: false, tiers: TIERS }),
     withCandidates,
     candidates: new Set(kept.filter((e) => isExperimental(e)).map((e) => e.id)),
   };

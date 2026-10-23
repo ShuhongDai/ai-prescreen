@@ -3,10 +3,11 @@
   "years": "2019–21",
   "abstracts": 2010,
   "words": 321139,
-  "fingerprint": "3b864b19",
+  "fingerprint": "383f8586",
   "levels": {
     "off": {
       "lexicalEntries": 0,
+      "stylisticEntries": 0,
       "pooledPer1k": 0,
       "meanPer1k": 0,
       "medianPer1k": 0,
@@ -14,6 +15,7 @@
     },
     "loose": {
       "lexicalEntries": 1303,
+      "stylisticEntries": 0,
       "pooledPer1k": 2.82,
       "meanPer1k": 2.72,
       "medianPer1k": 0,
@@ -21,6 +23,7 @@
     },
     "standard": {
       "lexicalEntries": 1459,
+      "stylisticEntries": 0,
       "pooledPer1k": 8.59,
       "meanPer1k": 8.44,
       "medianPer1k": 6.17,
@@ -28,10 +31,11 @@
     },
     "strict": {
       "lexicalEntries": 1552,
-      "pooledPer1k": 20.94,
-      "meanPer1k": 20.72,
-      "medianPer1k": 18.69,
-      "p90Per1k": 41.98
+      "stylisticEntries": 5,
+      "pooledPer1k": 21.85,
+      "meanPer1k": 21.62,
+      "medianPer1k": 19.35,
+      "p90Per1k": 43.48
     }
   },
   "fires": {

@@ -1,0 +1,22 @@
+{
+  "en.stylistic.in-conclusion-opener": {
+    "positive": ["In conclusion, the method works.", "Results are robust. In summary, we propose a simpler model.", "The trend holds.\n\nIn conclusion, ..."],
+    "negative": ["They wrote in conclusion, nothing more.", "The section ends in summary form."]
+  },
+  "en.stylistic.summary-opener": {
+    "positive": ["To sum up, the approach scales.", "All in all, a good year.", "It worked. In short, we were lucky.", "To summarise, three points stand out."],
+    "negative": ["In short supply, they rationed water.", "We want to sum up the totals."]
+  },
+  "en.stylistic.not-only-but-also": {
+    "positive": ["Parks not only cool the city but also reshape the wind.", "This is not just possible, but likely."],
+    "negative": ["Not only that.", "It was not only late. But it was cheap."]
+  },
+  "en.stylistic.its-not-x-its-y": {
+    "positive": ["It's not a bug, it's a feature.", "This is not about money — it is about trust.", "That isn't luck; it's design."],
+    "negative": ["It is not clear whether it works.", "It's not a bug. The feature works."]
+  },
+  "en.stylistic.moreover-furthermore": {
+    "positive": ["Moreover, the data show a trend.", "The results hold. Furthermore the model is fast."],
+    "negative": ["There is moreover a second issue.", "We note, furthermore, that the bound is tight."]
+  }
+}

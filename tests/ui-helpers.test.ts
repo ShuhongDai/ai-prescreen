@@ -73,21 +73,44 @@ describe('buildSummary', () => {
     });
   });
 
-  it('uses singular and plural and one decimal per 1k words', () => {
+  it("reads as a reviewer's note, with one decimal per 1k words", () => {
     expect(line(buildSummary({ ...base, stats: stats({ artifact: 1 }, 320) }))).toBe(
-      '1 artifact · 3.1 per 1k words',
+      '1 to remove · 3.1 per 1k words',
     );
     expect(line(buildSummary({ ...base, stats: stats({ artifact: 2, lexical: 7 }, 1000) }))).toBe(
-      '2 artifacts · 7 overused words · 9.0 per 1k words',
+      '2 to remove · 7 to consider · 9.0 per 1k words',
     );
-    expect(line(buildSummary({ ...base, stats: stats({ lexical: 1, stylistic: 3 }, 2000) }))).toBe(
-      '1 overused word · 3 style signals · 2.0 per 1k words',
+    expect(line(buildSummary({ ...base, stats: stats({ lexical: 1, stylistic: 1 }, 2000) }))).toBe(
+      '1 to consider · 1 style note · 1.0 per 1k words',
     );
+    expect(buildSummary({ ...base, stats: stats({ stylistic: 3 }, 20) }).text).toBe('3 style notes');
+  });
+
+  it('adds the typical rate of human papers, explained in a long form', () => {
+    const baseline = { years: '2019–21', pooledPer1k: 8.64 };
+    const s = buildSummary({ ...base, baseline, stats: stats({ artifact: 3, lexical: 12 }, 2055) });
+    expect(line(s)).toBe('3 to remove · 12 to consider · 7.3 per 1k words, typical ~8.6');
+    expect(s.text).toBe('3 to remove · 12 to consider');
+    expect(s.densityDetail).toBe('typical human papers, 2019–21');
+    // No rate below 200 words, so nothing to compare either.
+    const short = buildSummary({ ...base, baseline, stats: stats({ lexical: 2 }, 150) });
+    expect([short.density, short.densityDetail]).toEqual([null, null]);
+    // Left out while experimental matches are shown (measured with the default lexicon).
+    const exp = buildSummary({
+      ...base,
+      baseline,
+      experimentalShown: 1,
+      stats: stats({ lexical: 2 }, 400),
+    });
+    expect([exp.density, exp.densityDetail]).toEqual(['5.0 per 1k words', null]);
+    // Without a baseline (sensitivity Off) only the rate.
+    const off = buildSummary({ ...base, baseline: null, stats: stats({ artifact: 1 }, 1000) });
+    expect([off.density, off.densityDetail]).toEqual(['1.0 per 1k words', null]);
   });
 
   it('keeps the rate out of the counts text (live region) as a separate part', () => {
     const s = buildSummary({ ...base, stats: stats({ artifact: 2, lexical: 7 }, 2260) });
-    expect(s.text).toBe('2 artifacts · 7 overused words');
+    expect(s.text).toBe('2 to remove · 7 to consider');
     expect(s.density).toBe('4.0 per 1k words');
     expect(densitySuffix(s)).toBe(' · 4.0 per 1k words');
     // Typing that only moves the rate leaves the live-region text unchanged.
@@ -98,23 +121,23 @@ describe('buildSummary', () => {
 
   it('omits the rate when there are no words', () => {
     const s = buildSummary({ ...base, stats: stats({ artifact: 1 }, 0) });
-    expect([s.text, s.density, densitySuffix(s)]).toEqual(['1 artifact', null, '']);
+    expect([s.text, s.density, densitySuffix(s)]).toEqual(['1 to remove', null, '']);
   });
 
   it(`hides the rate below ${DENSITY_MIN_WORDS} words and shows it from there on`, () => {
     expect(DENSITY_MIN_WORDS).toBe(200);
     const below = buildSummary({ ...base, stats: stats({ artifact: 1, lexical: 2 }, 199) });
-    expect([below.text, below.density]).toEqual(['1 artifact · 2 overused words', null]);
+    expect([below.text, below.density]).toEqual(['1 to remove · 2 to consider', null]);
     const at = buildSummary({ ...base, stats: stats({ artifact: 1, lexical: 2 }, 200) });
-    expect([at.text, at.density]).toEqual(['1 artifact · 2 overused words', '15.0 per 1k words']);
-    expect(line(at)).toBe('1 artifact · 2 overused words · 15.0 per 1k words');
-    expect(line(buildSummary({ ...base, stats: stats({ lexical: 1 }, 6) }))).toBe('1 overused word');
+    expect([at.text, at.density]).toEqual(['1 to remove · 2 to consider', '15.0 per 1k words']);
+    expect(line(at)).toBe('1 to remove · 2 to consider · 15.0 per 1k words');
+    expect(line(buildSummary({ ...base, stats: stats({ lexical: 1 }, 6) }))).toBe('1 to consider');
   });
 
   it('lists tiers in the order artifact, lexical, stylistic', () => {
     expect(
       line(buildSummary({ ...base, stats: stats({ stylistic: 2, lexical: 1, artifact: 3 }, 1000) })),
-    ).toBe('3 artifacts · 1 overused word · 2 style signals · 6.0 per 1k words');
+    ).toBe('3 to remove · 1 to consider · 2 style notes · 6.0 per 1k words');
   });
 
   it('says when experimental matches are hidden, briefly', () => {

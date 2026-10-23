@@ -14,40 +14,102 @@
   </head>
   <body>
     <header class="site-header">
-      <h1 class="site-title">AI初筛 · ai-prescreen</h1>
+      <h1 class="site-title">AI初筛</h1>
       <p class="site-tagline">
-        A self-check linter for your drafts: it highlights leftover chatbot text and wording that
-        may read as templated / AI-like, so you can consider revising. It is not a detector and
-        makes no judgement about who wrote the text.
+        <span class="site-name">ai-prescreen</span> · a self-check for chatbot leftovers and
+        overused wording
       </p>
     </header>
 
     <div class="toolbar">
-      <div class="sensitivity">
-        <label for="sensitivity">Overused-word sensitivity</label>
-        <select id="sensitivity" aria-describedby="sensitivity-help">
+      <div class="controls">
+        <label class="control-label" for="sensitivity">Sensitivity</label>
+        <select id="sensitivity" class="select" aria-describedby="sensitivity-help">
           <option value="off">Off (artifacts only)</option>
           <option value="loose">Loose</option>
           <option value="standard" selected>Standard</option>
           <option value="strict">Strict</option>
         </select>
-        <span id="sensitivity-help" class="toggle-help"
-          >Loose shows only words found in ≤0.25% of human papers (2019–21), Standard ≤1%,
-          Strict all</span
+        <span id="sensitivity-help" class="sr-only"
+          >Overused words: Loose shows only those found in at most 0.25% of human papers
+          (2019–21), Standard 1%, Strict all of them plus style notes. Off shows chatbot
+          artifacts only.</span
         >
+        <div class="key">
+          <button
+            type="button"
+            id="key-button"
+            class="chip"
+            aria-expanded="false"
+            aria-controls="key-panel"
+          >
+            Key
+          </button>
+          <div id="key-panel" class="key-panel" role="group" aria-label="Key to the marks" hidden>
+            <ul class="key-list">
+              <li>
+                <span class="key-sample"><mark class="hl hl--artifact">Certainly!</mark></span>
+                <span><strong>Red pen</strong>: chatbot leftover; remove it.</span>
+              </li>
+              <li>
+                <span class="key-sample"><mark class="hl hl--lexical">delve</mark></span>
+                <span><strong>Highlighter</strong>: overused wording; your call.</span>
+              </li>
+              <li>
+                <span class="key-sample"><mark class="hl hl--stylistic">not only</mark></span>
+                <span><strong>Pencil</strong>: style note (Strict only).</span>
+              </li>
+              <li>
+                <span class="key-sample"
+                  ><mark class="hl hl--lexical hl--experimental">dashed</mark></span
+                >
+                <span><strong>Dashed box</strong>: experimental entry, still under review.</span>
+              </li>
+            </ul>
+            <p class="key-note">
+              Sensitivity: Loose shows only overused words found in ≤0.25% of human papers
+              (2019–21), Standard ≤1%, Strict all of them plus style notes.
+            </p>
+          </div>
+        </div>
       </div>
-      <ul class="legend" aria-label="Legend">
-        <li><mark class="hl hl--artifact">Certainly!</mark> chatbot artifact — remove</li>
-        <li><mark class="hl hl--lexical">delve</mark> overused wording — your call</li>
-        <li><mark class="hl hl--stylistic">not only</mark> weak style signal</li>
-        <li>
-          <mark class="hl hl--artifact hl--experimental">dashed box</mark> experimental entry
-        </li>
-      </ul>
+
+      <!-- The reviewer's note. Two live regions: the counts, and the notes under them. The
+           per-1k rate sits right after the counts but outside both, because it changes on
+           nearly every keystroke and would make screen readers repeat the summary. -->
+      <div id="summary" class="summary" data-state="idle">
+        <p class="summary-line">
+          <span id="summary-text" class="summary-text" role="status"
+            >Paste or type a draft to check it.</span
+          ><span id="summary-density" class="summary-density" hidden
+            ><span id="summary-rate"></span
+            ><span id="summary-rate-detail" class="sr-only"></span
+          ></span>
+        </p>
+        <div class="summary-notes" role="status">
+          <p id="summary-note" class="summary-note" hidden>
+            <span id="summary-note-text"></span>
+            <button type="button" id="enable-experimental" class="link-button" hidden>
+              Turn on Experimental lexicon
+            </button>
+          </p>
+          <p id="summary-dismissed" class="summary-note" hidden>
+            <span id="summary-dismissed-text"></span><span aria-hidden="true"> · </span
+            ><button
+              type="button"
+              id="undo-dismiss"
+              class="link-button"
+              aria-describedby="summary-dismissed-text"
+            >
+              Undo
+            </button>
+          </p>
+        </div>
+      </div>
     </div>
 
     <main class="panes">
-      <section class="pane" aria-labelledby="input-label">
+      <section class="pane pane--source" aria-labelledby="input-label">
         <div class="pane-head">
           <label id="input-label" class="pane-title" for="input">Your draft</label>
         </div>
@@ -65,55 +127,36 @@
         ></textarea>
       </section>
 
-      <section class="pane" aria-labelledby="result-title">
+      <section class="pane pane--sheet" aria-labelledby="result-title">
         <div class="pane-head">
-          <h2 id="result-title" class="pane-title">Result</h2>
+          <h2 class="pane-title">
+            <span id="result-title">Result</span><sup class="fn-ref" aria-hidden="true">*</sup>
+          </h2>
           <p id="result-hint" class="pane-hint" hidden>Select a highlight for details</p>
         </div>
-        <p class="pane-note">
-          Self-check tool. Highlights are hints, not verdicts; you decide what to change and
-          remain responsible for your text.
-        </p>
-        <!-- Two live regions: the counts, and the notes under them. The per-1k rate sits
-             right after the counts but outside both, because it changes on nearly every
-             keystroke and would make screen readers repeat the summary while typing. -->
-        <div id="summary" class="summary" data-state="idle">
-          <p class="summary-line">
-            <span id="summary-text" class="summary-text" role="status"
-              >Paste or type a draft to check it.</span
-            ><span id="summary-density" class="summary-density" hidden></span>
-          </p>
-          <div class="summary-notes" role="status">
-            <p id="summary-note" class="summary-note" hidden>
-              <span id="summary-note-text"></span>
-              <button type="button" id="enable-experimental" class="link-button" hidden>
-                Turn on Experimental lexicon
-              </button>
-            </p>
-            <p id="summary-dismissed" class="summary-note" hidden>
-              <span id="summary-dismissed-text"></span><span aria-hidden="true"> · </span
-              ><button
-                type="button"
-                id="undo-dismiss"
-                class="link-button"
-                aria-describedby="summary-dismissed-text"
-              >
-                Undo
-              </button>
-            </p>
+        <div class="sheet-wrap">
+          <div
+            id="result"
+            class="result sheet"
+            role="group"
+            tabindex="0"
+            aria-labelledby="result-title"
+            aria-describedby="summary-text summary-density summary-note-text"
+          ></div>
+          <!-- Inserted here by script: the highlight popover (role="dialog",
+               src/ui/popover.ts) and the "Report as AI-like" link for selected text
+               (src/ui/phrase-report.ts). -->
+          <div id="empty" class="sheet-empty">
+            <p>Paste a draft on the left to have it marked up.</p>
+            <button type="button" id="try-example" class="button">Try an example</button>
           </div>
         </div>
-        <div
-          id="result"
-          class="result"
-          role="group"
-          tabindex="0"
-          aria-labelledby="result-title"
-          aria-describedby="summary-text summary-density summary-note-text"
-        ></div>
-        <!-- Inserted here by script: the highlight popover (role="dialog", src/ui/popover.ts)
-             and the "Report as AI-like" link for selected text (src/ui/phrase-report.ts). -->
       </section>
+
+      <p id="disclaimer" class="footnote">
+        <span class="fn-mark" aria-hidden="true">*</span> Self-check tool. Highlights are hints,
+        not verdicts; you decide what to change and remain responsible for your text.
+      </p>
     </main>
 
     <details id="advanced" class="advanced">
@@ -142,9 +185,14 @@
     </details>
 
     <footer class="site-footer">
-      <p><strong>Your text stays in your browser. Nothing is sent unless you open a report on GitHub.</strong></p>
       <p>
-        Code MIT · lexicon CC BY 4.0 ·
+        <strong
+          >Your text stays in your browser. Nothing is sent unless you open a report on
+          GitHub.</strong
+        >
+      </p>
+      <p>
+        Code MIT · lexicon CC BY 4.0 · Source Serif 4 (OFL) ·
         <a href="https://github.com/ShuhongDai/ai-prescreen">Source on GitHub</a>
       </p>
     </footer>

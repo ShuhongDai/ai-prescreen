@@ -2,7 +2,9 @@ import './style.css';
 import baseline from './baseline.json';
 import type { LexiconEntry } from './engine/index.ts';
 import { LEXICON } from './lexicon.ts';
+import { setupDisclosure } from './ui/disclosure.ts';
 import { focusIndexAfterDismiss } from './ui/dismiss.ts';
+import { EXAMPLE_TEXT } from './ui/example.ts';
 import { buildSummary, densitySuffix, popoverModel } from './ui/format.ts';
 import { analyzeDraft, compileLexicons } from './ui/lexicons.ts';
 import { createPhraseReport } from './ui/phrase-report.ts';
@@ -35,6 +37,8 @@ const sensitivitySelect = byId<HTMLSelectElement>('sensitivity');
 const summaryBox = byId<HTMLDivElement>('summary');
 const summaryText = byId<HTMLSpanElement>('summary-text');
 const summaryDensity = byId<HTMLSpanElement>('summary-density');
+const summaryRate = byId<HTMLSpanElement>('summary-rate');
+const summaryRateDetail = byId<HTMLSpanElement>('summary-rate-detail');
 const summaryNote = byId<HTMLParagraphElement>('summary-note');
 const summaryNoteText = byId<HTMLSpanElement>('summary-note-text');
 const enableButton = byId<HTMLButtonElement>('enable-experimental');
@@ -43,6 +47,11 @@ const dismissedLabel = byId<HTMLSpanElement>('summary-dismissed-text');
 const undoButton = byId<HTMLButtonElement>('undo-dismiss');
 const advanced = byId<HTMLDetailsElement>('advanced');
 const reportPhraseLink = byId<HTMLAnchorElement>('report-phrase');
+const emptyState = byId<HTMLDivElement>('empty');
+const tryExample = byId<HTMLButtonElement>('try-example');
+
+// The "Key" to the marks (red pen, highlighter, pencil, dashed box).
+setupDisclosure(byId<HTMLButtonElement>('key-button'), byId<HTMLDivElement>('key-panel'));
 
 // The empty "report an AI-like phrase" form, for keyboard users and phrases not on screen.
 reportPhraseLink.href = newPhraseReportUrl('');
@@ -166,7 +175,11 @@ function update(): void {
   setText(summaryText, summary.text);
   // Outside the live regions: it changes on nearly every keystroke. Emptied (not just
   // hidden) when there is no rate, since #result's aria-describedby still reads it.
-  setText(summaryDensity, densitySuffix(summary));
+  // "typical" is explained in a tooltip and, for screen readers, in hidden text.
+  setText(summaryRate, densitySuffix(summary));
+  setText(summaryRateDetail, summary.densityDetail ? ` (${summary.densityDetail})` : '');
+  if (summary.densityDetail) summaryDensity.title = summary.densityDetail;
+  else summaryDensity.removeAttribute('title');
   setHidden(summaryDensity, summary.density === null);
   setText(summaryNoteText, summary.note ?? '');
   setHidden(summaryNote, summary.note === null);
@@ -174,6 +187,7 @@ function update(): void {
   setText(dismissedLabel, summary.dismissed ?? '');
   setHidden(dismissedLine, summary.dismissed === null);
   setHidden(resultHint, summary.state !== 'flagged');
+  setHidden(emptyState, summary.state !== 'idle');
   result.dataset.state = summary.state;
   highlights = renderMirror(result, shownText, res.matches, entries);
   lastUpdateMs = performance.now() - started;
@@ -257,6 +271,17 @@ enableButton.addEventListener('click', () => {
   toggle.dispatchEvent(new Event('change'));
   // This button disappears with the update; stay with the results rather than jump to
   // the Advanced area (the summary's live region announces the change).
+  result.focus({ preventScroll: true });
+});
+tryExample.addEventListener('click', () => {
+  input.value = EXAMPLE_TEXT;
+  // Shown at Strict so all three tiers appear. For this view only: the saved preference
+  // is left alone, but the select shows what is in effect.
+  sensitivity = 'strict';
+  sensitivitySelect.value = sensitivity;
+  recompile();
+  update();
+  // The button is gone now; continue with the marked-up example.
   result.focus({ preventScroll: true });
 });
 undoButton.addEventListener('click', () => {

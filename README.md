@@ -15,7 +15,8 @@ decide whether to revise it.
 - **Instant.** Analysis runs locally as you paste.
 
 > Status: early development. Live at https://shuhongdai.github.io/ai-prescreen/ — checks for
-> chatbot artifacts (tier 1) and over-used LLM vocabulary (tier 2).
+> chatbot artifacts (tier 1), over-used LLM vocabulary (tier 2) and, at sensitivity Strict,
+> style signals (tier 3).
 
 ## Detection tiers
 

@@ -8,19 +8,43 @@
 // dialog sat right after its highlight in the tab order). Clicking outside, or moving
 // focus elsewhere, just closes it.
 //
-// Position: fixed, next to the clicked line of the highlight (below, or above when there
-// is no room), clamped to the viewport. It follows the highlight while the page or the
-// result pane scrolls and closes once the highlight is scrolled out of view.
+// Position (fixed), chosen again on every scroll and resize:
+// - "margin": a margin note in the sheet's right margin (its note column), aligned to the
+//   highlight's line, with a thin connector line from the end of the highlight, so it
+//   never covers the text being read;
+// - "float": next to the clicked line (below, or above when there is no room) when the
+//   sheet has no note column;
+// - "sheet": a bottom sheet (CSS) on a narrow or short viewport (phones in either
+//   orientation), or when floating would cover the highlight; the highlight is scrolled
+//   above it. The choice is chooseCardMode() in position.ts.
+// The card follows the highlight while the page or the result pane scrolls and closes
+// once the highlight is scrolled out of view. No fade-in: opaque from the first frame.
 
 import type { PopoverModel } from './format.ts';
 import {
+  chooseCardMode,
+  coversAnchor,
   intersection,
   intersects,
+  isCompactViewport,
   lineIndexAt,
+  noteColumn,
+  placeMarginNote,
   placePopover,
   VIEWPORT_MARGIN,
   type Box,
+  type CardMode,
+  type Column,
 } from './position.ts';
+
+/** The phone layout of style.css (stacked panes); main.ts uses it for the paste reveal. */
+export const BOTTOM_SHEET_QUERY = '(max-width: 767.98px)';
+/** A note column narrower than this (px) is not used: the card floats instead. */
+const MIN_NOTE_COLUMN = 176;
+
+function matches(query: string): boolean {
+  return typeof window.matchMedia === 'function' && window.matchMedia(query).matches;
+}
 
 export interface PopoverOptions<T> {
   /**
@@ -33,6 +57,8 @@ export interface PopoverOptions<T> {
   clipRect?(): Box | null;
   /** The highlight after `anchor` in tab order (for Tab past the end of the popover). */
   nextAfter?(anchor: HTMLElement): HTMLElement | null;
+  /** The sheet the highlights are on; its right padding, when wide enough, holds the card. */
+  sheet?: HTMLElement;
 }
 
 export interface OpenRequest<T> {
@@ -120,6 +146,11 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
 
   root.append(head, experimental, quote, whySection, suggestionsSection, actions);
 
+  // The margin note's line to its highlight; inserted next to the card on first use.
+  const connector = el('div', 'popover-connector');
+  connector.setAttribute('aria-hidden', 'true');
+  connector.hidden = true;
+
   // ---- State ----
   let anchor: HTMLElement | null = null;
   let current: { context: T } | null = null;
@@ -129,8 +160,9 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
   let pointerDownOutside = false;
 
   function fill(model: PopoverModel): void {
-    // The card's left rule shows the tier's pen (style.css).
+    // The card's rule and the connector show the tier's pen (style.css).
     root.dataset.tier = model.tier;
+    connector.dataset.tier = model.tier;
     title.dataset.tier = model.tier;
     title.textContent = model.title;
     experimental.textContent = model.experimental ?? '';
@@ -182,16 +214,74 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
     return intersects(box, area);
   }
 
-  function place(): void {
+  function sheetColumn(): Column | null {
+    const sheet = options.sheet;
+    if (!sheet) return null;
+    const padding = Number.parseFloat(getComputedStyle(sheet).paddingRight) || 0;
+    const rect = sheet.getBoundingClientRect();
+    return noteColumn(rect, sheet.clientLeft, sheet.clientWidth, padding, MIN_NOTE_COLUMN);
+  }
+
+  function resetGeometry(): void {
+    for (const p of ['top', 'left', 'width', 'maxWidth', 'maxHeight'] as const) root.style[p] = '';
+    connector.hidden = true;
+  }
+
+  function place(): CardMode | null {
     const box = anchorBox();
-    if (!box) return;
+    if (!box) return null;
     const vp = viewport();
-    root.style.maxWidth = `${Math.max(0, vp.width - 2 * VIEWPORT_MARGIN)}px`;
-    root.style.maxHeight = `${Math.max(0, vp.height - 2 * VIEWPORT_MARGIN)}px`;
-    const pos = placePopover(box, { width: root.offsetWidth, height: root.offsetHeight }, vp);
-    root.style.top = `${pos.top}px`;
-    root.style.left = `${pos.left}px`;
-    root.dataset.placement = pos.placement;
+    // The window size as media queries see it (scrollbar included).
+    const screen = { width: window.innerWidth || vp.width, height: window.innerHeight || vp.height };
+    const column = isCompactViewport(screen) ? null : sheetColumn();
+    resetGeometry();
+
+    if (chooseCardMode(screen, column !== null, false) === 'margin' && column) {
+      root.dataset.mode = 'margin';
+      root.style.maxHeight = `${Math.max(0, vp.height - 2 * VIEWPORT_MARGIN)}px`;
+      root.style.width = `${placeMarginNote(box, column, 0, vp).width}px`;
+      const note = placeMarginNote(box, column, root.offsetHeight, vp);
+      root.style.top = `${note.top}px`;
+      root.style.left = `${note.left}px`;
+      if (note.connector) {
+        connector.style.top = `${note.connector.top}px`;
+        connector.style.left = `${note.connector.left}px`;
+        connector.style.width = `${note.connector.width}px`;
+        connector.hidden = false;
+      }
+      return 'margin';
+    }
+
+    if (!isCompactViewport(screen)) {
+      root.dataset.mode = 'float';
+      root.style.maxWidth = `${Math.max(0, vp.width - 2 * VIEWPORT_MARGIN)}px`;
+      root.style.maxHeight = `${Math.max(0, vp.height - 2 * VIEWPORT_MARGIN)}px`;
+      const size = { width: root.offsetWidth, height: root.offsetHeight };
+      const pos = placePopover(box, size, vp);
+      if (chooseCardMode(screen, false, coversAnchor(pos, size, box)) === 'float') {
+        root.style.top = `${pos.top}px`;
+        root.style.left = `${pos.left}px`;
+        root.dataset.placement = pos.placement;
+        return 'float';
+      }
+      resetGeometry();
+    }
+
+    root.dataset.mode = 'sheet'; // fixed to the bottom by style.css
+    return 'sheet';
+  }
+
+  /**
+   * Bottom sheet: when it covers the highlight, scroll (never move focus) so the highlight
+   * comes to the top of the view, above the sheet. scrollIntoView handles both the result
+   * pane (when it scrolls on its own) and the page; marks keep a scroll margin (style.css).
+   */
+  function revealAboveSheet(): void {
+    const box = anchorBox();
+    if (!anchor || !box) return;
+    if (box.bottom + 12 <= root.getBoundingClientRect().top) return;
+    const behavior = matches('(prefers-reduced-motion: reduce)') ? 'auto' : 'smooth';
+    anchor.scrollIntoView({ block: 'start', inline: 'nearest', behavior });
   }
 
   // ---- Open / close ----
@@ -204,10 +294,12 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
     line = point ? lineIndexAt(anchor.getClientRects(), point.x, point.y) : 0;
     anchor.setAttribute('aria-expanded', 'true');
     pointerDownOutside = false;
+    if (!connector.isConnected) root.after(connector);
     root.hidden = false;
-    place();
+    const mode = place();
     listen(true);
     root.focus({ preventScroll: true });
+    if (mode === 'sheet') revealAboveSheet();
   }
 
   /** Closes; moves focus to `focusTo` first (before the focused control is hidden). */
@@ -224,6 +316,7 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
     was.setAttribute('aria-expanded', 'false');
     if (focusTo?.isConnected) focusTo.focus({ preventScroll });
     root.hidden = true;
+    connector.hidden = true;
   }
 
   function close({ returnFocus = false }: { returnFocus?: boolean } = {}): void {

@@ -105,3 +105,103 @@ export function lineIndexAt(rects: ArrayLike<Box>, x: number, y: number): number
   }
   return best;
 }
+
+// ---- Margin notes: the card in the sheet's right margin, with a connector line ----
+
+/** A horizontal span in client coordinates. */
+export interface Column {
+  left: number;
+  right: number;
+}
+
+/** Space between the text column and the card. */
+export const NOTE_GAP = 16;
+/** Space between the card and the sheet's right edge. */
+export const NOTE_INSET = 12;
+
+/**
+ * The sheet's note column: its right padding, in client coordinates (`clientLeft` and
+ * `clientWidth` leave out the border and a scrollbar). Null when narrower than `min`.
+ */
+export function noteColumn(
+  sheet: { left: number },
+  clientLeft: number,
+  clientWidth: number,
+  paddingRight: number,
+  min: number,
+): Column | null {
+  if (paddingRight < min) return null;
+  const right = sheet.left + clientLeft + clientWidth;
+  return { left: right - paddingRight, right };
+}
+
+export interface MarginNotePlacement {
+  top: number;
+  left: number;
+  width: number;
+  /** From the end of the highlight on its line to the card's left edge, just under the
+   * line; null when there is no room or it would miss the card. */
+  connector: { top: number; left: number; width: number } | null;
+}
+
+/**
+ * The card fills the note column and starts at the highlight's line, clamped into the
+ * viewport (a card taller than the viewport is pinned to the top margin).
+ */
+export function placeMarginNote(
+  line: Box,
+  column: Column,
+  cardHeight: number,
+  viewport: Size,
+  gap = NOTE_GAP,
+  inset = NOTE_INSET,
+  margin = VIEWPORT_MARGIN,
+): MarginNotePlacement {
+  const left = Math.round(column.left + gap);
+  const width = Math.max(0, Math.round(column.right - inset - left));
+  const top = Math.round(clamp(line.top - 4, margin, viewport.height - margin - cardHeight));
+  // In the gap under the line, so it never strikes through the words after the highlight.
+  const y = Math.round(line.bottom + 2);
+  const x = Math.round(line.right + 2);
+  const reaches = y >= top + 2 && y <= top + cardHeight - 2;
+  return {
+    top,
+    left,
+    width,
+    connector: left - x >= 4 && reaches ? { top: y, left: x, width: left - x } : null,
+  };
+}
+
+// ---- Where a highlight's card goes ----
+
+export type CardMode = 'margin' | 'float' | 'sheet';
+
+/** A viewport narrower than this, or shorter than the next, gets the bottom sheet (px). */
+export const SHEET_BELOW_WIDTH = 768;
+export const SHEET_BELOW_HEIGHT = 560;
+
+/** Phones in either orientation, and other small windows. */
+export function isCompactViewport(viewport: Size): boolean {
+  return viewport.width < SHEET_BELOW_WIDTH || viewport.height < SHEET_BELOW_HEIGHT;
+}
+
+/**
+ * The card's mode: a bottom sheet on a compact viewport; else a margin note when the sheet
+ * has a note column; else floating next to the highlight, unless that would cover the
+ * highlight (`floatCovers`), which also gets the bottom sheet.
+ */
+export function chooseCardMode(
+  viewport: Size,
+  hasNoteColumn: boolean,
+  floatCovers: boolean,
+): CardMode {
+  if (isCompactViewport(viewport)) return 'sheet';
+  if (hasNoteColumn) return 'margin';
+  return floatCovers ? 'sheet' : 'float';
+}
+
+/** Whether a card of `size` placed at `pos` overlaps the highlight's line box. */
+export function coversAnchor(pos: { top: number; left: number }, size: Size, anchor: Box): boolean {
+  const card = { top: pos.top, left: pos.left, right: pos.left + size.width, bottom: pos.top + size.height };
+  return intersects(card, anchor);
+}

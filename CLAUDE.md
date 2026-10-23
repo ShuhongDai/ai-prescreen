@@ -194,6 +194,15 @@ proofread with a red pen, a highlighter and a pencil.
   offers "Try an example" (a short sample with all three tiers, shown at Strict for that
   view without saving the preference); on mobile the panes stack, the sheet is full width
   and the margins shrink.
+- Highlight popover: on desktop a margin-note card in the sheet's right margin (the sheet
+  keeps a note margin when there is room; text stays ≤ 70ch), with a thin connector line to
+  the highlight, so it never covers the text being read; where there is no room it falls
+  back to floating next to the highlight. Below 768px it is a bottom sheet; on resize or
+  orientation change it is repositioned or closed. No fade-in: opaque from the first frame.
+- Mobile: after a paste, the page scrolls to the result; the draft textarea is capped at
+  about 8 lines.
+- Summary colours: "N to remove" in the red-pen colour, "N to consider" in a highlighter
+  tone dark enough for AA text contrast; style notes in ink.
 - Keep visible focus states and screen-reader text; never trade accessibility for looks.
 
 ## Architecture

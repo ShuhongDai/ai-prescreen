@@ -86,6 +86,18 @@ describe('buildSummary', () => {
     expect(buildSummary({ ...base, stats: stats({ stylistic: 3 }, 20) }).text).toBe('3 style notes');
   });
 
+  it('tags each count with its tier (for its colour), in tier order', () => {
+    const s = buildSummary({ ...base, stats: stats({ stylistic: 2, lexical: 12, artifact: 3 }, 100) });
+    expect(s.parts).toEqual([
+      { tier: 'artifact', text: '3 to remove' },
+      { tier: 'lexical', text: '12 to consider' },
+      { tier: 'stylistic', text: '2 style notes' },
+    ]);
+    expect(s.parts.map((p) => p.text).join(' · ')).toBe(s.text);
+    expect(buildSummary({ ...base, stats: stats({}, 100) }).parts).toEqual([]);
+    expect(buildSummary({ ...base, idle: true, stats: stats({}, 0) }).parts).toEqual([]);
+  });
+
   it('adds the typical rate of human papers, explained in a long form', () => {
     const baseline = { years: '2019–21', pooledPer1k: 8.64 };
     const s = buildSummary({ ...base, baseline, stats: stats({ artifact: 3, lexical: 12 }, 2055) });

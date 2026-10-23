@@ -5,10 +5,16 @@ import { LEXICON } from './lexicon.ts';
 import { setupDisclosure } from './ui/disclosure.ts';
 import { focusIndexAfterDismiss } from './ui/dismiss.ts';
 import { EXAMPLE_TEXT } from './ui/example.ts';
-import { buildSummary, densitySuffix, popoverModel } from './ui/format.ts';
+import {
+  buildSummary,
+  densitySuffix,
+  popoverModel,
+  SEPARATOR,
+  type Summary,
+} from './ui/format.ts';
 import { analyzeDraft, compileLexicons } from './ui/lexicons.ts';
 import { createPhraseReport } from './ui/phrase-report.ts';
-import { createPopover } from './ui/popover.ts';
+import { BOTTOM_SHEET_QUERY, createPopover } from './ui/popover.ts';
 import { loadExperimental, loadSensitivity, saveExperimental, saveSensitivity } from './ui/prefs.ts';
 import { renderMirror, type RenderedHighlight } from './ui/render.ts';
 import { newPhraseReportUrl } from './ui/report.ts';
@@ -29,6 +35,27 @@ function setHidden(el: HTMLElement, hidden: boolean): void {
   if (el.hidden !== hidden) el.hidden = hidden;
 }
 
+/** The counts, each in its tier's colour; rebuilt only when the text changes (live region). */
+function setCounts(el: HTMLElement, summary: Summary): void {
+  if (el.textContent === summary.text) return;
+  if (summary.parts.length === 0) {
+    el.textContent = summary.text;
+    return;
+  }
+  const frag = document.createDocumentFragment();
+  summary.parts.forEach((part, i) => {
+    if (i > 0) frag.append(SEPARATOR);
+    const span = document.createElement('span');
+    span.className = `count count--${part.tier}`;
+    span.textContent = part.text;
+    frag.append(span);
+  });
+  el.replaceChildren(frag);
+}
+
+const matches = (query: string) =>
+  typeof window.matchMedia === 'function' && window.matchMedia(query).matches;
+
 const input = byId<HTMLTextAreaElement>('input');
 const result = byId<HTMLDivElement>('result');
 const resultHint = byId<HTMLParagraphElement>('result-hint');
@@ -48,6 +75,18 @@ const undoButton = byId<HTMLButtonElement>('undo-dismiss');
 const advanced = byId<HTMLDetailsElement>('advanced');
 const reportPhraseLink = byId<HTMLAnchorElement>('report-phrase');
 const emptyState = byId<HTMLDivElement>('empty');
+const sheetPane = result.closest('section') ?? result;
+
+// The sheet keeps a note column for margin notes when its pane is at least this wide, so
+// the text column still gets about 45ch (style.css, .pane--sheet[data-notes]).
+const NOTES_MIN_PANE_REM = 43.5;
+if (typeof ResizeObserver === 'function') {
+  new ResizeObserver(([entry]) => {
+    if (!entry) return;
+    const rem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    sheetPane.toggleAttribute('data-notes', entry.contentRect.width >= NOTES_MIN_PANE_REM * rem);
+  }).observe(sheetPane);
+}
 const tryExample = byId<HTMLButtonElement>('try-example');
 
 // The "Key" to the marks (red pen, highlighter, pencil, dashed box).
@@ -74,6 +113,9 @@ function recompile(): void {
   lexicons = compileLexicons(LEXICON, choice());
 }
 
+/** Set by a paste; the next update scrolls the result into view on small screens. */
+let revealAfterPaste = false;
+
 /** The text the result pane shows, and its highlights in text order. */
 let shownText = '';
 let highlights: RenderedHighlight[] = [];
@@ -87,6 +129,7 @@ const popover = createPopover<RenderedHighlight>({
   },
   clipRect: () => result.getBoundingClientRect(),
   nextAfter: (anchor) => highlights[Number(anchor.dataset.i) + 1]?.el ?? null,
+  sheet: result,
 });
 result.after(popover.element);
 
@@ -172,7 +215,7 @@ function update(): void {
   });
 
   summaryBox.dataset.state = summary.state;
-  setText(summaryText, summary.text);
+  setCounts(summaryText, summary);
   // Outside the live regions: it changes on nearly every keystroke. Emptied (not just
   // hidden) when there is no rate, since #result's aria-describedby still reads it.
   // "typical" is explained in a tooltip and, for screen readers, in hidden text.
@@ -191,6 +234,15 @@ function update(): void {
   result.dataset.state = summary.state;
   highlights = renderMirror(result, shownText, res.matches, entries);
   lastUpdateMs = performance.now() - started;
+
+  // Mobile: after a paste, bring the marked-up result into view (focus stays put).
+  if (revealAfterPaste) {
+    revealAfterPaste = false;
+    if (summary.state !== 'idle' && matches(BOTTOM_SHEET_QUERY)) {
+      const behavior = matches('(prefers-reduced-motion: reduce)') ? 'auto' : 'smooth';
+      sheetPane.scrollIntoView({ block: 'start', behavior });
+    }
+  }
 }
 
 // ---- Highlights: one set of listeners on the container (event delegation) ----
@@ -250,6 +302,9 @@ result.addEventListener('keyup', (e) => {
 
 // ---- Controls ----
 
+input.addEventListener('paste', () => {
+  revealAfterPaste = true;
+});
 input.addEventListener('input', schedule);
 toggle.addEventListener('change', () => {
   experimental = toggle.checked;

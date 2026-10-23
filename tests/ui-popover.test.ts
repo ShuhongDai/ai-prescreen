@@ -2,9 +2,16 @@ import { describe, expect, it } from 'vitest';
 import type { LexiconEntry } from '../web/src/engine/index.ts';
 import { POPOVER_TEXT, popoverModel, QUOTE_MAX_CHARS, quoteText } from '../web/src/ui/format.ts';
 import {
+  chooseCardMode,
+  coversAnchor,
   intersection,
   intersects,
+  isCompactViewport,
   lineIndexAt,
+  NOTE_GAP,
+  NOTE_INSET,
+  noteColumn,
+  placeMarginNote,
   placePopover,
   placeWithin,
   POPOVER_GAP,
@@ -210,6 +217,71 @@ describe('placeWithin (the selection link, kept inside the visible pane)', () =>
     expect(placeWithin(a, size, { top: 0, left: 0, right: 1280, bottom: 800 })).toEqual(
       placePopover(a, size, { width: 1280, height: 800 }),
     );
+  });
+});
+
+describe('margin notes', () => {
+  const viewport = { width: 1280, height: 860 };
+  // A sheet at x 520..1240 (1px border, 16rem = 256px note column, scrollbar of 15px).
+  const column = noteColumn({ left: 520 }, 1, 703, 256, 176)!;
+  const line = (top: number, right: number): Box => ({ top, bottom: top + 24, left: 600, right });
+
+  it('finds the note column in the sheet\'s right padding, left of a scrollbar', () => {
+    expect(column).toEqual({ left: 520 + 1 + 703 - 256, right: 520 + 1 + 703 });
+    expect(noteColumn({ left: 0 }, 1, 600, 40, 176)).toBeNull(); // no room: the card floats
+  });
+
+  it('fills the column and starts at the highlight\'s line, with a connector under it', () => {
+    const note = placeMarginNote(line(300, 700), column, 180, viewport);
+    expect(note.left).toBe(column.left + NOTE_GAP);
+    expect(note.width).toBe(column.right - NOTE_INSET - (column.left + NOTE_GAP));
+    expect(note.top).toBe(296);
+    expect(note.connector).toEqual({ top: 300 + 24 + 2, left: 702, width: note.left - 702 });
+  });
+
+  it('stays in the viewport and still meets the line when clamped', () => {
+    const low = placeMarginNote(line(780, 700), column, 200, viewport);
+    expect(low.top).toBe(860 - VIEWPORT_MARGIN - 200);
+    expect(low.connector).not.toBeNull();
+    const high = placeMarginNote(line(-2, 700), column, 200, viewport);
+    expect(high.top).toBe(VIEWPORT_MARGIN);
+    expect(high.connector).not.toBeNull();
+  });
+
+  it('drops the connector when it would miss the card or has no length', () => {
+    // A card shorter than the gap between its clamped top and the line.
+    expect(placeMarginNote(line(840, 700), column, 20, viewport).connector).toBeNull();
+    // The highlight already ends at the note column.
+    expect(placeMarginNote(line(300, column.left + NOTE_GAP - 3), column, 180, viewport).connector).toBeNull();
+  });
+});
+
+describe('card mode', () => {
+  const desktop = { width: 1280, height: 860 };
+
+  it('uses a margin note on a wide, tall screen when the sheet has a note column', () => {
+    expect(chooseCardMode(desktop, true, false)).toBe('margin');
+    expect(chooseCardMode(desktop, true, true)).toBe('margin'); // floating is not consulted
+  });
+
+  it('floats without a note column, unless floating would cover the highlight', () => {
+    expect(chooseCardMode(desktop, false, false)).toBe('float');
+    expect(chooseCardMode(desktop, false, true)).toBe('sheet');
+  });
+
+  it('uses the bottom sheet on narrow or short viewports (phones in either orientation)', () => {
+    expect(chooseCardMode({ width: 390, height: 844 }, false, false)).toBe('sheet');
+    expect(chooseCardMode({ width: 844, height: 390 }, true, false)).toBe('sheet');
+    expect(chooseCardMode({ width: 1280, height: 500 }, true, false)).toBe('sheet');
+    expect(isCompactViewport({ width: 767, height: 900 })).toBe(true);
+    expect(isCompactViewport({ width: 768, height: 559 })).toBe(true);
+    expect(isCompactViewport({ width: 768, height: 560 })).toBe(false);
+  });
+
+  it('knows when a floating card covers its highlight (the landscape-phone case)', () => {
+    const mark: Box = { top: 69, bottom: 93, left: 675, right: 719 };
+    expect(coversAnchor({ top: 13, left: 484 }, { width: 352, height: 369 }, mark)).toBe(true);
+    expect(coversAnchor({ top: 99, left: 484 }, { width: 352, height: 200 }, mark)).toBe(false);
   });
 });
 

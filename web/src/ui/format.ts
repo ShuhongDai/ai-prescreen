@@ -51,10 +51,19 @@ export interface SummaryInput {
 
 export type SummaryState = 'idle' | 'clean' | 'flagged';
 
+/** One count of the reviewer's note, e.g. { tier: 'artifact', text: '3 to remove' }. */
+export interface SummaryPart {
+  tier: Tier;
+  text: string;
+}
+
 export interface Summary {
   state: SummaryState;
   /** Counts line, e.g. "3 to remove · 12 to consider". Goes in the live region. */
   text: string;
+  /** The counts of `text`, in tier order (shown in each tier's colour); empty unless
+   * something is flagged. */
+  parts: SummaryPart[];
   /**
    * E.g. "7.3 per 1k words, typical ~8.6": shown right after the counts but kept OUT of
    * the live region, since it changes on nearly every keystroke. Null below
@@ -109,6 +118,7 @@ export function buildSummary(input: SummaryInput): Summary {
     return {
       state: 'idle',
       text: IDLE_TEXT,
+      parts: [],
       density: null,
       densityDetail: null,
       note: null,
@@ -125,6 +135,7 @@ export function buildSummary(input: SummaryInput): Summary {
     return {
       state: 'clean',
       text: hidden ? CLEAN_REVIEWED_TEXT : CLEAN_TEXT,
+      parts: [],
       density: null,
       densityDetail: null,
       note,
@@ -133,9 +144,10 @@ export function buildSummary(input: SummaryInput): Summary {
     };
   }
 
-  const parts = TIERS.filter((t) => stats.counts[t] > 0).map((t) =>
-    countNoun(stats.counts[t], TIER_INFO[t].one, TIER_INFO[t].many),
-  );
+  const parts = TIERS.filter((t) => stats.counts[t] > 0).map((tier) => ({
+    tier,
+    text: countNoun(stats.counts[tier], TIER_INFO[tier].one, TIER_INFO[tier].many),
+  }));
 
   // The baseline was measured with the default lexicon, so it is left out while
   // experimental matches are shown.
@@ -145,7 +157,8 @@ export function buildSummary(input: SummaryInput): Summary {
 
   return {
     state: 'flagged',
-    text: parts.join(SEPARATOR),
+    text: parts.map((p) => p.text).join(SEPARATOR),
+    parts,
     density: rated ? `${formatPer1k(stats.per1k)} per 1k words${typical}` : null,
     densityDetail: rated && baseline ? `typical human papers, ${baseline.years}` : null,
     note: hidden ? note : experimentalShown > 0 ? shownNote(experimentalShown, stats.total) : null,

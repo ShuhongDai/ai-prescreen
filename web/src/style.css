@@ -49,6 +49,8 @@
   --highlighter: #f3e3a0;
   --highlighter-strong: #e9cf6a;
   --highlighter-line: #8a6d0f;
+  /* "N to consider" in the summary: a highlighter tone dark enough for text. */
+  --highlighter-ink: #7c6208;
   --pencil: #7a7368;
   --pencil-tint: rgb(122 115 104 / 0.12);
   --experimental: #6b655c;
@@ -86,6 +88,7 @@
     --highlighter: rgb(230 190 70 / 0.28);
     --highlighter-strong: rgb(230 190 70 / 0.38);
     --highlighter-line: #d8b954;
+    --highlighter-ink: #d8b954;
     --pencil: #a69e90;
     --pencil-tint: rgb(166 158 144 / 0.16);
     --experimental: #a69e90;
@@ -270,6 +273,17 @@ a {
   color: var(--muted);
 }
 
+/* "3 to remove" in red pen, "12 to consider" in highlighter ink, style notes in ink. */
+.count--artifact {
+  color: var(--red-pen);
+}
+.count--lexical {
+  color: var(--highlighter-ink);
+}
+.count--stylistic {
+  color: var(--ink);
+}
+
 .summary[data-state="idle"] .summary-line {
   color: var(--muted);
 }
@@ -294,6 +308,14 @@ a {
   min-width: 0;
 }
 
+/* The result pane. Its width decides whether the sheet keeps a note column: main.ts sets
+   data-notes from a ResizeObserver (a CSS container query is avoided on purpose: it may
+   apply layout containment, which would misplace the fixed-position card inside it). */
+.pane--sheet {
+  --sheet-pad-right: 2.5rem;
+  --sheet-max: calc(70ch + 6rem + 2px);
+}
+
 .pane-head {
   display: flex;
   flex-wrap: wrap;
@@ -302,9 +324,12 @@ a {
   min-height: 1.9rem;
 }
 
-/* The result's heading row is as wide as the sheet below it. */
+/* The result's heading row is exactly as wide as the sheet below it, with or without the
+   note column: the same width rule, and the sheet's font so that `ch` is the same. */
 .pane--sheet .pane-head {
-  max-width: calc(70ch + 6rem);
+  max-width: var(--sheet-max);
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
 }
 
 .pane-title {
@@ -323,6 +348,7 @@ a {
 
 .pane-hint {
   margin: 0 0 0 auto;
+  font-family: var(--font-ui);
   font-size: 0.8125rem;
   color: var(--muted);
 }
@@ -368,10 +394,11 @@ a {
 .result.sheet {
   position: relative; /* containing block for the red pen's margin marks */
   width: 100%;
-  max-width: calc(70ch + 6rem); /* text width <= 70ch plus the side margins */
+  max-width: var(--sheet-max); /* text width <= 70ch plus the margins */
   min-height: 14rem;
   margin: 0;
-  padding: 2.25rem 2.5rem 2.5rem 3.5rem; /* wider left margin for the marks */
+  /* Wider left margin for the red pen's marks; the right one may hold margin notes. */
+  padding: 2.25rem var(--sheet-pad-right) 2.5rem 3.5rem;
   background: var(--sheet);
   border: 1px solid var(--rule);
   border-radius: 2px;
@@ -397,7 +424,7 @@ a {
   top: 0;
   bottom: 0;
   left: 0;
-  width: min(100%, calc(70ch + 6rem));
+  width: min(100%, var(--sheet-max));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -459,6 +486,22 @@ a {
   }
   .footnote {
     grid-column: 2;
+  }
+}
+
+/* Wider screens give the sheet more room, so it can keep a note column. */
+@media (min-width: 75rem) {
+  .panes {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  }
+}
+
+/* A note column in the sheet's right margin for the margin-note cards, when the text
+   column still gets >= about 45ch (it never exceeds 70ch). */
+@media (min-width: 768px) {
+  .pane--sheet[data-notes] {
+    --sheet-pad-right: 16rem;
+    --sheet-max: calc(70ch + 19.5rem + 2px);
   }
 }
 
@@ -575,9 +618,11 @@ mark.hl--experimental {
   outline-offset: 1px;
 }
 
-/* Marks on the sheet open the annotation card (click, Enter or Space). */
+/* Marks on the sheet open the annotation card (click, Enter or Space). The scroll
+   margin keeps a mark clear of the edge when it is scrolled into view. */
 .result mark.hl {
   cursor: pointer;
+  scroll-margin: 2.5rem 0 1rem;
 }
 
 .result mark.hl--artifact[aria-expanded="true"] {
@@ -764,17 +809,61 @@ mark.hl--experimental {
   }
 }
 
-/* Motion only for people who have not asked to reduce it. */
-@media (prefers-reduced-motion: no-preference) {
-  .popover {
-    animation: card-in 120ms ease-out;
-  }
+/* Margin note: the card in the sheet's note column (width and position from script),
+   with a connector from the end of the highlight: 1px dashed (no tier mark is dashed) at
+   60% opacity in the tier's colour, in the gap under the line. */
+.popover[data-mode="margin"] {
+  max-width: none;
 }
 
-@keyframes card-in {
-  from {
-    opacity: 0;
-  }
+.popover-connector {
+  position: fixed;
+  z-index: 10;
+  height: 0;
+  border-top: 1px dashed var(--card-pen, var(--rule));
+  opacity: 0.6;
+  pointer-events: none;
+}
+.popover-connector[data-tier="artifact"] {
+  --card-pen: var(--red-pen);
+}
+.popover-connector[data-tier="lexical"] {
+  --card-pen: var(--highlighter-line);
+}
+.popover-connector[data-tier="stylistic"] {
+  --card-pen: var(--pencil);
+}
+
+/* Bottom sheet below 768px (mode set by script): full width, at most 60% of the screen,
+   scrolling inside, with a handle on its top edge. Opaque from the first frame. */
+.popover[data-mode="sheet"] {
+  top: auto;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  max-width: none;
+  max-height: 60vh;
+  max-height: 60dvh;
+  padding: 0.5rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--card-pen, var(--rule));
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -6px 24px rgb(60 48 30 / 0.18);
+}
+.popover[data-mode="sheet"][data-tier="stylistic"] {
+  border-left-style: solid;
+  border-top-style: dotted;
+}
+.popover[data-mode="sheet"]::before {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 4px;
+  margin: 0 auto 0.35rem;
+  border-radius: 2px;
+  background: var(--control);
 }
 
 /* ---- Advanced (experimental lexicon, report a phrase) ---- */
@@ -868,7 +957,7 @@ mark.hl--experimental {
 
 /* ---- Small screens: stacked panes, the sheet full width with smaller margins ---- */
 
-@media (max-width: 40rem) {
+@media (max-width: 767.98px) {
   body {
     padding: 0 0.75rem;
   }
@@ -876,13 +965,18 @@ mark.hl--experimental {
     flex-basis: 100%;
     text-align: left;
   }
+  /* About 8 lines of source; it scrolls inside. */
+  .editor {
+    height: calc(8 * 1.6 * 0.875rem + 1.8rem + 2px);
+  }
   .result.sheet {
     min-height: 11rem;
     padding: 1.25rem 1rem 1.5rem 1.9rem;
     --margin-mark-left: 0.6rem;
     font-size: 1rem;
   }
-  .sheet-empty {
+  .sheet-empty,
+  .pane--sheet .pane-head {
     font-size: 1rem;
   }
 }
@@ -907,7 +1001,8 @@ mark.hl--experimental {
     outline: 2px solid Highlight;
   }
   .popover,
-  .key-panel {
+  .key-panel,
+  .popover-connector {
     border-color: CanvasText;
   }
 }

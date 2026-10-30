@@ -14,7 +14,7 @@ decide whether to revise it.
 - **Private.** Your text never leaves the browser.
 - **Instant.** Analysis runs locally as you paste.
 
-> Status: early development. Live at https://shuhongdai.github.io/ai-prescreen/ — checks for
+> Status: early development. Live at https://aiprescreen.fyi — checks for
 > chatbot artifacts (tier 1), over-used LLM vocabulary (tier 2) and, at sensitivity Strict,
 > style signals (tier 3).
 
@@ -32,7 +32,7 @@ Requires Node.js 24 LTS.
 
 ```sh
 npm install
-npm run dev        # Vite dev server on http://localhost:5173/ai-prescreen/
+npm run dev        # Vite dev server on http://localhost:5173/
 npm test           # Vitest
 npm run build      # type-check and build into dist/
 ```

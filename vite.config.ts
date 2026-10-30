@@ -19,7 +19,8 @@ function slimLexicon(): Plugin {
 
 export default defineConfig({
   root: 'web',
-  base: '/ai-prescreen/',
+  // Served from the root of https://aiprescreen.fyi (GitHub Pages custom domain).
+  base: '/',
   plugins: [slimLexicon()],
   build: {
     outDir: '../dist',

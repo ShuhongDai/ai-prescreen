@@ -6,7 +6,7 @@ leftover chatbot artifacts ("Certainly! Here is a possible introduction…") and
 overused LLM vocabulary ("delve into", "underscore", "pivotal").
 
 Owner: Shuhong Dai (GitHub: ShuhongDai). Personal side project, fully open source.
-Repo: github.com/ShuhongDai/ai-prescreen. Site: GitHub Pages.
+Repo: github.com/ShuhongDai/ai-prescreen. Site: https://aiprescreen.fyi (GitHub Pages).
 
 ## What this project is — and is not
 
@@ -167,7 +167,7 @@ Entry schema:
   (`vite.config.ts`); the page needs only patterns, notes and suggestions.
 - Visual style: see Design below. Iterate from screenshots.
 - UI language: English. Product name shown as "AI初筛 · ai-prescreen".
-- Vite `base` must be `/ai-prescreen/` for GitHub Pages.
+- Vite `base` is `/`: the site is served from the root of https://aiprescreen.fyi.
 
 ## Design ("academic paper")
 
@@ -207,8 +207,14 @@ proofread with a red pen, a highlighter and a pencil.
 
 ## Architecture
 
-- Frontend: static build → GitHub Pages via GitHub Actions.
+- Frontend: static build → GitHub Pages via GitHub Actions, at https://aiprescreen.fyi
+  (custom domain, HTTPS enforced). DNS on Cloudflare, records DNS-only (not proxied): apex
+  A/AAAA → GitHub Pages, `www` CNAME → shuhongdai.github.io (GitHub redirects www to the
+  apex, and the old github.io URL to the domain), and the `_github-pages-challenge-ShuhongDai`
+  TXT record that verifies the domain for the GitHub account.
 - Backend (from M4): Cloudflare Worker + D1 (SQLite) + Turnstile (anti-spam), free tier.
+  `api.aiprescreen.fyi` is reserved for the Worker: no DNS record until then; attaching it
+  as a Workers custom domain in M4 creates its own record.
   The Worker stores feedback and anonymous counts, rate-limits by IP, and can open
   GitHub issues for triage using a token stored as a Worker secret.
 - Everything is configured as code in this repo (`wrangler.toml`, `migrations/*.sql`,
@@ -278,7 +284,7 @@ Single root `package.json`; Vite `root` is `web/`, build output goes to `dist/`.
 
 ```
 npm install
-npm run dev        # Vite dev server → http://localhost:5173/ai-prescreen/
+npm run dev        # Vite dev server → http://localhost:5173/
 npm test           # tsc --noEmit, then Vitest (tests/**/*.test.ts, web/src/**/*.test.ts)
 npm run test:watch
 npm run validate-lexicon  # schema, unique IDs, valid regexes, no duplicate patterns
@@ -324,3 +330,7 @@ Files: everything for this project stays inside this folder. Review files for Sh
   or quoted text, and the same-line quote heuristic is removed. Line anchors stay only where
   they define the artifact (Markdown syntax) or where the bare text is an everyday phrase
   ("Copy code", "Searched the web", "Thought for a few seconds").
+- 2026-10-30 — Site moves to https://aiprescreen.fyi (Cloudflare Registrar, DNS on Cloudflare):
+  GitHub Pages custom domain, HTTPS enforced, www redirects to the apex, the old github.io URL
+  redirects; Vite `base` is `/`. `api.aiprescreen.fyi` is reserved for the M4 Worker (no DNS
+  record until it is attached as a Workers custom domain).

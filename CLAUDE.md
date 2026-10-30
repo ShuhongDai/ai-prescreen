@@ -219,6 +219,9 @@ proofread with a red pen, a highlighter and a pencil.
   GitHub issues for triage using a token stored as a Worker secret.
 - Everything is configured as code in this repo (`wrangler.toml`, `migrations/*.sql`,
   `.github/workflows/*`). No manual dashboard work after initial account setup.
+  Exception, managed by hand: DNS in Cloudflare (the records above; null MX, SPF `-all` and
+  DMARC `p=reject`, since the domain sends no mail; DNSSEC on) and the GitHub Pages
+  custom-domain and HTTPS settings.
 
 ```
 ai-prescreen/
@@ -303,6 +306,10 @@ npm run baseline          # recompute web/src/baseline.json (per-entry fire coun
 
 Before every push: `npm test && npm run validate-lexicon`.
 
+Scale verification to the task. For small or config-only changes, one direct check is enough.
+Use multiple independent reviewers only for engine logic, lexicon policy or security-sensitive
+code.
+
 Files: everything for this project stays inside this folder. Review files for Shuhong go in
 `reviews/` (gitignored); temporary files go in the session scratchpad.
 
@@ -334,3 +341,5 @@ Files: everything for this project stays inside this folder. Review files for Sh
   GitHub Pages custom domain, HTTPS enforced, www redirects to the apex, the old github.io URL
   redirects; Vite `base` is `/`. `api.aiprescreen.fyi` is reserved for the M4 Worker (no DNS
   record until it is attached as a Workers custom domain).
+- 2026-10-30 — DNS stays a manual exception to configuration as code (no check script). The
+  domain sends no mail: null MX, SPF `-all`, DMARC `p=reject`. DNSSEC on.

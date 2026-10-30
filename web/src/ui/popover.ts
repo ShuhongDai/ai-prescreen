@@ -9,11 +9,11 @@
 // focus elsewhere, just closes it.
 //
 // Position (fixed), chosen again on every scroll and resize:
-// - "margin": a margin note in the sheet's right margin (its note column), aligned to the
-//   highlight's line, with a thin connector line from the end of the highlight, so it
-//   never covers the text being read;
-// - "float": next to the clicked line (below, or above when there is no room) when the
-//   sheet has no note column;
+// - "margin": a margin note in the sheet's right margin (its note column), its tier label
+//   level with the highlight's line, with a thin connector line from the end of the
+//   highlight, so it never covers the text being read;
+// - "float": next to the clicked line (below, or above when there is no room), within the
+//   sheet's right edge, when the sheet has no note column;
 // - "sheet": a bottom sheet (CSS) on a narrow or short viewport (phones in either
 //   orientation), or when floating would cover the highlight; the highlight is scrolled
 //   above it. The choice is chooseCardMode() in position.ts.
@@ -30,7 +30,7 @@ import {
   lineIndexAt,
   noteColumn,
   placeMarginNote,
-  placePopover,
+  placeWithin,
   VIEWPORT_MARGIN,
   type Box,
   type CardMode,
@@ -222,6 +222,14 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
     return noteColumn(rect, sheet.clientLeft, sheet.clientWidth, padding, MIN_NOTE_COLUMN);
   }
 
+  /** From the card's top edge to the top of the tier label's first line (px). */
+  function titleLead(): number | undefined {
+    const range = document.createRange();
+    range.selectNodeContents(title);
+    const first = range.getClientRects()[0];
+    return first ? first.top - root.getBoundingClientRect().top : undefined;
+  }
+
   function resetGeometry(): void {
     for (const p of ['top', 'left', 'width', 'maxWidth', 'maxHeight'] as const) root.style[p] = '';
     connector.hidden = true;
@@ -240,7 +248,7 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
       root.dataset.mode = 'margin';
       root.style.maxHeight = `${Math.max(0, vp.height - 2 * VIEWPORT_MARGIN)}px`;
       root.style.width = `${placeMarginNote(box, column, 0, vp).width}px`;
-      const note = placeMarginNote(box, column, root.offsetHeight, vp);
+      const note = placeMarginNote(box, column, root.offsetHeight, vp, { lead: titleLead() });
       root.style.top = `${note.top}px`;
       root.style.left = `${note.left}px`;
       if (note.connector) {
@@ -257,7 +265,10 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
       root.style.maxWidth = `${Math.max(0, vp.width - 2 * VIEWPORT_MARGIN)}px`;
       root.style.maxHeight = `${Math.max(0, vp.height - 2 * VIEWPORT_MARGIN)}px`;
       const size = { width: root.offsetWidth, height: root.offsetHeight };
-      const pos = placePopover(box, size, vp);
+      // On the paper: the card's right edge stops at the sheet's, not at the viewport's.
+      const sheetRight = options.sheet?.getBoundingClientRect().right ?? vp.width;
+      const right = Math.min(vp.width, sheetRight + VIEWPORT_MARGIN);
+      const pos = placeWithin(box, size, { top: 0, left: 0, bottom: vp.height, right });
       if (chooseCardMode(screen, false, coversAnchor(pos, size, box)) === 'float') {
         root.style.top = `${pos.top}px`;
         root.style.left = `${pos.left}px`;

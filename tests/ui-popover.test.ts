@@ -4,6 +4,7 @@ import { POPOVER_TEXT, popoverModel, QUOTE_MAX_CHARS, quoteText } from '../web/s
 import {
   chooseCardMode,
   coversAnchor,
+  floatBounds,
   intersection,
   intersects,
   isCompactViewport,
@@ -211,21 +212,32 @@ describe('placeWithin (the selection link, kept inside the visible pane)', () =>
     expect(p.top).toBeGreaterThanOrEqual(204);
   });
 
-  it('keeps a floating card on the paper when the right bound is the sheet\'s edge', () => {
-    const sheetRight = 1004;
-    const card = { width: 352, height: 300 };
-    const bounds = { top: 0, left: 0, bottom: 768, right: sheetRight + VIEWPORT_MARGIN };
-    const p = placeWithin({ top: 240, bottom: 264, left: 880, right: 960 }, card, bounds);
-    expect(p.left + card.width).toBe(sheetRight);
-    expect(p.placement).toBe('below');
-  });
-
   it('matches placePopover when the bounds are the viewport', () => {
     const a = caret(100, 300);
     const size = { width: 352, height: 200 };
     expect(placeWithin(a, size, { top: 0, left: 0, right: 1280, bottom: 800 })).toEqual(
       placePopover(a, size, { width: 1280, height: 800 }),
     );
+  });
+});
+
+describe('floatBounds (a floating card stays on the paper)', () => {
+  const vp = { width: 1024, height: 768 };
+
+  it('ends at the sheet\'s right edge plus the margin placeWithin keeps free', () => {
+    expect(floatBounds(vp, 1004)).toEqual({ top: 0, right: 1004 + VIEWPORT_MARGIN, bottom: 768, left: 0 });
+  });
+
+  it('never reaches past the viewport, and is the viewport without a sheet', () => {
+    expect(floatBounds(vp, 1100).right).toBe(1024);
+    expect(floatBounds(vp)).toEqual({ top: 0, right: 1024, bottom: 768, left: 0 });
+  });
+
+  it('puts a card near the sheet\'s right edge flush with it', () => {
+    const card = { width: 352, height: 300 };
+    const p = placeWithin({ top: 240, bottom: 264, left: 880, right: 960 }, card, floatBounds(vp, 1004));
+    expect(p.left + card.width).toBe(1004);
+    expect(p.placement).toBe('below');
   });
 });
 
@@ -253,6 +265,17 @@ describe('margin notes', () => {
     const note = placeMarginNote(line(300, 700), column, 180, viewport, { lead: 14.4 });
     expect(note.top).toBe(286);
     expect(note.connector).toEqual({ top: 300 + 24 + 2, left: 702, width: note.left - 702 });
+  });
+
+  it('keeps the card below the paper\'s top edge, unless it would not fit', () => {
+    const minTop = 141; // the sheet's top edge
+    // The line at the top of the scrolled sheet: the label would rise above the paper.
+    const near = placeMarginNote(line(145, 700), column, 180, viewport, { lead: 14, minTop });
+    expect(near.top).toBe(141);
+    expect(near.connector).not.toBeNull();
+    // Too tall to fit below it: as low as it can go while staying whole in the viewport.
+    const tall = placeMarginNote(line(145, 700), column, 800, viewport, { lead: 14, minTop });
+    expect(tall.top).toBe(860 - VIEWPORT_MARGIN - 800);
   });
 
   it('stays in the viewport and still meets the line when clamped', () => {

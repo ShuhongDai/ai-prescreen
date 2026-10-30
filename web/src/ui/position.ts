@@ -71,6 +71,15 @@ export function placeWithin(
   };
 }
 
+/**
+ * Where a floating card may go: the viewport, but no further right than the sheet's edge
+ * (placeWithin keeps `margin` free inside the bounds, so they reach `margin` past it).
+ */
+export function floatBounds(viewport: Size, sheetRight?: number, margin = VIEWPORT_MARGIN): Box {
+  const right = sheetRight === undefined ? viewport.width : Math.min(viewport.width, sheetRight + margin);
+  return { top: 0, right, bottom: viewport.height, left: 0 };
+}
+
 export function intersection(a: Box, b: Box): Box {
   return {
     top: Math.max(a.top, b.top),
@@ -147,6 +156,8 @@ export interface MarginNotePlacement {
 export interface MarginNoteOptions {
   /** From the card's top edge to the top of its first line of text (the tier label). */
   lead?: number;
+  /** The card's top edge stays at or below this, e.g. the sheet's top edge. */
+  minTop?: number;
   gap?: number;
   inset?: number;
   margin?: number;
@@ -155,18 +166,28 @@ export interface MarginNoteOptions {
 /**
  * The card fills the note column, its first line level with the highlight's line, as in a
  * sidenote: with the same font and size on both, equal line tops mean one baseline. Clamped
- * into the viewport (a card taller than the viewport is pinned to the top margin).
+ * into the viewport and, where it fits, below `minTop` (a card taller than the viewport is
+ * pinned to the top margin).
  */
 export function placeMarginNote(
   line: Box,
   column: Column,
   cardHeight: number,
   viewport: Size,
-  { lead = 4, gap = NOTE_GAP, inset = NOTE_INSET, margin = VIEWPORT_MARGIN }: MarginNoteOptions = {},
+  {
+    lead = 4,
+    minTop = -Infinity,
+    gap = NOTE_GAP,
+    inset = NOTE_INSET,
+    margin = VIEWPORT_MARGIN,
+  }: MarginNoteOptions = {},
 ): MarginNotePlacement {
   const left = Math.round(column.left + gap);
   const width = Math.max(0, Math.round(column.right - inset - left));
-  const top = Math.round(clamp(line.top - lead, margin, viewport.height - margin - cardHeight));
+  const hi = viewport.height - margin - cardHeight;
+  // Staying whole in the viewport comes before staying below minTop.
+  const lo = Math.max(margin, Math.min(minTop, hi));
+  const top = Math.round(clamp(line.top - lead, lo, hi));
   // In the gap under the line, so it never strikes through the words after the highlight.
   const y = Math.round(line.bottom + 2);
   const x = Math.round(line.right + 2);

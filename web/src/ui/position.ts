@@ -144,22 +144,29 @@ export interface MarginNotePlacement {
   connector: { top: number; left: number; width: number } | null;
 }
 
+export interface MarginNoteOptions {
+  /** From the card's top edge to the top of its first line of text (the tier label). */
+  lead?: number;
+  gap?: number;
+  inset?: number;
+  margin?: number;
+}
+
 /**
- * The card fills the note column and starts at the highlight's line, clamped into the
- * viewport (a card taller than the viewport is pinned to the top margin).
+ * The card fills the note column, its first line level with the highlight's line, as in a
+ * sidenote: with the same font and size on both, equal line tops mean one baseline. Clamped
+ * into the viewport (a card taller than the viewport is pinned to the top margin).
  */
 export function placeMarginNote(
   line: Box,
   column: Column,
   cardHeight: number,
   viewport: Size,
-  gap = NOTE_GAP,
-  inset = NOTE_INSET,
-  margin = VIEWPORT_MARGIN,
+  { lead = 4, gap = NOTE_GAP, inset = NOTE_INSET, margin = VIEWPORT_MARGIN }: MarginNoteOptions = {},
 ): MarginNotePlacement {
   const left = Math.round(column.left + gap);
   const width = Math.max(0, Math.round(column.right - inset - left));
-  const top = Math.round(clamp(line.top - 4, margin, viewport.height - margin - cardHeight));
+  const top = Math.round(clamp(line.top - lead, margin, viewport.height - margin - cardHeight));
   // In the gap under the line, so it never strikes through the words after the highlight.
   const y = Math.round(line.bottom + 2);
   const x = Math.round(line.right + 2);

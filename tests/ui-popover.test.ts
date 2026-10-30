@@ -211,6 +211,15 @@ describe('placeWithin (the selection link, kept inside the visible pane)', () =>
     expect(p.top).toBeGreaterThanOrEqual(204);
   });
 
+  it('keeps a floating card on the paper when the right bound is the sheet\'s edge', () => {
+    const sheetRight = 1004;
+    const card = { width: 352, height: 300 };
+    const bounds = { top: 0, left: 0, bottom: 768, right: sheetRight + VIEWPORT_MARGIN };
+    const p = placeWithin({ top: 240, bottom: 264, left: 880, right: 960 }, card, bounds);
+    expect(p.left + card.width).toBe(sheetRight);
+    expect(p.placement).toBe('below');
+  });
+
   it('matches placePopover when the bounds are the viewport', () => {
     const a = caret(100, 300);
     const size = { width: 352, height: 200 };
@@ -236,6 +245,13 @@ describe('margin notes', () => {
     expect(note.left).toBe(column.left + NOTE_GAP);
     expect(note.width).toBe(column.right - NOTE_INSET - (column.left + NOTE_GAP));
     expect(note.top).toBe(296);
+    expect(note.connector).toEqual({ top: 300 + 24 + 2, left: 702, width: note.left - 702 });
+  });
+
+  it('sets the card\'s first line level with the highlight\'s line', () => {
+    // lead: from the card's top edge to the top of the tier label's line.
+    const note = placeMarginNote(line(300, 700), column, 180, viewport, { lead: 14.4 });
+    expect(note.top).toBe(286);
     expect(note.connector).toEqual({ top: 300 + 24 + 2, left: 702, width: note.left - 702 });
   });
 

@@ -11,7 +11,8 @@ probability". It points out wording that may read as templated or AI-like so you
 decide whether to revise it.
 
 - **Rule-based only.** A curated lexicon and simple rules, no ML models or LLM calls.
-- **Private.** Your text never leaves the browser.
+- **Private.** Your text stays in your browser; nothing is sent unless you open a report on
+  GitHub.
 - **Instant.** Analysis runs locally as you paste.
 
 > Status: early development. Live at https://aiprescreen.fyi — checks for
@@ -24,7 +25,7 @@ decide whether to revise it.
 |---|---|---|
 | `artifact` | Chatbot leftovers: almost always worth fixing | "Certainly! Here is…", "As an AI language model", "[Insert citation]" |
 | `lexical` | Overused LLM words and phrases: you decide | delve, underscore, pivotal, "plays a crucial role in" |
-| `stylistic` | Weak signals, off by default | em-dash density, "In conclusion," openers |
+| `stylistic` | Weak signals, shown only at sensitivity Strict | "In conclusion," openers, "not only … but also" |
 
 ## Development
 
@@ -33,8 +34,8 @@ Requires Node.js 24 LTS.
 ```sh
 npm install
 npm run dev        # Vite dev server on http://localhost:5173/
-npm test           # Vitest
-npm run build      # type-check and build into dist/
+npm test           # type-check (tsc --noEmit), then Vitest
+npm run build      # Vite build into dist/
 ```
 
 Project layout:

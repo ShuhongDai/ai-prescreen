@@ -24,6 +24,7 @@ import type { PopoverModel } from './format.ts';
 import {
   chooseCardMode,
   coversAnchor,
+  floatBounds,
   intersection,
   intersects,
   isCompactViewport,
@@ -248,7 +249,9 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
       root.dataset.mode = 'margin';
       root.style.maxHeight = `${Math.max(0, vp.height - 2 * VIEWPORT_MARGIN)}px`;
       root.style.width = `${placeMarginNote(box, column, 0, vp).width}px`;
-      const note = placeMarginNote(box, column, root.offsetHeight, vp, { lead: titleLead() });
+      // Never above the paper, also when the highlight's line is at the top of the scrolled sheet.
+      const minTop = options.sheet?.getBoundingClientRect().top;
+      const note = placeMarginNote(box, column, root.offsetHeight, vp, { lead: titleLead(), minTop });
       root.style.top = `${note.top}px`;
       root.style.left = `${note.left}px`;
       if (note.connector) {
@@ -266,9 +269,8 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
       root.style.maxHeight = `${Math.max(0, vp.height - 2 * VIEWPORT_MARGIN)}px`;
       const size = { width: root.offsetWidth, height: root.offsetHeight };
       // On the paper: the card's right edge stops at the sheet's, not at the viewport's.
-      const sheetRight = options.sheet?.getBoundingClientRect().right ?? vp.width;
-      const right = Math.min(vp.width, sheetRight + VIEWPORT_MARGIN);
-      const pos = placeWithin(box, size, { top: 0, left: 0, bottom: vp.height, right });
+      const bounds = floatBounds(vp, options.sheet?.getBoundingClientRect().right);
+      const pos = placeWithin(box, size, bounds);
       if (chooseCardMode(screen, false, coversAnchor(pos, size, box)) === 'float') {
         root.style.top = `${pos.top}px`;
         root.style.left = `${pos.left}px`;

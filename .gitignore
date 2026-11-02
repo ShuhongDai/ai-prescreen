@@ -30,3 +30,6 @@ data/*
 
 # review files for Shuhong (generated, e.g. by npm run fire-rate -- --review); not published
 reviews/
+
+# Worker: the entry IDs generated from lexicon/ (scripts/worker-entry-ids.ts)
+worker/src/generated/

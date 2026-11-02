@@ -121,6 +121,53 @@ describe('triage', () => {
   });
 });
 
+describe('issue forms filed on github.com', () => {
+  const phraseForm = (example: string, model = '_No response_') =>
+    `### Phrase\n\ndelve into\n\n### Suggested tier\n\noverused word\n\n### Example sentence\n\n${example}\n\n### Model it came from\n\n${model}`;
+  const fpForm = (matched: string, example: string, comment: string) =>
+    `### Entry id\n\nen.lexical.delve\n\n### Matched text\n\n${matched}\n\n### Example sentence\n\n${example}\n\n### Comment\n\n${comment}`;
+
+  it('reads Markdown and a typed code block as the field\'s text, also with CRLF', () => {
+    const example = 'We **delve** into it.\n```\n### Model it came from\nfake\n```';
+    for (const body of [phraseForm(example, 'Claude'), phraseForm(example, 'Claude').replace(/\n/g, '\r\n')]) {
+      expect(toReport(issue(1, 'report:new-phrase', body))).toMatchObject({ phrase: 'delve into', example, model: 'Claude' });
+    }
+  });
+
+  it('reads each form with its own labels only', () => {
+    const report = toReport(issue(2, 'report:false-positive', fpForm('delve', 'Notes\n### Phrase\nrest', 'why')));
+    expect(report).toMatchObject({ entryId: 'en.lexical.delve', example: 'Notes\n### Phrase\nrest', comment: 'why' });
+  });
+
+  it('opens a code block only in a textarea and only when it is closed again', () => {
+    const fenceInInput = toReport(issue(3, 'report:false-positive', fpForm('```python', '_No response_', 'A code listing.')));
+    expect(fenceInInput).toMatchObject({ matchedText: 'python', comment: 'A code listing.' });
+    const unclosed = toReport(issue(4, 'report:false-positive', fpForm('delve', '```\ncode', 'Still here.')));
+    expect(unclosed).toMatchObject({ example: '```\ncode', comment: 'Still here.' });
+  });
+
+  it('keeps only model names', () => {
+    expect(toReport(issue(5, 'report:new-phrase', phraseForm('_No response_', 'GPT-4o (via Copilot)')))).toMatchObject({ model: 'GPT-4o (via Copilot)' });
+    for (const model of ['www.tracker.example/x', 'see https://x.example', '@octocat', 'x'.repeat(81)]) {
+      expect(toReport(issue(6, 'report:new-phrase', phraseForm('_No response_', model)))).toMatchObject({ model: '' });
+    }
+  });
+});
+
+describe('triage of reports filed without an account', () => {
+  it('cuts long slugs cleanly and never lets one unusable report stop the batch', () => {
+    const files = (): LexiconFile[] => [{ fileName: 'en.lexical.json', entries: [] }];
+    const long = 'a comprehensive understanding of the multifaceted interplay between';
+    const result = triage([toReport(issue(1, 'report:new-phrase', phraseBody(long, 'overused word')))], files(), {
+      today: '2026-10-30',
+      matchedBy: () => null,
+    });
+    expect(result.added).toHaveLength(1);
+    expect(result.added[0]!.entryId).toMatch(/^en\.lexical\.[a-z0-9]+(?:-[a-z0-9]+)*$/);
+    expect(result.added[0]!.entryId.length).toBeLessThanOrEqual('en.lexical.'.length + 60);
+  });
+});
+
 describe('closing processed issues', () => {
   it('waits for a decision, then comments and closes', () => {
     const p = (kind: 'new-phrase' | 'false-positive', entryId: string | null) => ({ issue: 1, kind, entryId });

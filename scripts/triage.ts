@@ -12,6 +12,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { TIERS, analyze, compileLexicon, type LexiconEntry } from '../web/src/engine/index.ts';
 import { validateLexiconFiles } from '../web/src/engine/validate.ts';
 import { closingAction, toReport, triage, type Issue, type TriageResult } from './triage-lib.ts';
+import { codeSpan } from '../worker/src/text.ts';
 
 const REPO = 'ShuhongDai/ai-prescreen';
 const STATE = 'reviews/triage-state.json';
@@ -27,6 +28,8 @@ function readLexicon(): { fileName: string; entries: LexiconEntry[] }[] {
 }
 
 const cell = (s: string) => s.replace(/\|/g, '\\|').replace(/\s*\n\s*/g, ' ');
+/** Text from a report, as a table cell's code span: shown as written, never rendered. */
+const code = (s: string) => (s ? codeSpan(cell(s)) : '');
 const issues = (ns: number[]) => ns.map((n) => `#${n}`).join(', ');
 
 function reviewFile(r: TriageResult, total: number): string {
@@ -39,7 +42,7 @@ function reviewFile(r: TriageResult, total: number): string {
     '## New lexicon candidates',
     '',
     r.added.length ? '| entry | pattern | file | issues |\n|---|---|---|---|' : '_None._',
-    ...r.added.map((a) => `| \`${a.entryId}\` | \`${cell(a.pattern)}\` | ${a.fileName} | ${issues(a.issues)} |`),
+    ...r.added.map((a) => `| ${code(a.entryId)} | ${code(a.pattern)} | ${a.fileName} | ${issues(a.issues)} |`),
     '',
     '## Reports added as evidence to existing entries',
     '',
@@ -49,19 +52,19 @@ function reviewFile(r: TriageResult, total: number): string {
     '## Not turned into entries',
     '',
     r.skipped.length ? '| issue | phrase | reason |\n|---|---|---|' : '_None._',
-    ...r.skipped.map((s) => `| #${s.issue} | ${cell(s.phrase)} | ${s.reason} |`),
+    ...r.skipped.map((s) => `| #${s.issue} | ${code(s.phrase)} | ${s.reason} |`),
     '',
     '## False positives per entry',
     '',
     r.falsePositives.length ? '| entry | status | reports | issues | matched text | comments |\n|---|---|---|---|---|---|' : '_None._',
     ...r.falsePositives.map(
       (f) =>
-        `| \`${f.entryId}\` | ${f.status ?? 'unknown id'} | ${f.count} | ${issues(f.issues)} | ${cell(f.matched.join('; '))} | ${cell(f.comments.join(' / '))} |`,
+        `| ${code(f.entryId)} | ${f.status ?? 'unknown id'} | ${f.count} | ${issues(f.issues)} | ${f.matched.map(code).join('; ')} | ${f.comments.map(code).join(' / ')} |`,
     ),
     '',
     '## Unparsed issues',
     '',
-    r.unparsed.length ? r.unparsed.map((u) => `- #${u.issue}: ${u.reason}`).join('\n') : '_None._',
+    r.unparsed.length ? r.unparsed.map((u) => `- #${u.issue}: ${code(u.reason)}`).join('\n') : '_None._',
     '',
     '## Next steps',
     '',

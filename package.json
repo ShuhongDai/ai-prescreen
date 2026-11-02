@@ -9,19 +9,25 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "pretypecheck": "node scripts/worker-entry-ids.ts",
     "typecheck": "tsc --noEmit",
+    "pretest": "node scripts/worker-entry-ids.ts",
     "test": "tsc --noEmit && vitest run",
     "test:watch": "vitest",
     "validate-lexicon": "node scripts/validate-lexicon.ts",
     "fetch-arxiv": "node scripts/fetch-arxiv.ts",
     "fire-rate": "node scripts/fire-rate.ts",
     "baseline": "node scripts/baseline.ts",
-    "triage": "node scripts/triage.ts"
+    "triage": "node scripts/triage.ts",
+    "worker:dev": "WRANGLER_LOG_PATH=worker/.wrangler/logs wrangler dev --config worker/wrangler.toml",
+    "worker:migrate-local": "WRANGLER_LOG_PATH=worker/.wrangler/logs wrangler d1 migrations apply aiprescreen-db --local --config worker/wrangler.toml",
+    "worker:deploy": "WRANGLER_LOG_PATH=worker/.wrangler/logs wrangler deploy --config worker/wrangler.toml"
   },
   "devDependencies": {
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "wrangler": "^4.156.0"
   },
   "engines": {
     "node": ">=24"

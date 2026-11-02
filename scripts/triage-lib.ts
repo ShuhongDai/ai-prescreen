@@ -4,7 +4,8 @@
 
 import { literalSource } from '../web/src/engine/compile.ts';
 import type { Evidence, LexiconEntry, Tier } from '../web/src/engine/types.ts';
-import { patternKey } from '../web/src/engine/validate.ts';
+import { patternKey, validateLexicon } from '../web/src/engine/validate.ts';
+import { ENTRY_ID, FIELD_MAX, MODEL_NAME } from '../web/src/report-contract.ts';
 
 export interface Issue {
   number: number;
@@ -22,18 +23,97 @@ export type Report =
 /** Longest phrase (in words) that becomes a lexicon pattern; longer reports are listed only. */
 export const MAX_PATTERN_WORDS = 8;
 
+/** Each issue form's field labels, in order (.github/ISSUE_TEMPLATE/). */
+export const FORM_FIELDS = {
+  'new-phrase': ['Phrase', 'Suggested tier', 'Example sentence', 'Model it came from'],
+  'false-positive': ['Entry id', 'Matched text', 'Example sentence', 'Comment'],
+} as const;
+
+export const FORM_LABELS: readonly string[] = [...new Set([...FORM_FIELDS['new-phrase'], ...FORM_FIELDS['false-positive']])];
+
+/** The textarea fields: only their values can hold a code block. */
+const MULTILINE_FIELDS: readonly string[] = ['Example sentence', 'Comment'];
+
+interface Fence {
+  char: string;
+  length: number;
+}
+
+/** A line opening a fenced code block (CommonMark: up to 3 spaces, 3+ ` or ~). */
+function fenceOpen(line: string): Fence | null {
+  const m = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(line);
+  if (!m || (m[1]![0] === '`' && m[2]!.includes('`'))) return null;
+  return { char: m[1]![0]!, length: m[1]!.length };
+}
+
+const CLOSING_FENCE = /^ {0,3}(`{3,}|~{3,})[ \t]*$/;
+
+const fenceCloses = (line: string, fence: Fence) => {
+  const m = CLOSING_FENCE.exec(line);
+  return m !== null && m[1]![0] === fence.char && m[1]!.length >= fence.length;
+};
+
 /**
  * GitHub renders an issue form as "### <field label>" followed by the value; empty
- * optional fields read "_No response_". Returns label → value ('' when empty).
+ * optional fields read "_No response_". Reports sent through the Worker (worker/src/
+ * reports.ts) read the same, with the reported text in a code span or code block, which is
+ * unwrapped here. A section starts only at one of `labels` (the form's own), outside a code
+ * block, and only the first section of a label counts, so reported text cannot fake a
+ * field. A code block counts only in a textarea field and only when it is closed again
+ * (the rule preprocess.ts follows). Lines end at line feeds only (not at U+2028).
+ * Returns label → value ('' when empty).
  */
-export function parseIssueForm(body: string): Record<string, string> {
+export function parseIssueForm(body: string, labels: readonly string[] = FORM_LABELS): Record<string, string> {
   const fields: Record<string, string> = {};
-  const parts = body.replace(/\r\n?/g, '\n').split(/^### +(.+)$/m);
-  for (let i = 1; i < parts.length; i += 2) {
-    const value = (parts[i + 1] ?? '').trim();
-    fields[parts[i]!.trim()] = value === '_No response_' ? '' : value;
+  const all = body.replace(/\r\n?/g, '\n').split('\n');
+  // closers[i]: the longest closing fence of each kind on line i or later.
+  const closers: Record<string, number>[] = [];
+  closers[all.length] = { '`': 0, '~': 0 };
+  for (let i = all.length - 1; i >= 0; i--) {
+    const m = CLOSING_FENCE.exec(all[i]!);
+    const here = { ...closers[i + 1]! };
+    if (m) here[m[1]![0]!] = Math.max(here[m[1]![0]!]!, m[1]!.length);
+    closers[i] = here;
   }
+  let label: string | null = null;
+  let lines: string[] = [];
+  let fence: Fence | null = null;
+  const end = () => {
+    if (label === null) return;
+    const value = lines.join('\n').trim();
+    fields[label] = value === '_No response_' ? '' : unwrapCode(value);
+  };
+  all.forEach((line, i) => {
+    if (fence) {
+      if (fenceCloses(line, fence)) fence = null;
+    } else {
+      const heading = /^### +(.+?)[ \t]*$/.exec(line)?.[1];
+      if (heading !== undefined && labels.includes(heading) && heading !== label && !(heading in fields)) {
+        end();
+        label = heading;
+        lines = [];
+        return;
+      }
+      const open = label !== null && MULTILINE_FIELDS.includes(label) ? fenceOpen(line) : null;
+      if (open && closers[i + 1]![open.char]! >= open.length) fence = open;
+    }
+    lines.push(line);
+  });
+  end();
   return fields;
+}
+
+/** The text inside a value that is exactly one fenced code block or one code span. */
+export function unwrapCode(value: string): string {
+  const block = /^(`{3,})[^`\n]*\n([\s\S]*?)\n\1$/.exec(value);
+  if (block) return block[2]!;
+  const fence = /^`+/.exec(value)?.[0] ?? '';
+  const n = fence.length;
+  if (n === 0 || value.length <= 2 * n || !value.endsWith(fence) || value[value.length - n - 1] === '`') return value;
+  const inner = value.slice(n, -n);
+  // A run of exactly n backticks inside would have closed the span earlier.
+  if ((inner.match(/`+/g) ?? []).some((run) => run.length === n)) return value;
+  return inner.length > 2 && inner.startsWith(' ') && inner.endsWith(' ') && inner.trim() ? inner.slice(1, -1) : inner;
 }
 
 export function normalizePhrase(text: string): string {
@@ -56,17 +136,22 @@ function tierOf(choice: string): Tier | null {
 
 export function toReport(issue: Issue): Report {
   const base = { issue: issue.number, url: issue.url };
-  const f = parseIssueForm(issue.body);
   if (issue.labels.includes('report:new-phrase')) {
+    const f = parseIssueForm(issue.body, FORM_FIELDS['new-phrase']);
     const phrase = normalizePhrase(f['Phrase'] ?? '');
     const tier = tierOf(f['Suggested tier'] ?? '');
     if (!phrase) return { kind: 'unparsed', ...base, reason: 'no phrase' };
     if (!tier) return { kind: 'unparsed', ...base, reason: 'no suggested tier' };
-    return { kind: 'new-phrase', ...base, phrase, tier, example: f['Example sentence'] ?? '', model: f['Model it came from'] ?? '' };
+    // Only a model name may end up in a lexicon entry's `models`.
+    const model = f['Model it came from'] ?? '';
+    const modelOk = MODEL_NAME.test(model) && Array.from(model).length <= FIELD_MAX.model;
+    return { kind: 'new-phrase', ...base, phrase, tier, example: f['Example sentence'] ?? '', model: modelOk ? model : '' };
   }
   if (issue.labels.includes('report:false-positive')) {
+    const f = parseIssueForm(issue.body, FORM_FIELDS['false-positive']);
     const entryId = (f['Entry id'] ?? '').trim();
     if (!entryId) return { kind: 'unparsed', ...base, reason: 'no entry id' };
+    if (!ENTRY_ID.test(entryId)) return { kind: 'unparsed', ...base, reason: 'invalid entry id' };
     return {
       kind: 'false-positive',
       ...base,
@@ -108,8 +193,15 @@ export interface TriageOptions {
   matchedBy: (phrase: string) => string | null;
 }
 
+// Cut first, then trim: a cut may end at a dash.
 const slugOf = (s: string) =>
-  s.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'phrase';
+  s
+    .toLowerCase()
+    .replace(/'/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+/, '')
+    .slice(0, 60)
+    .replace(/-+$/, '') || 'phrase';
 
 function addEvidence(entry: LexiconEntry, report: Extract<Report, { kind: 'new-phrase' }>): boolean {
   const ref = `#${report.issue}`;
@@ -214,6 +306,12 @@ export function triage(reports: readonly Report[], files: readonly LexiconFile[]
       ...(r.tier === 'lexical' ? { independentSources: 0 } : {}),
     };
     addEvidence(entry, r);
+    // One unusable report must not stop the whole batch (the lexicon is validated as a whole).
+    const problems = validateLexicon(file.fileName, [entry]);
+    if (problems.length > 0) {
+      result.unparsed.push({ issue: r.issue, reason: `unusable entry: ${problems[0]}` });
+      continue;
+    }
     file.entries.push(entry);
     byKey.set(key, entry);
     result.added.push({ entryId: id, fileName: file.fileName, pattern, issues: [r.issue] });

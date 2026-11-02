@@ -1,0 +1,42 @@
+name: Deploy the Worker
+
+# Build + deploy only (CLAUDE.md, rule 8): tests and lexicon validation run locally before
+# pushing. D1 migrations are never applied here: every remote schema change needs
+# Shuhong's confirmation first (rule 7).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "worker/**"
+      - "lexicon/**"
+      - "web/src/report-contract.ts"
+      - "scripts/worker-entry-ids.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/deploy-worker.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # Generates the lexicon's entry IDs (wrangler.toml [build]), bundles and deploys to
+      # the custom domain api.aiprescreen.fyi.
+      - run: npm run worker:deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: "false"

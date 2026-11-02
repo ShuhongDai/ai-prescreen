@@ -1,0 +1,61 @@
+# The report and hit-count API at https://api.aiprescreen.fyi (M4). Deployed by CI
+# (.github/workflows/deploy-worker.yml). Secrets, set once with `wrangler secret put`:
+#   GITHUB_TOKEN      fine-grained token: Issues read/write on ShuhongDai/ai-prescreen only
+#   TURNSTILE_SECRET  secret key of the Turnstile widget for aiprescreen.fyi
+# Local development: copy .dev.vars.example to .dev.vars (Turnstile test keys, dry run).
+
+name = "aiprescreen-api"
+main = "src/index.ts"
+compatibility_date = "2026-10-23"
+
+# Only the custom domain; no *.workers.dev or preview URLs.
+workers_dev = false
+preview_urls = false
+routes = [{ pattern = "api.aiprescreen.fyi", custom_domain = true }]
+
+# The set of lexicon entry IDs the Worker accepts (worker/src/generated/, not committed).
+# The command runs in wrangler's working directory: use the npm scripts (project root).
+# `wrangler dev` reruns it when the lexicon changes; source files are watched anyway.
+[build]
+command = "node scripts/worker-entry-ids.ts"
+watch_dir = "../lexicon"
+
+[vars]
+GITHUB_REPO = "ShuhongDai/ai-prescreen"
+ALLOWED_ORIGINS = "https://aiprescreen.fyi"
+TURNSTILE_HOSTNAMES = "aiprescreen.fyi"
+# Issues the Worker opens per UTC day and report kind at most, over all clients.
+REPORTS_PER_DAY = "30"
+# Rows written for hit counts per UTC day at most (the budget row included): D1's free write
+# quota (100,000 rows a day) is shared by the whole Cloudflare account.
+HITS_ROWS_PER_DAY = "20000"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "aiprescreen-db"
+database_id = "4fad06f0-8685-4189-b4b9-333951d2d333"
+migrations_dir = "migrations"
+
+# Per client (a salted hash of the IP or an IPv6 /64, see src/limits.ts) and per minute.
+[[ratelimits]]
+name = "REPORT_LIMIT"
+namespace_id = "4101"
+simple = { limit = 5, period = 60 }
+
+[[ratelimits]]
+name = "HITS_LIMIT"
+namespace_id = "4102"
+simple = { limit = 6, period = 60 }
+
+# Deletes the previous day's salt shortly after midnight UTC.
+[triggers]
+crons = ["5 0 * * *"]
+
+# Off on purpose: request logs would keep visitors' IP addresses.
+[observability]
+enabled = false
+
+# `npm run worker:dev`: 8787 is taken on the shared headnode (RStudio Server).
+[dev]
+ip = "127.0.0.1"
+port = 8788

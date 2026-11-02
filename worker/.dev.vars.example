@@ -1,0 +1,7 @@
+# Local development only (`npm run worker:dev`): copy to worker/.dev.vars (gitignored).
+# Turnstile's documented test secret always passes; its tokens report "example.com".
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+TURNSTILE_HOSTNAMES=localhost,example.com
+ALLOWED_ORIGINS=http://localhost:5173
+# Print the issue instead of opening it on GitHub.
+GITHUB_DRY_RUN=1

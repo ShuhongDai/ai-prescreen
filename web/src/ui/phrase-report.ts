@@ -1,19 +1,19 @@
-// "Report as AI-like": a small floating link next to a text selection in the result pane.
-// It is a real link to the public GitHub issue form with the selected phrase filled in,
-// so nothing leaves the page unless the user follows it.
+// "Report as AI-like": a small floating button next to a text selection in the result
+// pane. It opens the report form (src/ui/report-dialog.ts) with the selected phrase filled
+// in; nothing leaves the page unless the reader sends the report.
 //
 // The phrase comes from the selected text nodes, leaving out the screen-reader-only text
-// inside highlights. The link appears once a selection gesture ends, follows scrolling,
+// inside highlights. The button appears once a selection gesture ends, follows scrolling,
 // and hides when the selection collapses or leaves the pane, when the pane is re-rendered,
-// when the end of the selection scrolls out of view, and on Escape. It never takes the
-// selection or the focus away when clicked.
+// when the end of the selection scrolls out of view, and on Escape. Pressing it does not
+// take the selection away.
 
 import { intersection, intersects, placeWithin, type Box } from './position.ts';
-import { NEW_TAB_HINT, newPhraseReportUrl, REPORT_TEXT_MAX } from './report.ts';
+import { REPORT_TEXT_MAX } from './report.ts';
 
 export interface PhraseReport {
-  /** The link; the caller inserts it into the document (after the pane, not inside it). */
-  readonly element: HTMLAnchorElement;
+  /** The button; the caller inserts it into the document (after the pane, not inside it). */
+  readonly element: HTMLButtonElement;
   /** Hides the link until the selection changes again (e.g. before a re-render). */
   hide(): void;
 }
@@ -59,19 +59,14 @@ export function visibleSelectedText(range: Range, pane: Node, limit = COLLECT_MA
   return out;
 }
 
-export function createPhraseReport(pane: HTMLElement): PhraseReport {
-  const link = document.createElement('a');
+export function createPhraseReport(pane: HTMLElement, onReport: (phrase: string) => void): PhraseReport {
+  const link = document.createElement('button');
+  link.type = 'button';
   link.className = 'phrase-report';
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
   link.hidden = true;
-  const arrow = document.createElement('span');
-  arrow.setAttribute('aria-hidden', 'true');
-  arrow.textContent = ' ↗';
-  const hint = document.createElement('span');
-  hint.className = 'sr-only';
-  hint.textContent = NEW_TAB_HINT;
-  link.append('Report as AI-like', arrow, hint);
+  link.textContent = 'Report as AI-like';
+  /** The selected phrase the button stands for. */
+  let phrase = '';
 
   let frame = 0;
   /** A pointer went down in the pane and is not up yet (a selection may be in progress). */
@@ -124,7 +119,7 @@ export function createPhraseReport(pane: HTMLElement): PhraseReport {
     if (pressing || dragging) return;
     const ranges = suppressed ? null : selectedRanges();
     if (!ranges) return hideLink();
-    const phrase = ranges.map((r) => visibleSelectedText(r, pane)).join(' ');
+    phrase = ranges.map((r) => visibleSelectedText(r, pane)).join(' ');
     const box = phrase.trim() === '' ? null : endBox(ranges[ranges.length - 1]!);
     const at: Box | null = box && {
       top: box.top,
@@ -134,7 +129,6 @@ export function createPhraseReport(pane: HTMLElement): PhraseReport {
     };
     const area = visibleArea();
     if (!at || !intersects(at, area)) return hideLink();
-    link.href = newPhraseReportUrl(phrase);
     link.hidden = false;
     const pos = placeWithin(at, { width: link.offsetWidth, height: link.offsetHeight }, area, GAP, MARGIN);
     link.style.top = `${pos.top}px`;
@@ -171,7 +165,7 @@ export function createPhraseReport(pane: HTMLElement): PhraseReport {
     hideLink();
   });
 
-  // ---- The link itself ----
+  // ---- The button itself ----
   // No default on mousedown: the selection stays and the focus does not move.
   link.addEventListener('mousedown', (e) => e.preventDefault());
   link.addEventListener('pointerdown', () => {
@@ -188,14 +182,12 @@ export function createPhraseReport(pane: HTMLElement): PhraseReport {
   };
   document.addEventListener('pointerup', release(PRESS_GRACE_MS), true);
   document.addEventListener('pointercancel', release(0), true);
-  // Followed (click, Enter, middle click): the browser opens the form; the link hides.
-  const followed = (e: MouseEvent) => {
-    if (e.type === 'auxclick' && e.button !== 1) return;
+  // Pressed (click, Enter, Space): the form opens with the phrase; the button hides.
+  link.addEventListener('click', () => {
     suppressed = true;
     hideLink();
-  };
-  link.addEventListener('click', followed);
-  link.addEventListener('auxclick', followed);
+    onReport(phrase);
+  });
 
   return {
     element: link,

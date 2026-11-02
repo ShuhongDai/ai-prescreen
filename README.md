@@ -11,8 +11,10 @@ probability". It points out wording that may read as templated or AI-like so you
 decide whether to revise it.
 
 - **Rule-based only.** A curated lexicon and simple rules, no ML models or LLM calls.
-- **Private.** Your text stays in your browser; nothing is sent unless you open a report on
-  GitHub.
+- **Private.** Your text stays in your browser. The page sends only anonymous counts of
+  which entries fired (no text; you can switch them off, and Global Privacy Control does) and
+  the reports you choose to send; a report form also loads Cloudflare Turnstile, an anti-spam
+  check.
 - **Instant.** Analysis runs locally as you paste.
 
 > Status: early development. Live at https://aiprescreen.fyi — checks for

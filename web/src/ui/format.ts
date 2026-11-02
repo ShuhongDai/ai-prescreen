@@ -2,7 +2,7 @@
 // Wording rule: describe what was flagged, never who or what wrote the text.
 
 import { TIERS, type AnalysisStats, type LexiconEntry, type Tier } from '../engine/index.ts';
-import { falsePositiveReportUrl, NEW_TAB_HINT } from './report.ts';
+import { falsePositiveReportUrl } from './report.ts';
 
 export interface TierInfo {
   /** What follows the count in the summary line (a reviewer's note), singular and plural. */
@@ -215,8 +215,8 @@ export interface PopoverModel {
   /** Null when the entry has no suggestions: the section is left out. */
   suggestions: { heading: string; items: string[] } | null;
   falsePositive: string;
-  /** Link to the pre-filled public GitHub issue form; it also dismisses the entry. */
-  report: { label: string; hint: string; href: string };
+  /** Opens the report form; `href` is its secondary way, the pre-filled GitHub issue form. */
+  report: { label: string; href: string };
   close: string;
 }
 
@@ -232,7 +232,6 @@ export function popoverModel(entry: LexiconEntry, matchedText: string): PopoverM
     falsePositive: POPOVER_TEXT.falsePositive,
     report: {
       label: POPOVER_TEXT.report,
-      hint: NEW_TAB_HINT,
       href: falsePositiveReportUrl(entry.id, matchedText),
     },
     close: POPOVER_TEXT.close,

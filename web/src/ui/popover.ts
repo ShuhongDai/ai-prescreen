@@ -49,11 +49,12 @@ function matches(query: string): boolean {
 
 export interface PopoverOptions<T> {
   /**
-   * "Not AI-like (false positive)" was pressed, or the "Report false positive" link was
-   * followed (the browser opens it in a new tab); the popover is already closed.
+   * "Not AI-like (false positive)" was pressed; the popover is already closed.
    * `viaPointer` is false when the control was activated from the keyboard.
    */
   onFalsePositive(context: T, viaPointer: boolean): void;
+  /** "Report false positive" was pressed (opens the report form); the popover is closed. */
+  onReport(context: T): void;
   /** Client rect the highlight must stay visible in besides the viewport (the result pane). */
   clipRect?(): Box | null;
   /** The highlight after `anchor` in tab order (for Tab past the end of the popover). */
@@ -132,18 +133,11 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
 
   const fpButton = el('button', 'button');
   fpButton.type = 'button';
-  // A real link: the report only leaves the page when the user follows it.
-  const reportLink = el('a', 'report-link');
-  reportLink.target = '_blank';
-  reportLink.rel = 'noopener noreferrer';
-  const reportLabel = el('span', '');
-  const reportArrow = el('span', '');
-  reportArrow.setAttribute('aria-hidden', 'true');
-  reportArrow.textContent = ' ↗';
-  const reportHint = el('span', 'sr-only');
-  reportLink.append(reportLabel, reportArrow, reportHint);
+  // Opens the report form (src/ui/report-dialog.ts); nothing is sent from here.
+  const reportButton = el('button', 'link-button report-link');
+  reportButton.type = 'button';
   const actions = el('div', 'popover-actions');
-  actions.append(fpButton, reportLink);
+  actions.append(fpButton, reportButton);
 
   root.append(head, experimental, quote, whySection, suggestionsSection, actions);
 
@@ -181,9 +175,7 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
       }),
     );
     fpButton.textContent = model.falsePositive;
-    reportLabel.textContent = model.report.label;
-    reportHint.textContent = model.report.hint;
-    reportLink.href = model.report.href;
+    reportButton.textContent = model.report.label;
     closeButton.setAttribute('aria-label', model.close);
     // Only reference what is shown: a hidden element named in aria-describedby is still read.
     root.setAttribute(
@@ -346,16 +338,13 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
     options.onFalsePositive(context, e.detail > 0);
   });
 
-  // Following the link (click, Enter, or a middle click for a background tab) also
-  // dismisses the entry. The default action is kept: the browser opens the form.
-  function onReport(e: MouseEvent): void {
-    if (!current || (e.type === 'auxclick' && e.button !== 1)) return;
+  // The form takes over: the entry is dismissed once the report is sent (main.ts).
+  reportButton.addEventListener('click', () => {
+    if (!current) return;
     const { context } = current;
     hide(null);
-    options.onFalsePositive(context, e.detail > 0);
-  }
-  reportLink.addEventListener('click', onReport);
-  reportLink.addEventListener('auxclick', onReport);
+    options.onReport(context);
+  });
 
   root.addEventListener('keydown', (e) => {
     if (e.key !== 'Tab' || !anchor) return;
@@ -367,7 +356,7 @@ export function createPopover<T>(options: PopoverOptions<T>): Popover<T> {
       }
       return;
     }
-    if (active === reportLink) {
+    if (active === reportButton) {
       const next = options.nextAfter?.(anchor) ?? null;
       if (next) {
         e.preventDefault();

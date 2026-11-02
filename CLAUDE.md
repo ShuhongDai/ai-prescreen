@@ -156,13 +156,23 @@ Entry schema:
   With Off the summary line shows no baseline.
 - Clicking a highlight opens a popover: tier, why it is flagged, suggestions,
   "Not AI-like (false positive)" (hides that entry for the page session, memory only, Undo
-  in the summary) and "Report false positive" (opens the prefilled public GitHub form in a
-  new tab and also hides the entry). Selecting text in the result shows a "Report as
-  AI-like" link (prefilled new-phrase form). URLs are built in `web/src/ui/report.ts`.
+  in the summary) and "Report false positive" (opens the report form; once the report is
+  sent or opened on GitHub, the entry is hidden like "Not AI-like"). Selecting text in the
+  result shows a "Report as AI-like" button (the report form with the phrase).
+- Report form (M4, `web/src/ui/report-dialog.ts`): a modal dialog. "Send report" posts to
+  the Worker, which checks Turnstile and opens the public issue, so no GitHub account is
+  needed; "Open on GitHub instead" is the prefilled issue form (URLs in
+  `web/src/ui/report.ts`). It says that reports become public issues. The Turnstile script
+  is loaded only when the form opens.
+- Hit counts (M4, `web/src/ui/hits.ts`): once an analysis has been idle for 4 s, the IDs of
+  the entries it shows go to the Worker as a beacon (`{"ids": [...]}`, text/plain), each
+  entry at most once per page view, never for "Try an example"; whatever is waiting is sent
+  when the page is hidden. On by default; off with Global Privacy Control or the switch in
+  Advanced (localStorage). The footer says what is sent.
 - A short disclaimer sits near the result: "Self-check tool. Highlights are hints, not
   verdicts; you decide what to change and remain responsible for your text."
-- The experimental-lexicon toggle and a "Report a phrase" link live in an "Advanced" area
-  near the footer.
+- The experimental-lexicon toggle, the hit-count switch and "Report a phrase" (opens the
+  report form) live in an "Advanced" area near the footer.
 - The build strips `evidence`, `models` and `independentSources` from the bundled lexicon
   (`vite.config.ts`); the page needs only patterns, notes and suggestions.
 - Visual style: see Design below. Iterate from screenshots.
@@ -212,11 +222,33 @@ proofread with a red pen, a highlighter and a pencil.
   A/AAAA → GitHub Pages, `www` CNAME → shuhongdai.github.io (GitHub redirects www to the
   apex, and the old github.io URL to the domain), and the `_github-pages-challenge-ShuhongDai`
   TXT record that verifies the domain for the GitHub account.
-- Backend (from M4): Cloudflare Worker + D1 (SQLite) + Turnstile (anti-spam), free tier.
-  `api.aiprescreen.fyi` is reserved for the Worker: no DNS record until then; attaching it
-  as a Workers custom domain in M4 creates its own record.
-  The Worker stores feedback and anonymous counts, rate-limits by IP, and can open
-  GitHub issues for triage using a token stored as a Worker secret.
+- Backend (M4, `worker/`): Cloudflare Worker `aiprescreen-api` + D1 `aiprescreen-db` +
+  Turnstile, free tier, at https://api.aiprescreen.fyi (a Workers custom domain, which
+  creates its own DNS record; no workers.dev URL). The account's `visitor-log` Worker and D1
+  database are not part of this project: never touch them.
+  - `POST /v1/report`: checked against the contract (`web/src/report-contract.ts`) and the
+    lexicon's IDs (generated at build time, `scripts/worker-entry-ids.ts`), then Turnstile
+    (hostname and action), then the Worker opens the issue with the issue forms' title,
+    labels and `### <field label>` sections, so `npm run triage` reads it. Reported text goes
+    into code spans and blocks: it cannot mention, link or format anything. At most
+    `REPORTS_PER_DAY` issues per day and report kind, reserved atomically before GitHub is
+    called. `POST /v1/hits`: known entry IDs (at most 100 per request) → per-day counts,
+    within `HITS_ROWS_PER_DAY` rows written per day (D1's free write quota is shared by the
+    whole account). `GET /v1/health`: whether reports are configured.
+  - Only the page's origin may call it (CORS and an Origin check). Rate limits (5 reports and
+    6 hit requests per minute) are keyed by SHA-256 of the day's random salt and the IP (an
+    IPv6 address's /64); the key is never stored, and a salt is deleted after its day (cron).
+    Request logs are off (`observability`): no IP address or reported text is stored anywhere.
+    Request bodies are read with a byte limit. The page's Content-Security-Policy (a meta
+    tag, `vite.config.ts`) allows only its own files, the API and Turnstile.
+  - D1: `hits(day, entry_id, count)`, `reports(day, kind, entry_id, count)`,
+    `salts(day, salt)` (migration 0001), `budgets(day, name, used)` (0002). Secrets via
+    `wrangler secret put`: `GITHUB_TOKEN` (fine-grained, Issues read/write on this repo only)
+    and `TURNSTILE_SECRET`.
+  - CI deploys it (`.github/workflows/deploy-worker.yml`). Migrations are never applied by
+    CI: every remote schema change is confirmed by Shuhong first (rule 7), and applied before
+    the Worker that needs it is deployed. Run wrangler through the npm scripts only: they keep
+    its logs in `worker/.wrangler/logs` (inside the project, not world-readable).
 - Everything is configured as code in this repo (`wrangler.toml`, `migrations/*.sql`,
   `.github/workflows/*`). No manual dashboard work after initial account setup.
   Exception, managed by hand: DNS in Cloudflare (the records above; null MX, SPF `-all` and
@@ -276,8 +308,11 @@ ai-prescreen/
 - Git identity switches automatically via `includeIf "gitdir:~/projects/personal/"`
   → noreply email. Global identity (UIBK email) is for work repos; leave it alone.
 - Preview in the browser via SSH port forwarding from Shuhong's laptop:
-  `ssh -L 5173:localhost:5173 -L 8787:localhost:8787 <user>@<headnode>`
-  (5173 = Vite dev server, 8787 = `wrangler dev`).
+  `ssh -L 5173:localhost:5173 -L 8788:localhost:8788 <user>@<headnode>`
+  (5173 = Vite dev server, 8788 = `wrangler dev`; 8787 on the headnode is RStudio Server).
+- Worker locally: copy `worker/.dev.vars.example` to `worker/.dev.vars` (Turnstile test keys,
+  dry run: issues are printed, not opened), `npm run worker:migrate-local`, then
+  `npm run worker:dev`; the dev page talks to it at http://localhost:8788.
 - Cloudflare (M4): `wrangler login` does not work well on a remote host; use
   `CLOUDFLARE_API_TOKEN` from `.env` instead.
 
@@ -302,6 +337,9 @@ npm run triage -- --close [--yes]   # after the decision: comment on and close p
 npm run baseline          # recompute web/src/baseline.json (per-entry fire counts and the
                           # baseline per sensitivity level, ~3 min) after changing lexical
                           # entries or their status (tests/baseline.test.ts fails until then)
+npm run worker:dev        # the Worker locally on :8788 (local D1, see Development environment)
+npm run worker:migrate-local  # apply worker/migrations/ to the local D1 database
+npm run worker:deploy     # what CI runs to deploy the Worker (never applies migrations)
 ```
 
 Before every push: `npm test && npm run validate-lexicon`.
@@ -343,3 +381,10 @@ Files: everything for this project stays inside this folder. Review files for Sh
   record until it is attached as a Workers custom domain).
 - 2026-10-30 — DNS stays a manual exception to configuration as code (no check script). The
   domain sends no mail: null MX, SPF `-all`, DMARC `p=reject`. DNSSEC on.
+- 2026-10-30 — M4: reports go through the Worker (Turnstile, then the Worker opens the issue
+  in the forms' format; "Open on GitHub instead" stays as the secondary way). Hit counts are
+  entry IDs per day, sent once per entry and page view after a 4 s pause, on by default with
+  an off switch (off under Global Privacy Control). Rate limits use a daily-salted hash that
+  is never stored. Turnstile loads only with the report form. CI deploys the Worker;
+  migrations are applied by hand after confirmation. New resources: Worker `aiprescreen-api`,
+  D1 `aiprescreen-db`.

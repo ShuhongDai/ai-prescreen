@@ -11,7 +11,7 @@ function slimLexicon(): Plugin {
     transform(code, id) {
       if (!/[\\/]lexicon[\\/][^\\/]+\.json$/.test(id)) return null;
       const entries = JSON.parse(code) as Record<string, unknown>[];
-      const slim = entries.map(({ evidence, models, independentSources, ...rest }) => rest);
+      const slim = entries.map(({ evidence, models, independentSources, userReports, ...rest }) => rest);
       return { code: JSON.stringify(slim), map: null };
     },
   };

@@ -104,9 +104,10 @@ describe('triage', () => {
 
     const delve = f[1]!.entries.find((e) => e.id === 'en.lexical.delve')!;
     expect(delve.evidence!.map((e) => e.ref)).toEqual(['Kobak et al.', '#1']);
-    expect(delve).toMatchObject({ independentSources: 2, models: ['GPT-4o'] });
+    // Reports are evidence, but never independent sources (decision 2026-11-02).
+    expect(delve).toMatchObject({ independentSources: 1, userReports: 1, models: ['GPT-4o'] });
     const added = f[1]!.entries.find((e) => e.id === 'en.lexical.rich-tapestry-of')!;
-    expect(added).toMatchObject({ status: 'candidate', match: 'phrase', independentSources: 2 });
+    expect(added).toMatchObject({ status: 'candidate', match: 'phrase', independentSources: 0, userReports: 2 });
     expect(added.evidence!.map((e) => [e.type, e.ref])).toEqual([['user-report', '#2'], ['user-report', '#3']]);
     expect(validateLexiconFiles(f.map((x) => ({ fileName: x.fileName, data: x.entries })))).toEqual([]);
   });
@@ -155,6 +156,18 @@ describe('issue forms filed on github.com', () => {
 });
 
 describe('triage of reports filed without an account', () => {
+  it('gives a new stylistic candidate a source count of 0 and one user report', () => {
+    const files = (): LexiconFile[] => [{ fileName: 'en.stylistic.json', entries: [] }];
+    const f = files();
+    const result = triage([toReport(issue(1, 'report:new-phrase', phraseBody('at its very heart', 'style')))], f, {
+      today: '2026-11-02',
+      matchedBy: () => null,
+    });
+    expect(result.added).toHaveLength(1);
+    expect(f[0]!.entries[0]).toMatchObject({ tier: 'stylistic', independentSources: 0, userReports: 1 });
+    expect(validateLexiconFiles(f.map((x) => ({ fileName: x.fileName, data: x.entries })))).toEqual([]);
+  });
+
   it('cuts long slugs cleanly and never lets one unusable report stop the batch', () => {
     const files = (): LexiconFile[] => [{ fileName: 'en.lexical.json', entries: [] }];
     const long = 'a comprehensive understanding of the multifaceted interplay between';

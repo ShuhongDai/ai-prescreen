@@ -62,8 +62,15 @@ words). Each file is a JSON array of entries:
 - `note` must not say or imply that text is AI-generated; describe the wording
   ("a stock phrase in chatbot-style prose", "may read as templated").
 - `evidence` lists short citations and URLs, **never copied passages**. A source that only
-  repeats another source's list gets `"derivedFrom": "<that source's ref>"`;
-  `independentSources` counts the other items.
+  repeats another source's list gets `"derivedFrom": "<that source's ref>"` (never a user
+  report); `independentSources` counts the other items, except user reports.
+- Phrase reports (*Report as AI-like* / *Report a phrase*, from the site or the GitHub form)
+  are added by `npm run triage` as `{ "type": "user-report", "ref": "#<issue>", "url": "…" }`
+  evidence items, on a new candidate or on the existing entry that already covers the
+  phrase. They stay in `evidence` but never count as independent sources: `userReports`
+  counts them, and is required once an entry has one. False-positive reports never become
+  evidence; triage counts them per entry in its review. `npm run validate-lexicon` checks
+  both counts.
 - `status`: new entries are always `candidate`. Only the maintainer sets `accepted`,
   `watch` or `retired`. Candidates show on the site only with *Advanced → Experimental
   lexicon*.

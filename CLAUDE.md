@@ -81,16 +81,22 @@ Entry schema:
   "added": "2026-10-22",
   "evidence": [
     { "type": "paper", "ref": "Kobak et al., excess vocabulary", "url": "https://…" },
-    { "type": "blog", "ref": "Some blog", "derivedFrom": "Kobak et al., excess vocabulary" }
+    { "type": "blog", "ref": "Some blog", "derivedFrom": "Kobak et al., excess vocabulary" },
+    { "type": "user-report", "ref": "#12", "url": "https://github.com/ShuhongDai/ai-prescreen/issues/12" }
   ],
-  "independentSources": 1        // evidence items without "derivedFrom"
+  "independentSources": 1,       // evidence items without "derivedFrom", except user reports
+  "userReports": 1               // "user-report" items (npm run triage); required once there is one
 }
 ```
 
 - `evidence` lists the sources consulted for the entry: short citations and URLs only, never
-  copied passages. An item that only repeats another source's list carries `derivedFrom`;
-  `independentSources` counts the other items (the validator checks it). User reports add
-  `{ "type": "user-report", "ref": "#<issue>", "url": "…" }` items (`npm run triage`).
+  copied passages. An item that only repeats another source's list carries `derivedFrom`
+  (never a user report); `independentSources` counts the other items except user reports
+  (the validator checks it). Phrase reports (new-phrase issues) add
+  `{ "type": "user-report", "ref": "#<issue>", "url": "…" }` items (`npm run triage`). They
+  never count as independent sources: `userReports` counts them, required once an entry has
+  one (validator-checked). False-positive reports never become evidence; triage counts them
+  per entry in its review.
 
 - Only `accepted` (and `watch`, shown normally) entries are active by default; `candidate`
   entries appear only with an "experimental lexicon" toggle; `retired` are ignored.
@@ -173,8 +179,8 @@ Entry schema:
   verdicts; you decide what to change and remain responsible for your text."
 - The experimental-lexicon toggle, the hit-count switch and "Report a phrase" (opens the
   report form) live in an "Advanced" area near the footer.
-- The build strips `evidence`, `models` and `independentSources` from the bundled lexicon
-  (`vite.config.ts`); the page needs only patterns, notes and suggestions.
+- The build strips `evidence`, `models`, `independentSources` and `userReports` from the
+  bundled lexicon (`vite.config.ts`); the page needs only patterns, notes and suggestions.
 - Visual style: see Design below. Iterate from screenshots.
 - UI language: English. Product name shown as "AI初筛 · ai-prescreen".
 - Vite `base` is `/`: the site is served from the root of https://aiprescreen.fyi.
@@ -388,3 +394,6 @@ Files: everything for this project stays inside this folder. Review files for Sh
   is never stored. Turnstile loads only with the report form. CI deploys the Worker;
   migrations are applied by hand after confirmation. New resources: Worker `aiprescreen-api`,
   D1 `aiprescreen-db`.
+- 2026-11-02 — Lexicon policy: user reports stay evidence items (`user-report`) but never raise
+  `independentSources`; a separate `userReports` field counts them (validator, triage,
+  fire-rate review).

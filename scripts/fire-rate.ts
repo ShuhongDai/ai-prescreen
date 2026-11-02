@@ -9,6 +9,7 @@
 
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { TIERS, analyze, compileLexicon, type LexiconEntry } from '../web/src/engine/index.ts';
+import { independentSourceCount, USER_REPORT, userReportCount } from '../web/src/engine/validate.ts';
 
 function arg(name: string, fallback: string): string {
   const i = process.argv.indexOf(`--${name}`);
@@ -128,12 +129,14 @@ const cell = (s: string) => s.replace(/\|/g, '\\|').replace(/\n/g, ' ');
 
 function sourcesCell(e: LexiconEntry): string {
   const ev = e.evidence ?? [];
-  const indep = ev.filter((x) => !x.derivedFrom).map((x) => x.ref);
-  const derived = ev.length - indep.length;
+  const indep = ev.filter((x) => !x.derivedFrom && x.type !== USER_REPORT).map((x) => x.ref);
+  const derived = ev.filter((x) => x.derivedFrom).length;
+  const reports = userReportCount(ev);
   const shortRef = (ref: string) => (ref.length > 70 ? `${ref.slice(0, 67)}…` : ref);
   const shown = indep.slice(0, 3).map(shortRef).join('; ');
   const more = indep.length > 3 ? `; +${indep.length - 3} more` : '';
-  return `**${indep.length}**${derived ? ` (+${derived} derived)` : ''}: ${shown}${more}`;
+  const extra = [derived ? `+${derived} derived` : '', reports ? `+${reports} user report(s)` : ''].filter(Boolean).join(', ');
+  return `**${indep.length}**${extra ? ` (${extra})` : ''}: ${shown}${more}`;
 }
 
 function patternCell(e: LexiconEntry): string {
@@ -177,7 +180,7 @@ function review(): string {
     `|---|---|---|---|---|---|---|${withExample ? '---|' : ''}`;
 
   const rates = results.map((r) => r.rate);
-  const counts = selected.map((e) => (e.evidence ?? []).filter((x) => !x.derivedFrom).length);
+  const counts = selected.map((e) => independentSourceCount(e.evidence ?? []));
   const sorted = [...rates].sort((a, b) => a - b);
   const median = sorted.length ? sorted[Math.floor((sorted.length - 1) / 2)]! : 0;
   const mean = rates.reduce((s, v) => s + v, 0) / Math.max(1, rates.length);
@@ -207,7 +210,7 @@ function review(): string {
     `|---|${rateBands.map(() => '---').join('|')}|\n` +
     sourceBands
       .map(([label, inBand]) => {
-        const ids = selected.filter((e) => inBand((e.evidence ?? []).filter((x) => !x.derivedFrom).length));
+        const ids = selected.filter((e) => inBand(independentSourceCount(e.evidence ?? [])));
         const cells = rateBands.map(
           ([, test]) => ids.filter((e) => test(results.find((r) => r.id === e.id)!.rate)).length,
         );

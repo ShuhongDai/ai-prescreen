@@ -75,7 +75,15 @@ interface FakeWorld {
 }
 
 function world(
-  options: { human?: boolean; hostname?: string; action?: string; github?: number; env?: Partial<Omit<Env, 'DB' | 'REPORT_LIMIT' | 'HITS_LIMIT'>> } = {},
+  options: {
+    human?: boolean;
+    hostname?: string;
+    action?: string;
+    github?: number;
+    /** Labels GitHub keeps on a new issue (default: all it was given). */
+    keptLabels?: string[];
+    env?: Partial<Omit<Env, 'DB' | 'REPORT_LIMIT' | 'HITS_LIMIT'>>;
+  } = {},
 ): FakeWorld {
   const { db, sql } = d1();
   const calls: FakeWorld['calls'] = [];
@@ -87,8 +95,11 @@ function world(
     }
     if (url === 'https://api.github.com/repos/ShuhongDai/ai-prescreen/issues') {
       if (options.github) return new Response('{}', { status: options.github });
-      return Response.json({ number: 42, html_url: 'https://github.com/ShuhongDai/ai-prescreen/issues/42' }, { status: 201 });
+      const given = (calls.at(-1)!.body.labels as string[]) ?? [];
+      const labels = (options.keptLabels ?? given).map((name) => ({ name }));
+      return Response.json({ number: 42, html_url: 'https://github.com/ShuhongDai/ai-prescreen/issues/42', labels }, { status: 201 });
     }
+    if (url === 'https://api.github.com/repos/ShuhongDai/ai-prescreen/issues/42/labels') return Response.json([], { status: 200 });
     throw new Error(`unexpected fetch: ${url}`);
   }) as typeof fetch;
   const env = {
@@ -467,5 +478,20 @@ describe('hardening (security review)', () => {
     const honest = 'Here is the summary.\n### Key Takeaways\n- one';
     const pasted = issueFor({ kind: 'new-phrase', phrase: 'key takeaways', tier: 'artifact (chatbot leftover)', example: honest, model: 'GPT-4o' });
     expect(toReport({ number: 6, url: 'u', ...pasted })).toMatchObject({ phrase: 'key takeaways', example: honest, model: 'GPT-4o' });
+  });
+});
+
+describe('labels on Worker-filed issues', () => {
+  it('adds the labels GitHub dropped, so triage finds the report', async () => {
+    const w = world({ keptLabels: [] });
+    expect((await handle(request('/v1/report', { body: falsePositive }), w.env, w.deps())).status).toBe(201);
+    const add = w.calls.find((c) => c.url.endsWith('/issues/42/labels'));
+    expect(add?.body).toEqual({ labels: ['report', 'report:false-positive'] });
+  });
+
+  it('makes no extra call when GitHub kept them', async () => {
+    const w = world();
+    expect((await handle(request('/v1/report', { body: phrase }), w.env, w.deps())).status).toBe(201);
+    expect(w.calls.some((c) => c.url.endsWith('/labels'))).toBe(false);
   });
 });

@@ -349,6 +349,35 @@ describe('validateLexicon', () => {
     expect(joined(check({ evidence: [{ ...paper, derivedFrom: ' ' }] }))).toMatch(/"derivedFrom"/);
   });
 
+  it('counts user reports in userReports, never as independent sources', () => {
+    const paper = { type: 'paper', ref: 'Example et al. 2024' };
+    const report = { type: 'user-report', ref: '#12', url: 'https://github.com/ShuhongDai/ai-prescreen/issues/12' };
+    expect(check({ evidence: [paper, report], independentSources: 1, userReports: 1 })).toEqual([]);
+    expect(joined(check({ evidence: [paper, report], independentSources: 2, userReports: 1 }))).toMatch(
+      /"independentSources" is 2, but 1 evidence item\(s\) are independent/,
+    );
+    expect(joined(check({ evidence: [paper, report], independentSources: 1 }))).toMatch(/"userReports" is missing/);
+    expect(joined(check({ evidence: [paper, report, { ...report, ref: '#13' }], userReports: 1 }))).toMatch(
+      /"userReports" is 1, but 2 evidence item/,
+    );
+    expect(check({ evidence: [paper], userReports: 0 })).toEqual([]);
+    expect(joined(check({ evidence: [paper], userReports: -1 }))).toMatch(/"userReports" must be a non-negative integer/);
+    expect(joined(check({ evidence: [{ ...report, derivedFrom: '#11' }], userReports: 1 }))).toMatch(
+      /a user report cannot be "derivedFrom"/,
+    );
+  });
+
+  it('checks both counts without an evidence array, and catches reports under another type', () => {
+    expect(joined(check({ evidence: undefined, userReports: 2 }))).toMatch(/"userReports" is 2, but 0 evidence item/);
+    expect(joined(check({ evidence: undefined, independentSources: 1 }))).toMatch(/"independentSources" is 1, but 0/);
+    const report = { type: 'user-report', ref: '#12' };
+    for (const type of ['User-Report', 'user report', 'user_reports', 'github-issue']) {
+      expect(joined(check({ evidence: [{ ...report, type }], independentSources: 1 }))).toMatch(
+        /a report issue must have "type": "user-report"/,
+      );
+    }
+  });
+
   it('rejects bad dates and wrongly typed arrays', () => {
     expect(joined(check({ added: '2026-13-01' }))).toMatch(/"added"/);
     expect(joined(check({ added: '22.10.2026' }))).toMatch(/"added"/);

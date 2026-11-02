@@ -25,8 +25,29 @@ const KNOWN_KEYS = new Set([
   'added',
   'evidence',
   'independentSources',
+  'userReports',
 ]);
 const EVIDENCE_KEYS = new Set(['type', 'ref', 'url', 'derivedFrom']);
+
+/** Evidence type of a user report (added by `npm run triage` for a phrase report): kept as
+ * evidence, but counted in "userReports", never in "independentSources" (decision 2026-11-02). */
+export const USER_REPORT = 'user-report';
+
+interface EvidenceLike {
+  type?: unknown;
+  derivedFrom?: unknown;
+}
+
+/** Evidence items that are independent sources: not derived from another source's list,
+ * and not a user report. */
+export function independentSourceCount(evidence: readonly EvidenceLike[]): number {
+  return evidence.filter((ev) => ev.derivedFrom === undefined && ev.type !== USER_REPORT).length;
+}
+
+/** Evidence items that are user reports. */
+export function userReportCount(evidence: readonly EvidenceLike[]): number {
+  return evidence.filter((ev) => ev.type === USER_REPORT).length;
+}
 const URL = /^https?:\/\/\S+$/;
 const REQUIRED_STRINGS = ['id', 'pattern', 'match', 'tier', 'lang', 'status', 'note', 'added'];
 
@@ -275,8 +296,12 @@ function validateEntry(
   if (entry.models !== undefined && !isStringArray(entry.models)) {
     err('"models" must be an array of strings');
   }
-  let independent: number | null = null;
+  // No "evidence" means no items, so both counts must then be 0 (or absent).
+  let independent: number | null = 0;
+  let reports: number | null = 0;
   if (entry.evidence !== undefined) {
+    independent = null;
+    reports = null;
     const ok =
       Array.isArray(entry.evidence) &&
       entry.evidence.every(
@@ -298,10 +323,18 @@ function validateEntry(
         if (ev.derivedFrom !== undefined && (typeof ev.derivedFrom !== 'string' || ev.derivedFrom.trim() === '')) {
           err(`evidence[${i}]: "derivedFrom" must be a non-empty string`);
         }
+        if (ev.type === USER_REPORT && ev.derivedFrom !== undefined) {
+          err(`evidence[${i}]: a user report cannot be "derivedFrom" another source`);
+        }
+        // A report under another type would count as an independent source.
+        const looksLikeReport =
+          /^user[\s_-]*reports?$/i.test((ev.type as string).trim()) || /^#\d+$/.test((ev.ref as string).trim());
+        if (ev.type !== USER_REPORT && looksLikeReport) {
+          err(`evidence[${i}]: a report issue must have "type": "${USER_REPORT}" (never an independent source)`);
+        }
       });
-      independent = (entry.evidence as Record<string, unknown>[]).filter(
-        (ev) => ev.derivedFrom === undefined,
-      ).length;
+      independent = independentSourceCount(entry.evidence as Record<string, unknown>[]);
+      reports = userReportCount(entry.evidence as Record<string, unknown>[]);
     }
   }
   if (entry.independentSources !== undefined) {
@@ -310,9 +343,19 @@ function validateEntry(
       err('"independentSources" must be a non-negative integer');
     } else if (independent !== null && n !== independent) {
       err(
-        `"independentSources" is ${n}, but ${independent} evidence item(s) have no "derivedFrom"`,
+        `"independentSources" is ${n}, but ${independent} evidence item(s) are independent (no "derivedFrom", not a user report)`,
       );
     }
+  }
+  if (entry.userReports !== undefined) {
+    const n = entry.userReports;
+    if (typeof n !== 'number' || !Number.isInteger(n) || n < 0) {
+      err('"userReports" must be a non-negative integer');
+    } else if (reports !== null && n !== reports) {
+      err(`"userReports" is ${n}, but ${reports} evidence item(s) are user reports`);
+    }
+  } else if (reports !== null && reports > 0) {
+    err(`"userReports" is missing, but ${reports} evidence item(s) are user reports`);
   }
 
   if (typeof pattern === 'string' && pattern.trim() !== '') {

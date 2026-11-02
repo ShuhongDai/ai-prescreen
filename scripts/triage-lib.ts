@@ -4,7 +4,7 @@
 
 import { literalSource } from '../web/src/engine/compile.ts';
 import type { Evidence, LexiconEntry, Tier } from '../web/src/engine/types.ts';
-import { patternKey, validateLexicon } from '../web/src/engine/validate.ts';
+import { patternKey, USER_REPORT, userReportCount, validateLexicon } from '../web/src/engine/validate.ts';
 import { ENTRY_ID, FIELD_MAX, MODEL_NAME } from '../web/src/report-contract.ts';
 
 export interface Issue {
@@ -207,11 +207,10 @@ function addEvidence(entry: LexiconEntry, report: Extract<Report, { kind: 'new-p
   const ref = `#${report.issue}`;
   entry.evidence ??= [];
   if (entry.evidence.some((e) => e.ref === ref)) return false;
-  const item: Evidence = { type: 'user-report', ref, url: report.url };
+  const item: Evidence = { type: USER_REPORT, ref, url: report.url };
   entry.evidence.push(item);
-  if (entry.independentSources !== undefined) {
-    entry.independentSources = entry.evidence.filter((e) => !e.derivedFrom).length;
-  }
+  // A report is evidence, but never an independent source (decision 2026-11-02).
+  entry.userReports = userReportCount(entry.evidence);
   if (report.model && !(entry.models ?? []).includes(report.model)) entry.models = [...(entry.models ?? []), report.model];
   return true;
 }
@@ -303,7 +302,8 @@ export function triage(reports: readonly Report[], files: readonly LexiconFile[]
       models: [],
       added: opts.today,
       evidence: [],
-      ...(r.tier === 'lexical' ? { independentSources: 0 } : {}),
+      // Lexical and stylistic entries carry a source count; a report is never one.
+      ...(r.tier !== 'artifact' ? { independentSources: 0 } : {}),
     };
     addEvidence(entry, r);
     // One unusable report must not stop the whole batch (the lexicon is validated as a whole).

@@ -8,13 +8,14 @@ export const STATUSES = ['candidate', 'accepted', 'watch', 'retired'] as const;
 export type EntryStatus = (typeof STATUSES)[number];
 
 export interface Evidence {
-  /** Kind of source, e.g. "paper", "dataset", "word-list", "blog", "media", "forum". */
+  /** Kind of source, e.g. "paper", "dataset", "word-list", "blog", "media", "forum", or
+   * "user-report" (added by `npm run triage`; never an independent source). */
   type: string;
   /** Short citation; never a copied passage. */
   ref: string;
   url?: string;
   /** Set when this source repeats another source's list (ref of that source); such
-   * items do not count towards `independentSources`. */
+   * items do not count towards `independentSources`. Never set on a user report. */
   derivedFrom?: string;
 }
 
@@ -32,8 +33,12 @@ export interface LexiconEntry {
   models?: string[];
   added: string;
   evidence?: Evidence[];
-  /** Number of evidence items that are independent (no `derivedFrom`). */
+  /** Number of evidence items that are independent sources: no `derivedFrom`, and not a
+   * user report. */
   independentSources?: number;
+  /** Number of evidence items of type "user-report" (user reports, `npm run triage`);
+   * required once there is one. They never count as independent sources. */
+  userReports?: number;
 }
 
 export interface Match {

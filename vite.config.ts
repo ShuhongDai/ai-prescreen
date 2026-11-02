@@ -17,11 +17,38 @@ function slimLexicon(): Plugin {
   };
 }
 
+// Privacy, enforced by the browser: the built page loads only its own files, connects
+// only to the report/hit-count API, and runs and frames only Turnstile (loaded with a report
+// form). A meta tag, since GitHub Pages sends no custom headers; build only, as the dev
+// server needs inline scripts and its own connections.
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "script-src 'self' https://challenges.cloudflare.com",
+  'frame-src https://challenges.cloudflare.com',
+  'connect-src https://api.aiprescreen.fyi',
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join('; ');
+
+function contentSecurityPolicy(): Plugin {
+  return {
+    name: 'content-security-policy',
+    apply: 'build',
+    transformIndexHtml: () => [
+      { tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: CONTENT_SECURITY_POLICY }, injectTo: 'head-prepend' },
+    ],
+  };
+}
+
 export default defineConfig({
   root: 'web',
   // Served from the root of https://aiprescreen.fyi (GitHub Pages custom domain).
   base: '/',
-  plugins: [slimLexicon()],
+  plugins: [slimLexicon(), contentSecurityPolicy()],
   build: {
     outDir: '../dist',
     modulePreload: { polyfill: false },

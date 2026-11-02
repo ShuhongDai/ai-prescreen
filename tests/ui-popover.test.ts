@@ -47,7 +47,6 @@ describe('popover content model', () => {
       falsePositive: 'Not AI-like (false positive)',
       report: {
         label: 'Report false positive',
-        hint: ' (opens GitHub in a new tab)',
         href: falsePositiveReportUrl('en.lexical.delve-into', 'delve into'),
       },
       close: 'Close',

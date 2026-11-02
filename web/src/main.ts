@@ -12,12 +12,21 @@ import {
   SEPARATOR,
   type Summary,
 } from './ui/format.ts';
+import { sendHits } from './ui/api.ts';
+import { createHitTracker } from './ui/hits.ts';
 import { analyzeDraft, compileLexicons } from './ui/lexicons.ts';
 import { createPhraseReport } from './ui/phrase-report.ts';
 import { BOTTOM_SHEET_QUERY, createPopover } from './ui/popover.ts';
-import { loadExperimental, loadSensitivity, saveExperimental, saveSensitivity } from './ui/prefs.ts';
+import {
+  loadExperimental,
+  loadHitCounts,
+  loadSensitivity,
+  saveExperimental,
+  saveHitCounts,
+  saveSensitivity,
+} from './ui/prefs.ts';
 import { renderMirror, type RenderedHighlight } from './ui/render.ts';
-import { newPhraseReportUrl } from './ui/report.ts';
+import { createReportDialog } from './ui/report-dialog.ts';
 import { isSensitivity } from './ui/sensitivity.ts';
 
 function byId<T extends HTMLElement>(id: string): T {
@@ -73,7 +82,8 @@ const dismissedLine = byId<HTMLParagraphElement>('summary-dismissed');
 const dismissedLabel = byId<HTMLSpanElement>('summary-dismissed-text');
 const undoButton = byId<HTMLButtonElement>('undo-dismiss');
 const advanced = byId<HTMLDetailsElement>('advanced');
-const reportPhraseLink = byId<HTMLAnchorElement>('report-phrase');
+const reportPhraseButton = byId<HTMLButtonElement>('report-phrase');
+const hitCountsToggle = byId<HTMLInputElement>('hit-counts');
 const emptyState = byId<HTMLDivElement>('empty');
 const sheetPane = result.closest('section') ?? result;
 
@@ -92,8 +102,6 @@ const tryExample = byId<HTMLButtonElement>('try-example');
 // The "Key" to the marks (red pen, highlighter, pencil, dashed box).
 setupDisclosure(byId<HTMLButtonElement>('key-button'), byId<HTMLDivElement>('key-panel'));
 
-// The empty "report an AI-like phrase" form, for keyboard users and phrases not on screen.
-reportPhraseLink.href = newPhraseReportUrl('');
 
 const entries: ReadonlyMap<string, LexiconEntry> = new Map(LEXICON.map((e) => [e.id, e]));
 
@@ -122,10 +130,23 @@ let highlights: RenderedHighlight[] = [];
 
 const matchedText = (h: RenderedHighlight) => shownText.slice(h.match.start, h.match.end);
 
+// The report form (Worker, or the GitHub form as the secondary way). A false positive that
+// is reported is dismissed like "Not AI-like".
+const reportDialog = createReportDialog({
+  onReported(draft) {
+    if (draft.kind === 'false-positive') dismiss(draft.entryId);
+  },
+  fallbackFocus: () => result,
+});
+document.body.append(reportDialog.element);
+
 const popover = createPopover<RenderedHighlight>({
   onFalsePositive(item, viaPointer) {
-    onFalsePositive(item.entry, matchedText(item));
+    dismiss(item.entry.id);
     focusAfterDismiss(item.match.start, viaPointer);
+  },
+  onReport(item) {
+    reportDialog.open({ kind: 'false-positive', entryId: item.entry.id, matchedText: matchedText(item) }, item.el);
   },
   clipRect: () => result.getBoundingClientRect(),
   nextAfter: (anchor) => highlights[Number(anchor.dataset.i) + 1]?.el ?? null,
@@ -134,23 +155,28 @@ const popover = createPopover<RenderedHighlight>({
 result.after(popover.element);
 
 // "Report as AI-like" next to text selected in the result pane.
-const phraseReport = createPhraseReport(result);
+const phraseReport = createPhraseReport(result, (phrase) => reportDialog.open({ kind: 'new-phrase', phrase }, result));
 popover.element.after(phraseReport.element);
 
 /**
- * A false positive from the popover: both "Not AI-like (false positive)" and the
- * "Report false positive" link land here. Every highlight of the entry is dismissed for
- * the rest of this page view (memory only), and the summary offers Undo.
- * M3 reports by opening the public GitHub issue form: the link itself (a plain <a>, which
- * the browser opens in a new tab) carries the entry ID and the matched text, so the
- * matched text goes into the URL only when the user clicks Report. Nothing is sent by
- * script.
+ * A false positive: "Not AI-like (false positive)", or a report sent from the form (or
+ * opened on GitHub). Every highlight of the entry is dismissed for the rest of this page
+ * view (memory only), and the summary offers Undo.
  */
-function onFalsePositive(entry: LexiconEntry, _matchedText: string): void {
-  dismissed.add(entry.id);
+function dismiss(entryId: string): void {
+  dismissed.add(entryId);
   recompile();
   update();
 }
+
+// Anonymous hit counts (Advanced): entry IDs only, once an analysis settles, each entry at
+// most once per page view (src/ui/hits.ts). On by default, unless the reader switched them
+// off or the browser sends Global Privacy Control.
+let shareHits = loadHitCounts();
+hitCountsToggle.checked = shareHits;
+const hits = createHitTracker((ids) => void sendHits(ids), shareHits);
+/** The "Try an example" text is shown: its highlights are not counted. */
+let showingExample = false;
 
 /** After a dismissal, focus the next highlight (else the previous one, else Undo). */
 function focusAfterDismiss(pos: number, viaPointer: boolean): void {
@@ -233,6 +259,7 @@ function update(): void {
   setHidden(emptyState, summary.state !== 'idle');
   result.dataset.state = summary.state;
   highlights = renderMirror(result, shownText, res.matches, entries);
+  hits.analysed(idle || showingExample ? [] : res.matches.map((m) => m.entryId));
   lastUpdateMs = performance.now() - started;
 
   // Mobile: after a paste, bring the marked-up result into view (focus stays put).
@@ -305,7 +332,20 @@ result.addEventListener('keyup', (e) => {
 input.addEventListener('paste', () => {
   revealAfterPaste = true;
 });
-input.addEventListener('input', schedule);
+input.addEventListener('input', () => {
+  showingExample = false;
+  schedule();
+});
+hitCountsToggle.addEventListener('change', () => {
+  shareHits = hitCountsToggle.checked;
+  saveHitCounts(shareHits);
+  hits.setEnabled(shareHits);
+});
+// Leaving the page: send what is waiting rather than lose it (a beacon still arrives).
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') hits.flush();
+});
+reportPhraseButton.addEventListener('click', () => reportDialog.open({ kind: 'new-phrase', phrase: '' }, reportPhraseButton));
 toggle.addEventListener('change', () => {
   experimental = toggle.checked;
   saveExperimental(experimental);
@@ -330,6 +370,7 @@ enableButton.addEventListener('click', () => {
 });
 tryExample.addEventListener('click', () => {
   input.value = EXAMPLE_TEXT;
+  showingExample = true;
   // Shown at Strict so all three tiers appear. For this view only: the saved preference
   // is left alone, but the select shows what is in effect.
   sensitivity = 'strict';

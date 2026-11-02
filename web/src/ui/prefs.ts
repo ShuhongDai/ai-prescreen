@@ -34,6 +34,37 @@ export function saveExperimental(
   }
 }
 
+export const HIT_COUNTS_KEY = 'ai-prescreen:hit-counts';
+
+/**
+ * Whether anonymous hit counts are sent: the reader's choice, else on, unless the browser
+ * asks sites not to share data (Global Privacy Control).
+ */
+export function loadHitCounts(
+  storage: () => StorageLike | null = browserStorage,
+  privacySignal: boolean = globalPrivacyControl(),
+): boolean {
+  try {
+    const value = storage()?.getItem(HIT_COUNTS_KEY);
+    if (value === '1' || value === '0') return value === '1';
+  } catch {
+    // Unreadable: the default below.
+  }
+  return !privacySignal;
+}
+
+export function saveHitCounts(value: boolean, storage: () => StorageLike | null = browserStorage): void {
+  try {
+    storage()?.setItem(HIT_COUNTS_KEY, value ? '1' : '0');
+  } catch {
+    // Not persisted; the switch still works for this page view.
+  }
+}
+
+function globalPrivacyControl(): boolean {
+  return typeof navigator !== 'undefined' && (navigator as { globalPrivacyControl?: boolean }).globalPrivacyControl === true;
+}
+
 export const SENSITIVITY_KEY = 'ai-prescreen:tier2-sensitivity';
 
 /** The stored tier-2 sensitivity, or the default when missing, invalid or unreadable. */

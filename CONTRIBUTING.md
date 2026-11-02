@@ -6,20 +6,28 @@ and pull requests.
 
 ## Report from the site
 
-Reports are **public GitHub issues** (you need a GitHub account).
+Reports become **public GitHub issues**; you do not need a GitHub account.
 
 - **A phrase that should be flagged:** select it in the result pane and click
-  **Report as AI-like**, or use **Report a phrase** under *Advanced*. GitHub opens the
-  [report form](https://github.com/ShuhongDai/ai-prescreen/issues/new?template=report-ai-phrase.yml)
-  with the phrase filled in. Choose a tier; an example sentence and the model it came from
-  are optional.
+  **Report as AI-like**, or use **Report a phrase** under *Advanced*. A form opens with the
+  phrase filled in. Choose a tier; an example sentence and the model it came from are
+  optional.
 - **A highlight on ordinary wording (false positive):** click the highlight, then
-  **Report false positive**. The
-  [form](https://github.com/ShuhongDai/ai-prescreen/issues/new?template=report-false-positive.yml)
-  opens with the entry id and the highlighted words filled in; an example sentence and a
-  comment are optional. The page also hides that entry for the rest of your session.
+  **Report false positive**. The form shows the entry and the highlighted words; an
+  example sentence and a comment are optional. Once the report is sent, the page hides
+  that entry for the rest of your session.
 
-The page sends nothing by itself: a report is only what you submit on GitHub.
+**Send report** goes through the site's API (`api.aiprescreen.fyi`), which runs a
+Cloudflare Turnstile check against spam and opens the issue. **Open on GitHub instead**
+opens the same form on GitHub
+([phrase](https://github.com/ShuhongDai/ai-prescreen/issues/new?template=report-ai-phrase.yml),
+[false positive](https://github.com/ShuhongDai/ai-prescreen/issues/new?template=report-false-positive.yml)),
+filled in with the phrase, or with the entry id and the highlighted words.
+
+Besides the reports you send, the page sends only anonymous hit counts: which lexicon
+entries fired (their IDs, never your text), a few seconds after an analysis, each entry at
+most once per page view. Switch them off under *Advanced*; they are off by default if your
+browser sends Global Privacy Control.
 
 ## Change the lexicon with a pull request
 

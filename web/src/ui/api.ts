@@ -1,6 +1,6 @@
 // Requests to the report, hit-count and usage-statistics Worker (worker/). Besides the
 // reports a reader sends, the page sends anonymous hit counts (entry IDs only) and usage
-// statistics (src/ui/analytics.ts), never any text; both can be switched off.
+// statistics (src/ui/analytics.ts), never any text.
 
 import {
   API_ORIGIN,

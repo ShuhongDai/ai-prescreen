@@ -34,35 +34,37 @@ export function saveExperimental(
   }
 }
 
+/** '0': this browser is left out of the statistics (also kept from the former opt-out switch). */
 export const HIT_COUNTS_KEY = 'ai-prescreen:hit-counts';
 
-/**
- * Whether anonymous hit counts are sent: the reader's choice, else on, unless the browser
- * asks sites not to share data (Global Privacy Control).
- */
-export function loadHitCounts(
-  storage: () => StorageLike | null = browserStorage,
-  privacySignal: boolean = globalPrivacyControl(),
-): boolean {
+/** Opening the page with one of these hashes leaves a browser out of the statistics, or back in. */
+export const STATS_HASH = { off: '#no-stats', on: '#stats' } as const;
+
+/** Whether this browser sends hit counts and usage statistics: yes, unless it was left out. */
+export function loadHitCounts(storage: () => StorageLike | null = browserStorage): boolean {
   try {
-    const value = storage()?.getItem(HIT_COUNTS_KEY);
-    if (value === '1' || value === '0') return value === '1';
+    return storage()?.getItem(HIT_COUNTS_KEY) !== '0';
   } catch {
-    // Unreadable: the default below.
+    return true;
   }
-  return !privacySignal;
 }
 
 export function saveHitCounts(value: boolean, storage: () => StorageLike | null = browserStorage): void {
   try {
     storage()?.setItem(HIT_COUNTS_KEY, value ? '1' : '0');
   } catch {
-    // Not persisted; the switch still works for this page view.
+    // Not persisted.
   }
 }
 
-function globalPrivacyControl(): boolean {
-  return typeof navigator !== 'undefined' && (navigator as { globalPrivacyControl?: boolean }).globalPrivacyControl === true;
+/**
+ * Applies #no-stats / #stats from the page's URL (the owner's own browsers; not shown on the
+ * page). True when the hash was one of them, so the caller can remove it from the address.
+ */
+export function applyStatsHash(hash: string, storage: () => StorageLike | null = browserStorage): boolean {
+  if (hash !== STATS_HASH.off && hash !== STATS_HASH.on) return false;
+  saveHitCounts(hash === STATS_HASH.on, storage);
+  return true;
 }
 
 export const SENSITIVITY_KEY = 'ai-prescreen:tier2-sensitivity';

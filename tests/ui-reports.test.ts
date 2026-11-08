@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { API_PATHS, HITS_MAX_IDS } from '../web/src/report-contract.ts';
 import { API_BASE, sendHits, sendReport } from '../web/src/ui/api.ts';
 import { createHitTracker, HIT_DELAY_MS } from '../web/src/ui/hits.ts';
-import { HIT_COUNTS_KEY, loadHitCounts, saveHitCounts, type StorageLike } from '../web/src/ui/prefs.ts';
+import { applyStatsHash, HIT_COUNTS_KEY, loadHitCounts, saveHitCounts, type StorageLike } from '../web/src/ui/prefs.ts';
 import { buildRequest, errorText, githubUrl, type ReportFields } from '../web/src/ui/report-form.ts';
 
 describe('hit counts', () => {
@@ -71,18 +71,22 @@ describe('hit counts', () => {
   });
 });
 
-describe('the hit-count preference', () => {
+describe('leaving a browser out of the statistics', () => {
   const store = (initial: Record<string, string> = {}): StorageLike & { data: Record<string, string> } => {
     const data = { ...initial };
     return { data, getItem: (k) => data[k] ?? null, setItem: (k, v) => void (data[k] = v) };
   };
 
-  it('is on by default, off with Global Privacy Control, and the reader\'s choice wins', () => {
-    expect(loadHitCounts(() => store(), false)).toBe(true);
-    expect(loadHitCounts(() => store(), true)).toBe(false);
-    expect(loadHitCounts(() => store({ [HIT_COUNTS_KEY]: '1' }), true)).toBe(true);
-    expect(loadHitCounts(() => store({ [HIT_COUNTS_KEY]: '0' }), false)).toBe(false);
+  it('is on, except where #no-stats (or the former switch) left the browser out', () => {
+    expect(loadHitCounts(() => store())).toBe(true);
+    expect(loadHitCounts(() => store({ [HIT_COUNTS_KEY]: '1' }))).toBe(true);
+    expect(loadHitCounts(() => store({ [HIT_COUNTS_KEY]: '0' }))).toBe(false);
     const s = store();
+    expect(applyStatsHash('#no-stats', () => s)).toBe(true);
+    expect(loadHitCounts(() => s)).toBe(false);
+    expect(applyStatsHash('#stats', () => s)).toBe(true);
+    expect(loadHitCounts(() => s)).toBe(true);
+    expect(applyStatsHash('#result', () => s)).toBe(false);
     saveHitCounts(false, () => s);
     expect(s.data[HIT_COUNTS_KEY]).toBe('0');
   });
@@ -91,7 +95,7 @@ describe('the hit-count preference', () => {
     const broken = () => {
       throw new Error('blocked');
     };
-    expect(loadHitCounts(broken, false)).toBe(true);
+    expect(loadHitCounts(broken)).toBe(true);
     expect(() => saveHitCounts(true, broken)).not.toThrow();
   });
 });

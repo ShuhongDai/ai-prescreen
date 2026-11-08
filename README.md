@@ -12,8 +12,7 @@ decide whether to revise it.
 
 - **Rule-based only.** A curated lexicon and simple rules, no ML models or LLM calls.
 - **Private.** Your text stays in your browser. The page sends anonymous usage statistics
-  (never your text, no cookies; you can switch them off, and Global Privacy Control does) and
-  the reports you choose to send; a report form also loads Cloudflare Turnstile, an anti-spam
+  (never your text, no cookies) and the reports you choose to send; a report form also loads Cloudflare Turnstile, an anti-spam
   check. See [Privacy](#privacy).
 - **Instant.** Analysis runs locally as you paste.
 
@@ -59,15 +58,11 @@ no longer be traced back to an address or linked to another day. Visits on diffe
 not linked by any identifier, though a visit's details (place, network, browser, window size)
 are kept with it.
 
-**Your choice**: switch it off under *Advanced* on the page; it is off by default if your
-browser sends Global Privacy Control. Off means the page sends no more statistics; if
-Cloudflare Web Analytics was already loaded in that page view, it stops with the next page
-load.
-
 **Retention**: page views and events are deleted after 400 days; per-day totals (e.g. visits
 per country) are kept. **Purpose and legal basis**: understanding how the tool is found and
-used, to improve it (legitimate interest, GDPR Art. 6(1)(f)). **Who**: Shuhong Dai; questions
-and requests through [GitHub issues](https://github.com/ShuhongDai/ai-prescreen/issues).
+used, to improve it (legitimate interest, GDPR Art. 6(1)(f)). **Who**: Shuhong Dai; questions,
+requests and objections to this processing (GDPR Art. 21) through
+[GitHub issues](https://github.com/ShuhongDai/ai-prescreen/issues).
 
 ## Development
 

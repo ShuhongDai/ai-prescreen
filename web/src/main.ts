@@ -22,10 +22,10 @@ import { createPhraseReport } from './ui/phrase-report.ts';
 import { BOTTOM_SHEET_QUERY, createPopover } from './ui/popover.ts';
 import {
   loadExperimental,
+  applyStatsHash,
   loadHitCounts,
   loadSensitivity,
   saveExperimental,
-  saveHitCounts,
   saveSensitivity,
 } from './ui/prefs.ts';
 import { renderMirror, type RenderedHighlight } from './ui/render.ts';
@@ -86,7 +86,6 @@ const dismissedLabel = byId<HTMLSpanElement>('summary-dismissed-text');
 const undoButton = byId<HTMLButtonElement>('undo-dismiss');
 const advanced = byId<HTMLDetailsElement>('advanced');
 const reportPhraseButton = byId<HTMLButtonElement>('report-phrase');
-const hitCountsToggle = byId<HTMLInputElement>('hit-counts');
 const emptyState = byId<HTMLDivElement>('empty');
 const sheetPane = result.closest('section') ?? result;
 
@@ -106,10 +105,11 @@ const tryExample = byId<HTMLButtonElement>('try-example');
 const keyButton = byId<HTMLButtonElement>('key-button');
 setupDisclosure(keyButton, byId<HTMLDivElement>('key-panel'));
 
-// Anonymous hit counts and usage statistics (Advanced, one switch): entry IDs, buckets and
-// fixed values only, never text (src/ui/hits.ts, src/ui/analytics.ts). On by default, unless
-// the reader switched them off or the browser sends Global Privacy Control.
-let shareStats = loadHitCounts();
+// Anonymous hit counts and usage statistics: entry IDs, buckets and fixed values only, never
+// text (src/ui/hits.ts, src/ui/analytics.ts). Always on, except in a browser left out with
+// #no-stats (applied here, before anything is sent, then removed from the address).
+if (applyStatsHash(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+const shareStats = loadHitCounts();
 const usage = createUsageTracker({
   send: (body) => sendCollect(body),
   enabled: shareStats,
@@ -192,7 +192,6 @@ function dismiss(entryId: string): void {
 }
 
 // Hit counts: entry IDs once an analysis settles, each entry at most once per page view.
-hitCountsToggle.checked = shareStats;
 const hits = createHitTracker((ids) => void sendHits(ids), shareStats);
 /**
  * A draft analysis is counted (word and highlight buckets) once typing pauses, like hits;
@@ -383,14 +382,6 @@ input.addEventListener('input', (e) => {
     usage.track('input', 'type');
   }
   schedule();
-});
-hitCountsToggle.addEventListener('change', () => {
-  shareStats = hitCountsToggle.checked;
-  saveHitCounts(shareStats);
-  hits.setEnabled(shareStats);
-  // Off means off: what is waiting is dropped, and nothing tells that it was switched off.
-  usage.setEnabled(shareStats);
-  if (shareStats) loadCloudflareBeacon();
 });
 // Leaving the page: send what is waiting rather than lose it (a beacon still arrives).
 document.addEventListener('visibilitychange', () => {

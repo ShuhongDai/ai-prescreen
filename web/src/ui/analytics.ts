@@ -1,8 +1,7 @@
 // Anonymous usage statistics: one random visit ID per page view, kept in
 // memory only (never on the device), the visit's context (referring site, language,
 // viewport…) and events from the fixed lists in report-contract.ts. Never any text. Nothing
-// is sent while switched off (Advanced, or Global Privacy Control), and switching off drops
-// what is waiting.
+// is sent in a browser left out of the statistics (#no-stats, src/ui/prefs.ts).
 
 import {
   ACTIVE_MAX_S,

@@ -243,7 +243,7 @@ function renderLogin(message: string): void {
   const box = el('form', 'login');
   box.append(
     el('h2', '', 'Dashboard token'),
-    el('p', 'muted small', 'The STATS_TOKEN secret of the Worker (in .env on the headnode). It is kept in this browser only.'),
+    el('p', 'muted small', 'The STATS_TOKEN secret: only the part after "STATS_TOKEN=". It is kept in this browser only.'),
   );
   const input = el('input');
   input.type = 'password';
@@ -256,7 +256,12 @@ function renderLogin(message: string): void {
   if (message) box.append(el('p', 'error small', message));
   box.addEventListener('submit', (e) => {
     e.preventDefault();
-    token = input.value.trim();
+    // Forgiving: the whole .env line, quotes or spaces pasted with it still work.
+    token = input.value
+      .trim()
+      .replace(/^STATS_TOKEN\s*=\s*/, '')
+      .replace(/^["']|["']$/g, '')
+      .trim();
     saveToken(token);
     void load();
   });

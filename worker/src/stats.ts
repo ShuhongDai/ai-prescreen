@@ -266,13 +266,16 @@ export function aggregate(q: StatsQuery, data: StatsData, now: number): StatsRes
   }
 
   // Funnel: each step counts the visits that reached it.
-  const steps: [string, Set<string>][] = [
-    ['Draft entered (paste or type)', visitsWith((e) => e.name === 'input')],
-    ['Analysed own draft', visitsWith((e) => e.name === 'analysis')],
-    ['Opened a highlight', visitsWith((e) => e.name === 'popover')],
-    ['Opened the report form', visitsWith((e) => e.name === 'report-open')],
+  const steps: [string, string, Set<string>][] = [
+    ['input', 'Draft entered (paste or type)', visitsWith((e) => e.name === 'input')],
+    ['analysis', 'Analysed own draft', visitsWith((e) => e.name === 'analysis')],
+    ['popover', 'Opened a highlight', visitsWith((e) => e.name === 'popover')],
+    ['report-open', 'Opened the report form', visitsWith((e) => e.name === 'report-open')],
   ];
-  const funnel = [{ step: 'Opened the page', visits: visits.length }, ...steps.map(([step, set]) => ({ step, visits: set.size }))];
+  const funnel = [
+    { id: 'view', step: 'Opened the page', visits: visits.length },
+    ...steps.map(([id, step, set]) => ({ id, step, visits: set.size })),
+  ];
 
   // Events with fixed values, in one pass.
   const byNameValue = new Map<string, { count: number; visits: Set<string> }>();

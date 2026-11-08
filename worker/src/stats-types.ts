@@ -70,7 +70,8 @@ export interface StatsResponse {
   /** Visits per hour (Unix hour = ms / 3,600,000) in the last 48 hours (whatever the range). */
   hours: { hour: number; visits: number }[];
   dims: Record<Dimension, Count[]>;
-  funnel: { step: string; visits: number }[];
+  /** `id` names the step for the dashboard's translations; `step` is its English name. */
+  funnel: { id: string; step: string; visits: number }[];
   /** Events with fixed values: count and visits per value. */
   events: Record<string, { value: string; count: number; visits: number }[]>;
   /** Highlights opened and dismissed, per entry. */

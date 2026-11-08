@@ -123,3 +123,4 @@ details.table td:first-child, details.table th:first-child { text-align: left; }
 .login input { width: 100%; padding: 7px 9px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); margin: 8px 0; }
 .login button { padding: 6px 14px; border-radius: 6px; border: 1px solid var(--text); background: var(--text); color: var(--surface); cursor: pointer; }
 .error { color: var(--danger); }
+.top .langswitch { margin-left: auto; }

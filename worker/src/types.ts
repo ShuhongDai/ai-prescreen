@@ -33,6 +33,10 @@ export interface Env {
   DB: D1Database;
   REPORT_LIMIT: RateLimit;
   HITS_LIMIT: RateLimit;
+  COLLECT_LIMIT: RateLimit;
+  STATS_LIMIT: RateLimit;
+  /** Secret: the dashboard's access token (GET /v1/stats). Unset: no dashboard data. */
+  STATS_TOKEN?: string;
   /** Secret: fine-grained token with Issues read/write on GITHUB_REPO only. */
   GITHUB_TOKEN?: string;
   /** Secret: the Turnstile widget's secret key. */
@@ -47,6 +51,10 @@ export interface Env {
   REPORTS_PER_DAY: string;
   /** Rows written for hit counts per UTC day at most, the budget row included (D1's daily write quota). */
   HITS_ROWS_PER_DAY: string;
+  /** Rows written for usage statistics per UTC day at most, the budget row included. */
+  ANALYTICS_ROWS_PER_DAY: string;
+  /** Rows the dashboard may read per UTC day (D1's daily read quota is the account's). */
+  STATS_ROWS_READ_PER_DAY: string;
   /** "1": print issues instead of opening them (local development). */
   GITHUB_DRY_RUN?: string;
 }

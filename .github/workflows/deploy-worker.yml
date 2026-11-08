@@ -11,6 +11,7 @@ on:
       - "lexicon/**"
       - "web/src/report-contract.ts"
       - "scripts/worker-entry-ids.ts"
+      - "scripts/worker-dashboard.ts"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/deploy-worker.yml"

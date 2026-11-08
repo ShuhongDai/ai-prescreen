@@ -5,3 +5,5 @@ TURNSTILE_HOSTNAMES=localhost,example.com
 ALLOWED_ORIGINS=http://localhost:5173
 # Print the issue instead of opening it on GitHub.
 GITHUB_DRY_RUN=1
+# The dashboard's token (http://localhost:8788/dashboard).
+STATS_TOKEN=dev-token

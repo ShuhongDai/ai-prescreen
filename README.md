@@ -11,10 +11,10 @@ probability". It points out wording that may read as templated or AI-like so you
 decide whether to revise it.
 
 - **Rule-based only.** A curated lexicon and simple rules, no ML models or LLM calls.
-- **Private.** Your text stays in your browser. The page sends only anonymous counts of
-  which entries fired (no text; you can switch them off, and Global Privacy Control does) and
+- **Private.** Your text stays in your browser. The page sends anonymous usage statistics
+  (never your text, no cookies; you can switch them off, and Global Privacy Control does) and
   the reports you choose to send; a report form also loads Cloudflare Turnstile, an anti-spam
-  check.
+  check. See [Privacy](#privacy).
 - **Instant.** Analysis runs locally as you paste.
 
 > Status: early development. Live at https://aiprescreen.fyi — checks for
@@ -28,6 +28,46 @@ decide whether to revise it.
 | `artifact` | Chatbot leftovers: almost always worth fixing | "Certainly! Here is…", "As an AI language model", "[Insert citation]" |
 | `lexical` | Overused LLM words and phrases: you decide | delve, underscore, pivotal, "plays a crucial role in" |
 | `stylistic` | Weak signals, shown only at sensitivity Strict | "In conclusion," openers, "not only … but also" |
+
+## Privacy
+
+The text you paste is analysed in your browser and never sent anywhere. To learn how the site
+is used, the page sends anonymous usage statistics to its own API (`api.aiprescreen.fyi`, a
+Cloudflare Worker) and, once configured, page views to Cloudflare Web Analytics.
+
+**What is collected**, per page view:
+
+- from the page: the referring site (host name only, e.g. `news.ycombinator.com`), `utm_*`
+  campaign tags in the URL, the browser's language, the window width (as a range), light or
+  dark mode, whether it is a touch screen;
+- what you do on the page: pasting or typing (not the text), the length of an analysed draft
+  in words and how many highlights of each kind it got (as ranges), which highlights you open
+  or mark as "Not AI-like" (lexicon entry IDs), the example, settings you change, opening the
+  report form (not whether or when you sent a report); how long the page was visible and how
+  far you scrolled; times are rounded to the minute;
+- from Cloudflare's network: country, region and city, and the operator of the network
+  (e.g. a university or an internet provider), looked up from your IP address;
+- browser and operating system family (e.g. "Firefox", "Windows") read from the User-Agent;
+- which lexicon entries fired (entry IDs, counted per day), as before.
+
+**What is not collected or kept**: your text; your IP address and the User-Agent (used while
+the request is handled, never stored); cookies or anything else stored on your device; any ID
+that follows you from one day to the next. To count visitors per day, the API keeps a hash of
+your IP address, User-Agent and a random value that is deleted after that day. Once the
+random value is gone (the database's recovery copies keep it up to 7 more days), the hash can
+no longer be traced back to an address or linked to another day. Visits on different days are
+not linked by any identifier, though a visit's details (place, network, browser, window size)
+are kept with it.
+
+**Your choice**: switch it off under *Advanced* on the page; it is off by default if your
+browser sends Global Privacy Control. Off means the page sends no more statistics; if
+Cloudflare Web Analytics was already loaded in that page view, it stops with the next page
+load.
+
+**Retention**: page views and events are deleted after 400 days; per-day totals (e.g. visits
+per country) are kept. **Purpose and legal basis**: understanding how the tool is found and
+used, to improve it (legitimate interest, GDPR Art. 6(1)(f)). **Who**: Shuhong Dai; questions
+and requests through [GitHub issues](https://github.com/ShuhongDai/ai-prescreen/issues).
 
 ## Development
 

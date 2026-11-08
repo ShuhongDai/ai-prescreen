@@ -1,5 +1,6 @@
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
+import { CF_BEACON_ENDPOINT, CF_BEACON_SCRIPT, CF_BEACON_TOKEN } from './web/src/cf-analytics.ts';
 
 // The page only needs what the engine and the popover use; citations and source counts
 // stay in lexicon/*.json for reviewers. Build only, so tests and dev see the full files.
@@ -18,14 +19,16 @@ function slimLexicon(): Plugin {
 }
 
 // Privacy, enforced by the browser: the built page loads only its own files, connects
-// only to the report/hit-count API, and runs and frames only Turnstile (loaded with a report
-// form). A meta tag, since GitHub Pages sends no custom headers; build only, as the dev
-// server needs inline scripts and its own connections.
+// only to the report/hit-count/statistics API, and runs and frames only Turnstile (loaded
+// with a report form) and, once its token is set, Cloudflare Web Analytics
+// (src/cf-analytics.ts). A meta tag, since GitHub Pages sends no custom headers; build only,
+// as the dev server needs inline scripts and its own connections.
+const cfBeacon = CF_BEACON_TOKEN !== '';
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
-  "script-src 'self' https://challenges.cloudflare.com",
+  `script-src 'self' https://challenges.cloudflare.com${cfBeacon ? ` ${new URL(CF_BEACON_SCRIPT).origin}` : ''}`,
   'frame-src https://challenges.cloudflare.com',
-  'connect-src https://api.aiprescreen.fyi',
+  `connect-src https://api.aiprescreen.fyi${cfBeacon ? ` ${CF_BEACON_ENDPOINT}` : ''}`,
   "img-src 'self' data:",
   "font-src 'self'",
   "style-src 'self' 'unsafe-inline'",

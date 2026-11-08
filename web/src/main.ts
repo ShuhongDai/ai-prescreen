@@ -12,7 +12,10 @@ import {
   SEPARATOR,
   type Summary,
 } from './ui/format.ts';
-import { sendHits } from './ui/api.ts';
+import { loadCloudflareBeacon } from './cf-analytics.ts';
+import { analysisValue } from './report-contract.ts';
+import { createUsageTracker, readVisitInfo, watchEngagement } from './ui/analytics.ts';
+import { sendCollect, sendHits } from './ui/api.ts';
 import { createHitTracker } from './ui/hits.ts';
 import { analyzeDraft, compileLexicons } from './ui/lexicons.ts';
 import { createPhraseReport } from './ui/phrase-report.ts';
@@ -100,7 +103,21 @@ if (typeof ResizeObserver === 'function') {
 const tryExample = byId<HTMLButtonElement>('try-example');
 
 // The "Key" to the marks (red pen, highlighter, pencil, dashed box).
-setupDisclosure(byId<HTMLButtonElement>('key-button'), byId<HTMLDivElement>('key-panel'));
+const keyButton = byId<HTMLButtonElement>('key-button');
+setupDisclosure(keyButton, byId<HTMLDivElement>('key-panel'));
+
+// Anonymous hit counts and usage statistics (Advanced, one switch): entry IDs, buckets and
+// fixed values only, never text (src/ui/hits.ts, src/ui/analytics.ts). On by default, unless
+// the reader switched them off or the browser sends Global Privacy Control.
+let shareStats = loadHitCounts();
+const usage = createUsageTracker({
+  send: (body) => sendCollect(body),
+  enabled: shareStats,
+  info: () => readVisitInfo(),
+  engagement: watchEngagement(),
+  now: () => performance.now(),
+});
+if (shareStats) loadCloudflareBeacon();
 
 
 const entries: ReadonlyMap<string, LexiconEntry> = new Map(LEXICON.map((e) => [e.id, e]));
@@ -142,10 +159,12 @@ document.body.append(reportDialog.element);
 
 const popover = createPopover<RenderedHighlight>({
   onFalsePositive(item, viaPointer) {
+    usage.track('dismiss', item.entry.id);
     dismiss(item.entry.id);
     focusAfterDismiss(item.match.start, viaPointer);
   },
   onReport(item) {
+    usage.track('report-open', 'false-positive');
     reportDialog.open({ kind: 'false-positive', entryId: item.entry.id, matchedText: matchedText(item) }, item.el);
   },
   clipRect: () => result.getBoundingClientRect(),
@@ -155,7 +174,10 @@ const popover = createPopover<RenderedHighlight>({
 result.after(popover.element);
 
 // "Report as AI-like" next to text selected in the result pane.
-const phraseReport = createPhraseReport(result, (phrase) => reportDialog.open({ kind: 'new-phrase', phrase }, result));
+const phraseReport = createPhraseReport(result, (phrase) => {
+  usage.track('report-open', 'phrase-selection');
+  reportDialog.open({ kind: 'new-phrase', phrase }, result);
+});
 popover.element.after(phraseReport.element);
 
 /**
@@ -169,12 +191,22 @@ function dismiss(entryId: string): void {
   update();
 }
 
-// Anonymous hit counts (Advanced): entry IDs only, once an analysis settles, each entry at
-// most once per page view (src/ui/hits.ts). On by default, unless the reader switched them
-// off or the browser sends Global Privacy Control.
-let shareHits = loadHitCounts();
-hitCountsToggle.checked = shareHits;
-const hits = createHitTracker((ids) => void sendHits(ids), shareHits);
+// Hit counts: entry IDs once an analysis settles, each entry at most once per page view.
+hitCountsToggle.checked = shareStats;
+const hits = createHitTracker((ids) => void sendHits(ids), shareStats);
+/**
+ * A draft analysis is counted (word and highlight buckets) once typing pauses, like hits;
+ * only after the draft changed, not when a setting or a dismissal re-renders it.
+ */
+let analysisTimer = 0;
+let pendingAnalysis: string | null = null;
+let draftChanged = false;
+const ANALYSIS_SETTLE_MS = 4000;
+function countAnalysis(): void {
+  clearTimeout(analysisTimer);
+  if (pendingAnalysis !== null) usage.track('analysis', pendingAnalysis);
+  pendingAnalysis = null;
+}
 /** The "Try an example" text is shown: its highlights are not counted. */
 let showingExample = false;
 
@@ -260,6 +292,12 @@ function update(): void {
   result.dataset.state = summary.state;
   highlights = renderMirror(result, shownText, res.matches, entries);
   hits.analysed(idle || showingExample ? [] : res.matches.map((m) => m.entryId));
+  if (draftChanged) {
+    draftChanged = false;
+    clearTimeout(analysisTimer);
+    pendingAnalysis = idle || showingExample ? null : analysisValue(res.stats.words, res.stats.counts);
+    if (pendingAnalysis !== null) analysisTimer = window.setTimeout(countAnalysis, ANALYSIS_SETTLE_MS);
+  }
   lastUpdateMs = performance.now() - started;
 
   // Mobile: after a paste, bring the marked-up result into view (focus stays put).
@@ -288,6 +326,7 @@ function toggleFor(item: RenderedHighlight, point?: { x: number; y: number }): v
     return;
   }
   phraseReport.hide();
+  usage.track('popover', item.entry.id);
   popover.open({
     anchor: item.el,
     model: popoverModel(item.entry, matchedText(item)),
@@ -329,25 +368,51 @@ result.addEventListener('keyup', (e) => {
 
 // ---- Controls ----
 
+let typed = false;
 input.addEventListener('paste', () => {
   revealAfterPaste = true;
+  usage.track('input', 'paste');
 });
-input.addEventListener('input', () => {
+const TYPING = new Set(['insertText', 'insertLineBreak', 'insertParagraph', 'insertCompositionText']);
+input.addEventListener('input', (e) => {
   showingExample = false;
+  draftChanged = true;
+  // Typing is counted once per visit; every paste is counted.
+  if (!typed && TYPING.has((e as InputEvent).inputType ?? '')) {
+    typed = true;
+    usage.track('input', 'type');
+  }
   schedule();
 });
 hitCountsToggle.addEventListener('change', () => {
-  shareHits = hitCountsToggle.checked;
-  saveHitCounts(shareHits);
-  hits.setEnabled(shareHits);
+  shareStats = hitCountsToggle.checked;
+  saveHitCounts(shareStats);
+  hits.setEnabled(shareStats);
+  // Off means off: what is waiting is dropped, and nothing tells that it was switched off.
+  usage.setEnabled(shareStats);
+  if (shareStats) loadCloudflareBeacon();
 });
 // Leaving the page: send what is waiting rather than lose it (a beacon still arrives).
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') hits.flush();
+  if (document.visibilityState === 'hidden') {
+    hits.flush();
+    countAnalysis();
+    usage.flush();
+  }
 });
-reportPhraseButton.addEventListener('click', () => reportDialog.open({ kind: 'new-phrase', phrase: '' }, reportPhraseButton));
+reportPhraseButton.addEventListener('click', () => {
+  usage.track('report-open', 'phrase-advanced');
+  reportDialog.open({ kind: 'new-phrase', phrase: '' }, reportPhraseButton);
+});
+keyButton.addEventListener('click', () => {
+  if (keyButton.getAttribute('aria-expanded') === 'true') usage.track('key');
+});
+advanced.addEventListener('toggle', () => {
+  if (advanced.open) usage.track('advanced');
+});
 toggle.addEventListener('change', () => {
   experimental = toggle.checked;
+  usage.track('experimental', experimental ? 'on' : 'off');
   saveExperimental(experimental);
   recompile();
   schedule();
@@ -355,6 +420,7 @@ toggle.addEventListener('change', () => {
 sensitivitySelect.addEventListener('change', () => {
   if (!isSensitivity(sensitivitySelect.value)) return;
   sensitivity = sensitivitySelect.value;
+  usage.track('sensitivity', sensitivity);
   saveSensitivity(sensitivity);
   recompile();
   schedule();
@@ -369,6 +435,7 @@ enableButton.addEventListener('click', () => {
   result.focus({ preventScroll: true });
 });
 tryExample.addEventListener('click', () => {
+  usage.track('example');
   input.value = EXAMPLE_TEXT;
   showingExample = true;
   // Shown at Strict so all three tiers appear. For this view only: the saved preference
@@ -381,6 +448,7 @@ tryExample.addEventListener('click', () => {
   result.focus({ preventScroll: true });
 });
 undoButton.addEventListener('click', () => {
+  usage.track('undo');
   dismissed.clear();
   recompile();
   update();
@@ -389,4 +457,5 @@ undoButton.addEventListener('click', () => {
 });
 
 // Covers text the browser restores into the textarea on reload / back navigation.
+draftChanged = true;
 update();

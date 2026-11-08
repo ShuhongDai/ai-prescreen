@@ -1,7 +1,9 @@
-# The report and hit-count API at https://api.aiprescreen.fyi (M4). Deployed by CI
+# The report, hit-count and usage-statistics API at https://api.aiprescreen.fyi, and the
+# dashboard at https://api.aiprescreen.fyi/dashboard. Deployed by CI
 # (.github/workflows/deploy-worker.yml). Secrets, set once with `wrangler secret put`:
 #   GITHUB_TOKEN      fine-grained token: Issues read/write on ShuhongDai/ai-prescreen only
 #   TURNSTILE_SECRET  secret key of the Turnstile widget for aiprescreen.fyi
+#   STATS_TOKEN       the dashboard's access token (random; a copy in .env)
 # Local development: copy .dev.vars.example to .dev.vars (Turnstile test keys, dry run).
 
 name = "aiprescreen-api"
@@ -13,12 +15,13 @@ workers_dev = false
 preview_urls = false
 routes = [{ pattern = "api.aiprescreen.fyi", custom_domain = true }]
 
-# The set of lexicon entry IDs the Worker accepts (worker/src/generated/, not committed).
-# The command runs in wrangler's working directory: use the npm scripts (project root).
-# `wrangler dev` reruns it when the lexicon changes; source files are watched anyway.
+# Generated into worker/src/generated/ (not committed): the set of lexicon entry IDs the
+# Worker accepts, and the dashboard's files from worker/dashboard/. The command runs in
+# wrangler's working directory: use the npm scripts (project root). `wrangler dev` reruns
+# it when the lexicon or the dashboard changes; source files are watched anyway.
 [build]
-command = "node scripts/worker-entry-ids.ts"
-watch_dir = "../lexicon"
+command = "node scripts/worker-entry-ids.ts && node --disable-warning=ExperimentalWarning scripts/worker-dashboard.ts"
+watch_dir = ["../lexicon", "dashboard"]
 
 [vars]
 GITHUB_REPO = "ShuhongDai/ai-prescreen"
@@ -29,6 +32,12 @@ REPORTS_PER_DAY = "30"
 # Rows written for hit counts per UTC day at most (the budget row included): D1's free write
 # quota (100,000 rows a day) is shared by the whole Cloudflare account.
 HITS_ROWS_PER_DAY = "20000"
+# Rows written for usage statistics per UTC day at most (about 3,000 visits), the budget row
+# included; also within the account's shared write quota.
+ANALYTICS_ROWS_PER_DAY = "30000"
+# Rows the dashboard may read per UTC day (D1's free read quota, 5 million a day, is the
+# account's; hits and reports need some too).
+STATS_ROWS_READ_PER_DAY = "1500000"
 
 [[d1_databases]]
 binding = "DB"
@@ -47,7 +56,18 @@ name = "HITS_LIMIT"
 namespace_id = "4102"
 simple = { limit = 6, period = 60 }
 
-# Deletes the previous day's salt shortly after midnight UTC.
+[[ratelimits]]
+name = "COLLECT_LIMIT"
+namespace_id = "4103"
+simple = { limit = 30, period = 60 }
+
+[[ratelimits]]
+name = "STATS_LIMIT"
+namespace_id = "4104"
+simple = { limit = 20, period = 60 }
+
+# Shortly after midnight UTC: deletes the previous day's salt, writes the daily totals of the
+# last two days, deletes visits older than 400 days.
 [triggers]
 crons = ["5 0 * * *"]
 

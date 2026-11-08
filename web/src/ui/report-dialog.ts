@@ -13,7 +13,7 @@ import { loadTurnstile, TURNSTILE_SITE_KEY, type Turnstile } from './turnstile.t
 
 export interface ReportDialogOptions {
   /** The report was sent, or the reader opened it on GitHub instead. */
-  onReported(draft: ReportDraft): void;
+  onReported(draft: ReportDraft, via: 'sent' | 'github'): void;
   /** Where focus goes on close when the element it came from is gone (a dismissed highlight). */
   fallbackFocus(): HTMLElement | null;
 }
@@ -235,7 +235,7 @@ export function createReportDialog(options: ReportDialogOptions): ReportDialog {
     const res = await sendReport(request);
     sending = false;
     submit.disabled = false;
-    if (res.ok) options.onReported(sentDraft);
+    if (res.ok) options.onReported(sentDraft, 'sent');
     // The form was closed (and maybe another one opened) meanwhile: nothing more to show.
     if (mine !== generation || !dialog.open) return;
     if (res.ok) {
@@ -280,7 +280,7 @@ export function createReportDialog(options: ReportDialogOptions): ReportDialog {
     github.href = githubUrl(draft, phrase.value);
   });
   github.addEventListener('click', () => {
-    options.onReported(draft);
+    options.onReported(draft, 'github');
     dialog.close();
   });
   closeButton.addEventListener('click', () => dialog.close());

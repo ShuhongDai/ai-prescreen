@@ -1,74 +1,25 @@
-import { DatabaseSync } from 'node:sqlite';
+import type { DatabaseSync } from 'node:sqlite';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { toReport } from '../scripts/triage-lib.ts';
 import { FORMS, HITS_MAX_IDS } from '../web/src/report-contract.ts';
-import init from '../worker/migrations/0001_init.sql?raw';
-import budgets from '../worker/migrations/0002_budgets.sql?raw';
 import { parseHits } from '../worker/src/hits.ts';
 import { BODY_MAX, handle, type Deps } from '../worker/src/index.ts';
 import { clientPrefix, resetSaltCache } from '../worker/src/limits.ts';
 import { issueFor, parseReport, TITLE_MAX, type ValidReport } from '../worker/src/reports.ts';
 import { cleanText, codeBlock, codeSpan, titleText } from '../worker/src/text.ts';
 import { SITEVERIFY_URL } from '../worker/src/turnstile.ts';
-import type { D1Database, D1PreparedStatement, Env, RateLimit } from '../worker/src/types.ts';
+import type { Env } from '../worker/src/types.ts';
+import { d1, limiter } from './worker-fakes.ts';
 
 const KNOWN = new Set(['en.lexical.delve', 'en.artifact.certainly-here-is', 'en.stylistic.not-only-but-also']);
 
-/** D1 on Node's SQLite, with the real migrations. A batch runs as one transaction without
- * yielding, as D1 runs it in one round trip, so concurrent requests cannot interleave in it. */
-function d1(): { db: D1Database; sql: DatabaseSync } {
-  const sql = new DatabaseSync(':memory:');
-  for (const migration of [init, budgets]) sql.exec(migration);
-  const queries = new WeakMap<D1PreparedStatement, { query: string; values: unknown[] }>();
-  const runNow = (query: string, values: unknown[]) => {
-    const { changes } = sql.prepare(query).run(...values);
-    return { results: [], success: true, meta: { changes: Number(changes) } };
-  };
-  const statement = (query: string, values: unknown[]): D1PreparedStatement => {
-    const stmt: D1PreparedStatement = {
-      bind: (...v: unknown[]) => statement(query, v),
-      first: async <T>() => {
-        const row = sql.prepare(query).get(...values);
-        return (row ? { ...row } : null) as T | null;
-      },
-      run: async () => runNow(query, values),
-      all: async <T>() => ({ results: sql.prepare(query).all(...values).map((r) => ({ ...r })) as T[], success: true, meta: {} }),
-    };
-    queries.set(stmt, { query, values });
-    return stmt;
-  };
-  const db: D1Database = {
-    prepare: (query) => statement(query, []),
-    batch: async (statements) => {
-      sql.exec('BEGIN');
-      try {
-        const out = statements.map((s) => runNow(queries.get(s)!.query, queries.get(s)!.values));
-        sql.exec('COMMIT');
-        return out;
-      } catch (e) {
-        sql.exec('ROLLBACK');
-        throw e;
-      }
-    },
-  };
-  return { db, sql };
-}
-
-function limiter(limit: number): RateLimit & { keys: string[] } {
-  const counts = new Map<string, number>();
-  const keys: string[] = [];
-  return {
-    keys,
-    async limit({ key }) {
-      keys.push(key);
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-      return { success: counts.get(key)! <= limit };
-    },
-  };
-}
-
 interface FakeWorld {
-  env: Env & { REPORT_LIMIT: ReturnType<typeof limiter>; HITS_LIMIT: ReturnType<typeof limiter> };
+  env: Env & {
+    REPORT_LIMIT: ReturnType<typeof limiter>;
+    HITS_LIMIT: ReturnType<typeof limiter>;
+    COLLECT_LIMIT: ReturnType<typeof limiter>;
+    STATS_LIMIT: ReturnType<typeof limiter>;
+  };
   sql: DatabaseSync;
   calls: { url: string; body: Record<string, unknown> }[];
   deps: (day?: string, known?: ReadonlySet<string>) => Deps;
@@ -82,7 +33,7 @@ function world(
     github?: number;
     /** Labels GitHub keeps on a new issue (default: all it was given). */
     keptLabels?: string[];
-    env?: Partial<Omit<Env, 'DB' | 'REPORT_LIMIT' | 'HITS_LIMIT'>>;
+    env?: Partial<Omit<Env, 'DB' | 'REPORT_LIMIT' | 'HITS_LIMIT' | 'COLLECT_LIMIT' | 'STATS_LIMIT'>>;
   } = {},
 ): FakeWorld {
   const { db, sql } = d1();
@@ -106,6 +57,8 @@ function world(
     DB: db,
     REPORT_LIMIT: limiter(5),
     HITS_LIMIT: limiter(20),
+    COLLECT_LIMIT: limiter(30),
+    STATS_LIMIT: limiter(20),
     GITHUB_TOKEN: 'github_pat_test',
     TURNSTILE_SECRET: 'turnstile-secret',
     GITHUB_REPO: 'ShuhongDai/ai-prescreen',
@@ -113,6 +66,9 @@ function world(
     TURNSTILE_HOSTNAMES: 'aiprescreen.fyi',
     REPORTS_PER_DAY: '30',
     HITS_ROWS_PER_DAY: '20000',
+    ANALYTICS_ROWS_PER_DAY: '30000',
+    STATS_ROWS_READ_PER_DAY: '1500000',
+    STATS_TOKEN: 'stats-token',
     ...options.env,
   };
   return {

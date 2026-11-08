@@ -171,11 +171,12 @@
         </div>
         <div class="toggle">
           <input type="checkbox" id="hit-counts" aria-describedby="hit-counts-help" />
-          <label for="hit-counts">Anonymous hit counts</label>
+          <label for="hit-counts">Anonymous usage statistics</label>
           <span id="hit-counts-help" class="toggle-help"
-            >sends the IDs of the entries shown (never your text) to api.aiprescreen.fyi a few
-            seconds after an analysis, each entry at most once per page view; off by default if
-            your browser sends Global Privacy Control</span
+            >counts this visit and what you use (features, draft length in words, which entries
+            fired; never your text) at api.aiprescreen.fyi, plus page views via Cloudflare Web
+            Analytics; no cookies, nothing stored on your device, IP addresses not kept; off by
+            default if your browser sends Global Privacy Control</span
           >
         </div>
         <p class="advanced-report">
@@ -187,9 +188,12 @@
 
     <footer class="site-footer">
       <p>
-        <strong>Your text stays in your browser.</strong> The page sends only anonymous counts
-        of which entries fired (no text; switch them off under Advanced) and the reports you
-        choose to send. A report form also loads Cloudflare Turnstile, an anti-spam check.
+        <strong>Your text stays in your browser.</strong> The page sends anonymous usage
+        statistics (which features are used, draft length, which entries fired; never your
+        text, no cookies, no IP addresses kept;
+        <a href="https://github.com/ShuhongDai/ai-prescreen#privacy">details</a>, switch off
+        under Advanced) and the reports you choose to send. A report form also loads Cloudflare
+        Turnstile, an anti-spam check.
       </p>
       <p>
         Code MIT · lexicon CC BY 4.0 · Source Serif 4 (OFL) ·

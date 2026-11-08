@@ -1,10 +1,11 @@
-// Requests to the report and hit-count Worker (worker/). The only requests the page makes
-// besides the reports a reader sends: anonymous hit counts, which carry entry IDs only and
-// can be switched off.
+// Requests to the report, hit-count and usage-statistics Worker (worker/). Besides the
+// reports a reader sends, the page sends anonymous hit counts (entry IDs only) and usage
+// statistics (src/ui/analytics.ts), never any text; both can be switched off.
 
 import {
   API_ORIGIN,
   API_PATHS,
+  type CollectRequest,
   type HitsRequest,
   type ReportError,
   type ReportRequest,
@@ -46,6 +47,12 @@ export function sendHits(ids: readonly string[], beacon: ((url: string, data: Bl
   if (!beacon || ids.length === 0) return false;
   const body: HitsRequest = { ids: [...ids] };
   return beacon(`${API_BASE}${API_PATHS.hits}`, new Blob([JSON.stringify(body)], { type: 'text/plain;charset=UTF-8' }));
+}
+
+/** Sends usage statistics as a beacon, like sendHits. */
+export function sendCollect(body: CollectRequest, beacon: ((url: string, data: Blob) => boolean) | null = defaultBeacon()): boolean {
+  if (!beacon) return false;
+  return beacon(`${API_BASE}${API_PATHS.collect}`, new Blob([JSON.stringify(body)], { type: 'text/plain;charset=UTF-8' }));
 }
 
 function defaultBeacon(): ((url: string, data: Blob) => boolean) | null {
